@@ -1,0 +1,42 @@
+{
+  "slug": "MyPlugin",
+  "name": "Testing",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "brand": "Equanimity",
+  "author": "Vena",
+  "authorEmail": "yppahhappy.com@gmail.com",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "vena_lfo",
+      "name": "Ash Lfo",
+      "description": "A graphical randomized lfo",
+      "tags": []
+    },
+    {
+      "slug": "vena_comparator",
+      "name": "Vena's X-Wave Reflector",
+      "description": "A simple logical dual comparator",
+      "tags": [
+        "Utility",
+        "Effect",
+        "Distortion",
+        "Switch",
+        "Waveshaper",
+        "Limiter"
+      ]
+    },
+    {
+      "slug": "vena_comparator2",
+      "name": "Comparator2",
+      "description": "Idk yet",
+      "tags": []
+    }
+  ]
+}
