@@ -59,8 +59,7 @@ struct Vena_comparator2 : Module {
 			}
 			else if(boolParam)
 			{
-				outputs[i].setVoltage(outA > outB + 3.f ? outA : outB);
-				outputs[i].setVoltage(outA < outB - 3.f ? outA : outB);
+				outputs[i].setVoltage((outA > outB + 3.f or outA < outB - 3.f) ? outA : outB);
 			}
 			else 
 			{
