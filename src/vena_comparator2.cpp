@@ -51,16 +51,26 @@ struct Vena_comparator2 : Module {
 			//only on when gate on
 			
 			
-			if(boolGate)
+			if(boolGate && boolParam)
 			{
-				bool gate=(outA>outB);
+				float tempA = (outA > outB + 3.f or outA < outB - 3.f) ? outA : outB;
+				float tempB = (outB > outA + 3.f or outB < outA - 3.f) ? outB : outA;
+				
+				bool gate = (tempA >= tempB);
+
+				outputs[i].setVoltage(gate*10.f);
+				outputs[i+1].setVoltage((not gate)*10.f);
+			}
+			else if(boolGate)
+			{
+				bool gate = (outA >= outB);
 				outputs[i].setVoltage(gate*10.f);
 				outputs[i+1].setVoltage((not gate)*10.f);
 			}
 			else if(boolParam)
 			{
-				outputs[i].setVoltage(outA > outB + 3.f ? outA : outB);
-				outputs[i].setVoltage(outA < outB - 3.f ? outA : outB);
+				outputs[i].setVoltage((outA > outB + 3.f or outA < outB - 3.f) ? outA : outB);
+				outputs[i+1].setVoltage((outB > outA + 3.f or outB < outA - 3.f) ? outB : outA);
 			}
 			else 
 			{
@@ -75,7 +85,7 @@ struct Vena_comparator2 : Module {
 				outputs[i].setVoltage(outB);
 				outputs[i+1].setVoltage(outA);
 				lights[i/2+1].setBrightness(-1.f);
-			}
+				}
 			};
 		};
 
