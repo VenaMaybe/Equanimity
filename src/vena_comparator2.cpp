@@ -21,6 +21,7 @@ struct Vena_comparator2 : Module {
 		OUTPUT_B_OUTPUT,
 		OUTPUT_C_OUTPUT,
 		OUTPUT_D_OUTPUT,
+		OUTPUT_TEST_OUTPUT = 10,
 		NUM_OUTPUTS
 	};
 	enum LightIds {
@@ -53,18 +54,23 @@ struct Vena_comparator2 : Module {
 			
 			if(boolGate)
 			{
-				outA = outA > outB ? 10.0F : 0.0F;
-				outB = 10.f - outA;
-			}
+				outB = outB >= outA ? 10.0F : 0.0F;
+				outA = outA >= outB ? 10.0F : 0.0F;
+				
+				//outB = 10.f - outA;
 
+
+			}
+			//test output
+			outputs[OUTPUT_TEST_OUTPUT].setVoltage(outA);
 
 			// only on when latch on
 			if(boolParam)
 			{
-				outputs[i].setVoltage(outA > outB + 3.f ? outA : outB);
-				outputs[i].setVoltage(outA < outB - 3.f ? outA : outB);
-			} 
-			else 
+				//outputs[i].setVoltage(outA > outB + 3.f ? outA : outB);
+				//outputs[i].setVoltage(outA < outB - 3.f ? outA : outB);
+			}
+			else
 			{
 				if(outA > outB)
 				{
@@ -79,8 +85,8 @@ struct Vena_comparator2 : Module {
 				lights[i/2+1].setBrightness(-1.f);
 			}
 			};
-			outA = 0.f;
-			outB = 0.f;
+		//	outA = 0.f;
+		//	outB = 0.f;
 
 		};
 
@@ -155,6 +161,8 @@ struct Vena_comparator2Widget : ModuleWidget {
 		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 47.182)), module, Vena_comparator2::OUTPUT_B_OUTPUT));
 		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 101.044)), module, Vena_comparator2::OUTPUT_C_OUTPUT));
 		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 108.964)), module, Vena_comparator2::OUTPUT_D_OUTPUT));
+		//temp
+		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 123.964)), module, Vena_comparator2::OUTPUT_TEST_OUTPUT));
 
 		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(7.62, 32.586)), module, Vena_comparator2::TOP_LIGHT_LIGHT));
 		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(7.62, 94.368)), module, Vena_comparator2::BOTTOM_LIGHT_LIGHT));
