@@ -88,7 +88,6 @@ struct Vena_comparator2 : Module {
 				}
 			};
 		};
-
 /*
 		if (inputs[INPUT_A_INPUT].isConnected() || inputs[INPUT_B_INPUT].isConnected())
 		{
