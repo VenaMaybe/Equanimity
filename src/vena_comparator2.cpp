@@ -42,14 +42,13 @@ struct Vena_comparator2 : Module {
 
 	void process(const ProcessArgs& args) override 
 	{
-		if (lightDivider.process())
-		{
-		lights[0].setSmoothBrightness(params[0].getValue() / 10, args.sampleTime * lightDivider.getDivision());
-		lights[1].setSmoothBrightness(params[1].getValue() / 10, args.sampleTime * lightDivider.getDivision());
-
-		lights[2].setSmoothBrightness(params[2].getValue() / 10, args.sampleTime * lightDivider.getDivision());
-		lights[3].setSmoothBrightness(params[3].getValue() / 10, args.sampleTime * lightDivider.getDivision());
-		}
+		//Lights Top
+		lights[0].setSmoothBrightness(inputs[0].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
+		lights[1].setSmoothBrightness(inputs[1].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
+		//Lights Bottom
+		lights[2].setSmoothBrightness(inputs[2].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
+		lights[3].setSmoothBrightness(inputs[3].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
+		//Goes through the top two then bottom two in and outs
 		for (int i = 0; i < 4; i+=2)
 		{
 			if(inputs[i].isConnected() || inputs[i+1].isConnected())
@@ -58,9 +57,6 @@ struct Vena_comparator2 : Module {
 				bool boolGate = params[i+1].getValue();
 				float outA = inputs[i].getVoltage();
 				float outB = inputs[i+1].getVoltage();
-				
-				lights[0].setBrightness(0.f);
-				lights[1].setBrightness(0.f);
 
 				if(boolGate && boolParam)
 				{
