@@ -42,6 +42,15 @@ struct Vena_comparator2 : Module {
 
 	void process(const ProcessArgs& args) override 
 	{
+
+		//TODO!!!
+		//Add in a slider that changes Param's +/- 3 volt range, however
+			//we wouldn't be able to fit in a cv for that so it'd just be
+			//an up and down slider, so perhaps that would be a whole
+			//other module by itself!!! Work on it tomorrow!!! <3
+		
+
+
 		//Lights Top
 		lights[0].setSmoothBrightness(inputs[0].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
 		lights[1].setSmoothBrightness(inputs[1].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
