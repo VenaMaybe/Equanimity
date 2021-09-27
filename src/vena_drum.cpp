@@ -3,19 +3,19 @@
 
 struct Vena_drum : Module {
 	enum ParamIds {
-		ATTACK_PARAM,
+		ATTACK_PARAM, //DONE
 		NUM_PARAMS
 	};
 	enum InputIds {
-		V_PER_OCT_INPUT,
-		TRIG_INPUT,
-		DECAY_INPUT,
-		DROP_INPUT,
+		V_PER_OCT_INPUT, //DONE
+		TRIG_INPUT, //DONE
+		DECAY_INPUT, //DONE
+		DROP_INPUT, //DONE
 		DRIVE_DISTORTION_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
-		OUTPUT_OUTPUT,
+		OUTPUT_OUTPUT, //DONE
 		NUM_OUTPUTS
 	};
 	enum LightIds {
@@ -27,7 +27,53 @@ struct Vena_drum : Module {
 		configParam(ATTACK_PARAM, 0.f, 1.f, 0.f, "");
 	}
 
+	float phase = 0.f;
+	float noise = 0.f;
+	float volume = 0.f;
+	float drop = 0.f;
+	bool rising = false;
+
 	void process(const ProcessArgs& args) override {
+		if (inputs[TRIG_INPUT].getVoltage()) {
+			drop = 0.f;
+			rising = true;
+		}
+
+		if (rising) {
+			volume += params[ATTACK_PARAM].getValue() / 500;
+			volume = clamp(volume, 0.f, 1.f);
+			if (volume == 1) {
+				rising = false;
+			}
+		}
+
+		if (!rising) {
+			if (inputs[DECAY_INPUT].isConnected()){
+				volume -= inputs[DECAY_INPUT].getVoltage() / 500;
+			}else{
+				volume -= 0.01f;
+			}
+			volume = clamp(volume, 0.f, 1.f);
+		}
+
+		float pitch = drop;
+		pitch += inputs[V_PER_OCT_INPUT].getVoltage();
+		pitch = clamp(pitch, -4.f, 8.f);
+
+		float freq = dsp::FREQ_C4 * std::pow(2.f, pitch);
+
+		phase += freq * args.sampleTime;
+		if (phase >= 0.5f){
+			phase -= floor(phase+.5);
+			noise = rand()/(RAND_MAX/10);
+			noise = noise - 5;
+		}
+
+		if (volume > 0) {
+			drop -= inputs[DROP_INPUT].getVoltage()/1000;
+		}
+
+		outputs[OUTPUT_OUTPUT].setVoltage(volume * noise);
 	}
 };
 
