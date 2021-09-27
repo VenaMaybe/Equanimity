@@ -43,50 +43,51 @@ struct Vena_comparator2 : Module {
 
 		for (int i = 0; inputs[i].isConnected() && i < 4; i+=2)
 		{
-			bool boolParam = params[i].getValue(); 
-			bool boolGate = params[i+1].getValue();
-			float outA = inputs[i].getVoltage();
-			float outB = inputs[i+1].getVoltage();
-			
-			//only on when gate on
-			
-			
-			if(boolGate && boolParam)
+			if(inputs[i].isConnected() || inputs[i+1].isConnected())
 			{
-				float tempA = (outA > outB + 3.f or outA < outB - 3.f) ? outA : outB;
-				float tempB = (outB > outA + 3.f or outB < outA - 3.f) ? outB : outA;
+				bool boolParam = params[i].getValue(); 
+				bool boolGate = params[i+1].getValue();
+				float outA = inputs[i].getVoltage();
+				float outB = inputs[i+1].getVoltage();
 				
-				bool gate = (tempA >= tempB);
-
-				outputs[i].setVoltage(gate*10.f);
-				outputs[i+1].setVoltage((not gate)*10.f);
-			}
-			else if(boolGate)
-			{
-				bool gate = (outA >= outB);
-				outputs[i].setVoltage(gate*10.f);
-				outputs[i+1].setVoltage((not gate)*10.f);
-			}
-			else if(boolParam)
-			{
-				outputs[i].setVoltage((outA > outB + 3.f or outA < outB - 3.f) ? outA : outB);
-				outputs[i+1].setVoltage((outB > outA + 3.f or outB < outA - 3.f) ? outB : outA);
-			}
-			else 
-			{
-				if(outA > outB)
+				if(boolGate && boolParam)
 				{
-				outputs[i].setVoltage(outA);
-				outputs[i+1].setVoltage(outB);
-				lights[i/2+1].setBrightness(1.f);
-				} 
+					float tempA = (outA > outB + 3.f or outA < outB - 3.f) ? outA : outB;
+					float tempB = (outB > outA + 3.f or outB < outA - 3.f) ? outB : outA;
+					
+					bool gate = (tempA >= tempB);
+
+					outputs[i].setVoltage(gate*10.f);
+					outputs[i+1].setVoltage((not gate)*10.f);
+				}
+				else if(boolGate)
+				{
+					bool gate = (outA >= outB);
+					outputs[i].setVoltage(gate*10.f);
+					outputs[i+1].setVoltage((not gate)*10.f);
+				}
+				else if(boolParam)
+				{
+					outputs[i].setVoltage((outA > outB + 3.f or outA < outB - 3.f) ? outA : outB);
+					outputs[i+1].setVoltage((outB > outA + 3.f or outB < outA - 3.f) ? outB : outA);
+				}
 				else 
 				{
-				outputs[i].setVoltage(outB);
-				outputs[i+1].setVoltage(outA);
-				lights[i/2+1].setBrightness(-1.f);
-				}
-			};
+					if(outA > outB)
+					{
+					outputs[i].setVoltage(outA);
+					outputs[i+1].setVoltage(outB);
+					lights[i/2+1].setBrightness(1.f);
+					} 
+					else 
+					{
+					outputs[i].setVoltage(outB);
+					outputs[i+1].setVoltage(outA);
+					lights[i/2+1].setBrightness(-1.f);
+					}
+				};
+
+			}
 		};
 /*
 		if (inputs[INPUT_A_INPUT].isConnected() || inputs[INPUT_B_INPUT].isConnected())
@@ -145,10 +146,10 @@ struct Vena_comparator2Widget : ModuleWidget {
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<CKSS>(mm2px(Vec(13.142, 8.278)), module, Vena_comparator2::SWITCH_TOP_LATCH_PARAM));
-		addParam(createParam<CKSS>(mm2px(Vec(13.142, 21.386)), module, Vena_comparator2::SWITCH_TOP_GATE_PARAM));
-		addParam(createParam<CKSS>(mm2px(Vec(13.142, 70.06)), module, Vena_comparator2::SWITCH_BOTTOM_LATCH_PARAM));
-		addParam(createParam<CKSS>(mm2px(Vec(13.142, 83.168)), module, Vena_comparator2::SWITCH_BOTTOM_GATE_PARAM));
+		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 8.278)), module, Vena_comparator2::SWITCH_TOP_LATCH_PARAM));
+		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 21.386)), module, Vena_comparator2::SWITCH_TOP_GATE_PARAM));
+		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 70.06)), module, Vena_comparator2::SWITCH_BOTTOM_LATCH_PARAM));
+		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 83.168)), module, Vena_comparator2::SWITCH_BOTTOM_GATE_PARAM));
 
 		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 10.633)), module, Vena_comparator2::INPUT_A_INPUT));
 		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 23.747)), module, Vena_comparator2::INPUT_B_INPUT));
