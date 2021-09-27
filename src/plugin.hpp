@@ -9,6 +9,7 @@ extern Plugin* pluginInstance;
 extern Model* modelVena_lfo;
 extern Model* modelVena_comparator;
 extern Model* modelVena_comparator2;
+extern Model* modelVena_drum;
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;
 

@@ -37,6 +37,12 @@
       "name": "Comparator2",
       "description": "Idk yet",
       "tags": []
+    },
+    {
+      "slug": "vena_drum",
+      "name": "Ennui",
+      "description": "A drum distortion wip",
+      "tags": []
     }
   ]
 }

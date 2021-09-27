@@ -150,16 +150,16 @@ struct Vena_lfoWidget : ModuleWidget {
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(16.659, 94.711)), module, Vena_lfo::LENGTH_KNOB_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(49.381, 94.711)), module, Vena_lfo::RANDOM_KNOB_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(23.25, 103.322)), module, Vena_lfo::LENGTH_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(43.98, 103.322)), module, Vena_lfo::RANDOM_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(54.792, 103.322)), module, Vena_lfo::RNDM_GATE_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(16.659, 107.796)), module, Vena_lfo::HUMANIZE_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(37.388, 107.796)), module, Vena_lfo::RATE_IN_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(61.383, 107.796)), module, Vena_lfo::SYNC_GATE_IN_INPUT));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(23.25, 103.322)), module, Vena_lfo::LENGTH_IN_INPUT));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(43.98, 103.322)), module, Vena_lfo::RANDOM_IN_INPUT));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(54.792, 103.322)), module, Vena_lfo::RNDM_GATE_IN_INPUT));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(16.659, 107.796)), module, Vena_lfo::HUMANIZE_IN_INPUT));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(37.388, 107.796)), module, Vena_lfo::RATE_IN_INPUT));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(61.383, 107.796)), module, Vena_lfo::SYNC_GATE_IN_INPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(58.034, 120.538)), module, Vena_lfo::GLOBAL_OUT_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(58.034, 45.538)), module, Vena_lfo::GLOBAL_OUT_OUTPUTI));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(58.034, 30.538)), module, Vena_lfo::GLOBAL_OUT_OUTPUTII));
+		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(58.034, 120.538)), module, Vena_lfo::GLOBAL_OUT_OUTPUT));
+		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(58.034, 45.538)), module, Vena_lfo::GLOBAL_OUT_OUTPUTI));
+		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(58.034, 30.538)), module, Vena_lfo::GLOBAL_OUT_OUTPUTII));
 
 		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(37.609, 120.538)), module, Vena_lfo::LIGHT_ONE_LIGHT));
 		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(40.784, 120.538)), module, Vena_lfo::LIGHT_TWO_LIGHT));
