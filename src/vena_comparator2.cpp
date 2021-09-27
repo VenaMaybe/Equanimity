@@ -41,7 +41,7 @@ struct Vena_comparator2 : Module {
 	{
 		
 
-		for (int i = 0; inputs[i].isConnected() && i < 4; i+=2)
+		for (int i = 0; i < 4; i+=2)
 		{
 			if(inputs[i].isConnected() || inputs[i+1].isConnected())
 			{

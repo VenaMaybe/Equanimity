@@ -32,7 +32,7 @@ struct Vena_switch : app::SvgSwitch
 {
 	Vena_switch()
 	{
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/vena_swichOne_frameOn.svg")));
 		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/vena_swichOne_frameOff.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/vena_swichOne_frameOn.svg")));	
 	}
 };
