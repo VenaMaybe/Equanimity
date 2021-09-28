@@ -23,14 +23,23 @@
         "Distortion",
         "Switch",
         "Waveshaper",
-        "Limiter"
+        "Limiter",
+        "Dual"
       ]
     },
     {
       "slug": "vena_comparator2",
-      "name": "Comparator2",
-      "description": "Idk yet",
-      "tags": []
+      "name": "Vena's X-Wave 2 Reflector",
+      "description": "A logical dual comparator with included gate latch switches",
+      "tags": [
+        "Utility",
+        "Effect",
+        "Distortion",
+        "Switch",
+        "Waveshaper",
+        "Limiter",
+        "Dual"
+      ]
     }
   ]
 }
