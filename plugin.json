@@ -14,6 +14,12 @@
   "changelogUrl": "",
   "modules": [
     {
+      "slug": "vena_lfo",
+      "name": "Ash Lfo",
+      "description": "A graphical randomized lfo",
+      "tags": []
+    },
+    {
       "slug": "vena_comparator",
       "name": "Vena's X-Wave Reflector",
       "description": "A simple logical dual comparator",
@@ -30,6 +36,12 @@
       "slug": "vena_comparator2",
       "name": "Comparator2",
       "description": "Idk yet",
+      "tags": []
+    },
+    {
+      "slug": "vena_drum",
+      "name": "Ennui",
+      "description": "A drum distortion wip",
       "tags": []
     }
   ]
