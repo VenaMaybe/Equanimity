@@ -42,7 +42,7 @@ struct Vena_drum : Module {
 		}
 
 		if (rising) {
-			volume += params[ATTACK_PARAM].getValue() / 500;
+			volume += pow(params[ATTACK_PARAM].getValue(),2) / 1000;
 			volume = clamp(volume, 0.f, 1.f);
 			if (volume == 1) {
 				rising = false;
@@ -50,7 +50,7 @@ struct Vena_drum : Module {
 		}
 
 		if (!rising) {
-			volume -= params[DECAY_PARAM].getValue() / 500;
+			volume -= pow(params[DECAY_PARAM].getValue(),2) / 1000;
 			volume = clamp(volume, 0.f, 1.f);
 		}
 
