@@ -3,13 +3,13 @@
 
 struct Vena_drum : Module {
 	enum ParamIds {
-		ATTACK_PARAM, //DONE
-		V_PER_OCT_PARAM, //DONE
-		DECAY_PARAM, //DONE
-		DROP_PARAM, //DONE
+		ATTACK_PARAM,
+		DECAY_PARAM,
+		DROP_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
+		V_PER_OCT_INPUT,
 		TRIG_INPUT, //DONE
 		DRIVE_DISTORTION_INPUT,
 		NUM_INPUTS
@@ -25,9 +25,8 @@ struct Vena_drum : Module {
 	Vena_drum() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam(ATTACK_PARAM, 0.f, 1.f, 0.f, "Gain");
-		configParam(V_PER_OCT_PARAM, 0.f, 1.f, 0.f, "V/oct");
 		configParam(DECAY_PARAM, 0.f, 1.f, 0.f, "Fall");
-		configParam(DROP_PARAM, 0.f, 1.f, 0.f, "Drop");
+		configParam(DROP_PARAM, -1.f, 1.f, 0.f, "Drop");
 	}
 
 	float phase = 0.f;
@@ -51,16 +50,12 @@ struct Vena_drum : Module {
 		}
 
 		if (!rising) {
-			if (inputs[DECAY_PARAM].isConnected()){
-				volume -= inputs[DECAY_PARAM].getVoltage() / 500;
-			}else{
-				volume -= 0.01f;
-			}
+			volume -= params[DECAY_PARAM].getValue() / 500;
 			volume = clamp(volume, 0.f, 1.f);
 		}
 
 		float pitch = drop;
-		pitch += inputs[V_PER_OCT_PARAM].getVoltage();
+		pitch += inputs[V_PER_OCT_INPUT].getVoltage();
 		pitch = clamp(pitch, -4.f, 8.f);
 
 		float freq = dsp::FREQ_C4 * std::pow(2.f, pitch);
@@ -73,7 +68,7 @@ struct Vena_drum : Module {
 		}
 
 		if (volume > 0) {
-			drop -= inputs[DROP_PARAM].getVoltage()/1000;
+			drop -= params[DROP_PARAM].getValue()/2000;
 		}
 
 		outputs[OUTPUT_OUTPUT].setVoltage(volume * noise);
@@ -92,11 +87,11 @@ struct Vena_drumWidget : ModuleWidget {
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(14.03, 39.955)), module, Vena_drum::ATTACK_PARAM));
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(6.287, 49.26)), module, Vena_drum::DECAY_PARAM));
+		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(14.03, 58.24)), module, Vena_drum::DROP_PARAM));
 
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(14.03, 6.697)), module, Vena_drum::V_PER_OCT_PARAM));
+		addInput(createInputCentered<Vena_in>(mm2px(Vec(14.03, 6.697)), module, Vena_drum::V_PER_OCT_INPUT));
 		addInput(createInputCentered<Vena_in>(mm2px(Vec(6.287, 28.212)), module, Vena_drum::TRIG_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(6.287, 49.26)), module, Vena_drum::DECAY_PARAM));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(14.03, 58.24)), module, Vena_drum::DROP_PARAM));
 		addInput(createInputCentered<Vena_in>(mm2px(Vec(10.16, 81.741)), module, Vena_drum::DRIVE_DISTORTION_INPUT));
 
 		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(10.16, 109.221)), module, Vena_drum::OUTPUT_OUTPUT));
