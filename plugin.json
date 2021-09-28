@@ -1,24 +1,18 @@
 {
-  "slug": "MyPlugin",
-  "name": "Testing",
+  "slug": "Equanimity",
+  "name": "Equanimity",
   "version": "1.0.0",
-  "license": "proprietary",
+  "license": "GPL-3.0-or-later",
   "brand": "Equanimity",
   "author": "Vena",
   "authorEmail": "yppahhappy.com@gmail.com",
-  "authorUrl": "",
-  "pluginUrl": "",
+  "authorUrl": "https://github.com/VenaMaybe",
+  "pluginUrl": "https://github.com/VenaMaybe/Equanimity",
   "manualUrl": "",
-  "sourceUrl": "",
-  "donateUrl": "",
+  "sourceUrl": "https://github.com/VenaMaybe/Equanimity/tree/master",
+  "donateUrl": "https://www.dictionary.com/browse/equanimity",
   "changelogUrl": "",
   "modules": [
-    {
-      "slug": "vena_lfo",
-      "name": "Ash Lfo",
-      "description": "A graphical randomized lfo",
-      "tags": []
-    },
     {
       "slug": "vena_comparator",
       "name": "Vena's X-Wave Reflector",
@@ -36,12 +30,6 @@
       "slug": "vena_comparator2",
       "name": "Comparator2",
       "description": "Idk yet",
-      "tags": []
-    },
-    {
-      "slug": "vena_drum",
-      "name": "Ennui",
-      "description": "A drum distortion wip",
       "tags": []
     }
   ]
