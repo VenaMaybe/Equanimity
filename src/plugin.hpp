@@ -43,7 +43,7 @@ struct Orange_Switch : app::SvgSwitch
 // Slider stuff :>
 
 //Orange Slider
-struct Orange_Slider : app::SvgSlider /*, LightSlider<LEDSlider, TLightBase>*/ {
+struct Orange_Slider : app::SvgSlider {
 	Orange_Slider() {
 	maxHandlePos = mm2px(math::Vec(-0.225, -0.70));
 	minHandlePos = mm2px(math::Vec(-0.225, 11.91 - 2.35 - 0.70 - 0.70));
@@ -52,7 +52,10 @@ struct Orange_Slider : app::SvgSlider /*, LightSlider<LEDSlider, TLightBase>*/ {
 	}
 };
 
-//BEWARE BEWARE (bad code graveyard ahead)
+
+//----BEWARE BEWARE (bad code graveyard ahead)----//
+//
+//
 
 /*
 struct E_SliderLight : ModuleLightWidget {

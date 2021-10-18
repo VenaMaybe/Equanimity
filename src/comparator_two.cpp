@@ -29,7 +29,6 @@ struct Comparator_two : Module {
 	enum LightIds {
 		ENUMS(TOP_LIGHT, 2),
 		ENUMS(BOTTOM_LIGHT, 2),
-		ENUMS(SLIDER_LIGHT, 2),
 		NUM_LIGHTS
 	};
 
@@ -50,27 +49,13 @@ struct Comparator_two : Module {
 
 	void process(const ProcessArgs& args) override 
 	{
-
-		//TODO!!!
-		//Add in a slider that changes Param's +/- 3 volt range, however
-			//we wouldn't be able to fit in a cv for that so it'd just be
-			//an up and down slider, so perhaps that would be a whole
-			//other module by itself!!! Work on it tomorrow!!! <3
 		
-
-		
-		
-
-
-
 		//Lights Top
 		lights[0].setSmoothBrightness(inputs[0].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
 		lights[1].setSmoothBrightness(inputs[1].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
 		//Lights Bottom
 		lights[2].setSmoothBrightness(inputs[2].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
 		lights[3].setSmoothBrightness(inputs[3].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
-		//Lights Slider
-		lights[SLIDER_LIGHT].setBrightness(1.f);
 		//Goes through the top two then bottom two in and outs
 		for (int i = 0, i_par = 0; i < 4; i+=2, i_par+=3)
 		{
@@ -79,28 +64,28 @@ struct Comparator_two : Module {
 			{
 				bool boolLatch = params[i_par].getValue(); 
 				bool boolGate = params[i_par+1].getValue();
-				float LatchSize = params[i_par+2].getValue();
-				float AtenuverterSize = LatchSize;
+				float latchSize = params[i_par+2].getValue();
+				float atenuverterSize = latchSize;
 				float outA = inputs[i].getVoltage();
 				float outB = inputs[i+1].getVoltage();
 				
 				//If Gate is triggered without a B input you get the tri wave
 				if (boolGate && !inputs[i+1].isConnected()) {
 					if(outA > 5.f || outB > 5.f) {
-					AtenuverterSize += 5.f;
-					if (LatchSize < 5.f) {
-							outB = clamp(outA * -1.f + (LatchSize * 3.f), -10.f, 10.f);
+					atenuverterSize += 5.f;
+					if (latchSize < 5.f) {
+							outB = clamp(outA * -1.f + (latchSize * 3.f), -10.f, 10.f);
 						}
 					}
 				}
 				
 				
-
+				//This is where the beginning of output direciton happens!
 
 				if(boolGate && boolLatch)
 				{
-					float tempA = (outA > outB + LatchSize or outA < outB - LatchSize) ? outA : outB;
-					float tempB = (outB > outA + LatchSize or outB < outA - LatchSize) ? outB : outA;
+					float tempA = (outA > outB + latchSize or outA < outB - latchSize) ? outA : outB;
+					float tempB = (outB > outA + latchSize or outB < outA - latchSize) ? outB : outA;
 					
 					bool gate = (tempA >= tempB);
 
@@ -110,18 +95,27 @@ struct Comparator_two : Module {
 				//Remember Gate acts differently without B input
 				else if(boolGate && inputs[i+1].isConnected())
 				{
-					bool gate = (outA >= outB);
+					bool gate = (outA >= outB + (atenuverterSize - 5.f));
 					outputs[i].setVoltage(gate*10.f);
 					outputs[i+1].setVoltage((not gate)*10.f);
 				}
 				else if(boolLatch)
 				{
-					outputs[i].setVoltage((outA > outB + LatchSize or outA < outB - LatchSize) ? outA : outB);
-					outputs[i+1].setVoltage((outB > outA + LatchSize or outB < outA - LatchSize) ? outB : outA);
+					outputs[i].setVoltage((outA > outB + latchSize or outA < outB - latchSize) ? outA : outB);
+					outputs[i+1].setVoltage((outB > outA + latchSize or outB < outA - latchSize) ? outB : outA);
 				}
 				else 
 				{
-					if(outA > outB + (AtenuverterSize - 5))
+					float sizeShift = 2.f * (atenuverterSize - 5.f);
+					
+					if(sizeShift < 0.f) {
+						outA += sizeShift;
+					} else if (boolGate) {
+						sizeShift = sizeShift * 0.50f;
+					}
+					
+
+					if(outA > outB + sizeShift)
 					{
 					outputs[i].setVoltage(outA);
 					outputs[i+1].setVoltage(outB);
@@ -151,12 +145,10 @@ struct Comparator_twoWidget : ModuleWidget {
 
 		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 8.278)), module, Comparator_two::SWITCH_TOP_LATCH_PARAM));
 		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 21.386)), module, Comparator_two::SWITCH_TOP_GATE_PARAM));
-		//addParam(createLightParam<E_GreenLightSlider<GreenLight>>(mm2px(Vec(13.142, 36.909)), module, Comparator_two::SLIDER_TOP_LATCH_PARAM, Comparator_two::SLIDER_LIGHT + 0));
 		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 36.909).plus(Vec(0.225, 0.72/2))), module, Comparator_two::SLIDER_TOP_LATCH_PARAM));
 
 		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 70.06)), module, Comparator_two::SWITCH_BOTTOM_LATCH_PARAM));
 		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 83.168)), module, Comparator_two::SWITCH_BOTTOM_GATE_PARAM));
-		//addParam(createLightParam<LEDLightSliderFixed2<GreenLight>>(mm2px(Vec(13.142, 98.691)), module, Comparator_two::SLIDER_BOTTOM_LATCH_PARAM, Comparator_two::SLIDER_LIGHT + 1));
 		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 98.691).plus(Vec(0.225, 0.72/2))), module, Comparator_two::SLIDER_BOTTOM_LATCH_PARAM));
 
 		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 10.633)), module, Comparator_two::INPUT_A_INPUT));
@@ -174,8 +166,8 @@ struct Comparator_twoWidget : ModuleWidget {
 	}
 };
 
+//Light sliders don't work/are too hard to figure out, impliment later!
 //addParam(createLightParam<LEDLightSliderFixed<GreenLight>>(mm2px(Vec(5.8993969, 44.33149).plus(Vec(-2, 0))), module, VCMixer::LVL_PARAMS + 0, VCMixer::LVL_LIGHTS + 0));
-
 
 
 Model* modelComparator_two = createModel<Comparator_two, Comparator_twoWidget>("comparator_two");
