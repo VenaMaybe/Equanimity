@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1.64mm"
+   height="11.91mm"
+   viewBox="0 0 1.64 11.91"
+   version="1.1"
+   id="svg1063"
+   sodipodi:docname="grey_slider_background.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1065"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true"
+     inkscape:zoom="15.178749"
+     inkscape:cx="-1.9764474"
+     inkscape:cy="16.042165"
+     inkscape:window-width="1655"
+     inkscape:window-height="1003"
+     inkscape:window-x="443"
+     inkscape:window-y="151"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     height="11.91mm">
+    <sodipodi:guide
+       position="0,12.63"
+       orientation="0,8.9196846"
+       id="guide1550" />
+    <sodipodi:guide
+       position="2.36,12.63"
+       orientation="47.735434,0"
+       id="guide1552" />
+    <sodipodi:guide
+       position="2.36,0"
+       orientation="0,-8.9196846"
+       id="guide1554" />
+    <sodipodi:guide
+       position="0,0"
+       orientation="-47.735434,0"
+       id="guide1556" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1060" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect1558"
+       style="fill:#8e8e8e;fill-opacity:0.262745;stroke:none;stroke-width:0.349999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:0.262745;paint-order:markers fill stroke;stop-color:#000000"
+       d="M 0.48007404,4.7754488e-7 C 0.21423545,4.7754488e-7 0,0.21423593 0,0.48007452 V 11.427727 c 0,0.265838 0.21423545,0.479557 0.48007404,0.479557 H 1.1575521 c 0.2658386,0 0.480074,-0.213719 0.480074,-0.479557 V 0.48007452 C 1.6376261,0.21423593 1.4233907,4.7754488e-7 1.1575521,4.7754488e-7 Z" />
+  </g>
+</svg>

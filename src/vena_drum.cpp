@@ -90,11 +90,11 @@ struct Vena_drumWidget : ModuleWidget {
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(6.287, 49.26)), module, Vena_drum::DECAY_PARAM));
 		addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(14.03, 58.24)), module, Vena_drum::DROP_PARAM));
 
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(14.03, 6.697)), module, Vena_drum::V_PER_OCT_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(6.287, 28.212)), module, Vena_drum::TRIG_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(10.16, 81.741)), module, Vena_drum::DRIVE_DISTORTION_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(14.03, 6.697)), module, Vena_drum::V_PER_OCT_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(6.287, 28.212)), module, Vena_drum::TRIG_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(10.16, 81.741)), module, Vena_drum::DRIVE_DISTORTION_INPUT));
 
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(10.16, 109.221)), module, Vena_drum::OUTPUT_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(10.16, 109.221)), module, Vena_drum::OUTPUT_OUTPUT));
 	}
 };
 

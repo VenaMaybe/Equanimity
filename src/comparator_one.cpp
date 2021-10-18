@@ -1,6 +1,6 @@
 #include "plugin.hpp"
 
-struct Vena_comparator : Module
+struct Comparator_one : Module
 {
 	enum ParamIds {
 		NUM_PARAMS
@@ -25,7 +25,7 @@ struct Vena_comparator : Module
 		NUM_LIGHTS
 	};
 
-	Vena_comparator() {
+	Comparator_one() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 	}
 
@@ -74,30 +74,30 @@ struct Vena_comparator : Module
 };
 
 
-struct Vena_comparatorWidget : ModuleWidget {
-	Vena_comparatorWidget(Vena_comparator* module) {
+struct Comparator_oneWidget : ModuleWidget {
+	Comparator_oneWidget(Comparator_one* module) {
 		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/vena_comparator.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comparator_one.svg")));
 
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 10.633)), module, Vena_comparator::INPUT_A_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 23.747)), module, Vena_comparator::INPUT_B_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 72.415)), module, Vena_comparator::INPUT_C_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 85.529)), module, Vena_comparator::INPUT_D_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 10.633)), module, Comparator_one::INPUT_A_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 23.747)), module, Comparator_one::INPUT_B_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 72.415)), module, Comparator_one::INPUT_C_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 85.529)), module, Comparator_one::INPUT_D_INPUT));
 
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 39.262)), module, Vena_comparator::OUTPUT_A_OUTPUT));
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 47.182)), module, Vena_comparator::OUTPUT_B_OUTPUT));
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 101.044)), module, Vena_comparator::OUTPUT_C_OUTPUT));
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 108.964)), module, Vena_comparator::OUTPUT_D_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 39.262)), module, Comparator_one::OUTPUT_A_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 47.182)), module, Comparator_one::OUTPUT_B_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 101.044)), module, Comparator_one::OUTPUT_C_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 108.964)), module, Comparator_one::OUTPUT_D_OUTPUT));
 
-		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(7.62, 32.586)), module, Vena_comparator::TOP_LIGHT_LIGHT));
-		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(7.62, 94.368)), module, Vena_comparator::BOTTOM_LIGHT_LIGHT));
+		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(7.62, 32.586)), module, Comparator_one::TOP_LIGHT_LIGHT));
+		addChild(createLightCentered<TinyLight<GreenLight>>(mm2px(Vec(7.62, 94.368)), module, Comparator_one::BOTTOM_LIGHT_LIGHT));
 	}
 };
 
 
-Model* modelVena_comparator = createModel<Vena_comparator, Vena_comparatorWidget>("vena_comparator");
+Model* modelComparator_one = createModel<Comparator_one, Comparator_oneWidget>("comparator_one");

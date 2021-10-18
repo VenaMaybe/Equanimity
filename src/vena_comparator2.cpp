@@ -118,20 +118,20 @@ struct Vena_comparator2Widget : ModuleWidget {
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 8.278)), module, Vena_comparator2::SWITCH_TOP_LATCH_PARAM));
-		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 21.386)), module, Vena_comparator2::SWITCH_TOP_GATE_PARAM));
-		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 70.06)), module, Vena_comparator2::SWITCH_BOTTOM_LATCH_PARAM));
-		addParam(createParam<Vena_switch>(mm2px(Vec(13.142, 83.168)), module, Vena_comparator2::SWITCH_BOTTOM_GATE_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 8.278)), module, Vena_comparator2::SWITCH_TOP_LATCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 21.386)), module, Vena_comparator2::SWITCH_TOP_GATE_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 70.06)), module, Vena_comparator2::SWITCH_BOTTOM_LATCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 83.168)), module, Vena_comparator2::SWITCH_BOTTOM_GATE_PARAM));
 
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 10.633)), module, Vena_comparator2::INPUT_A_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 23.747)), module, Vena_comparator2::INPUT_B_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 72.415)), module, Vena_comparator2::INPUT_C_INPUT));
-		addInput(createInputCentered<Vena_in>(mm2px(Vec(7.62, 85.529)), module, Vena_comparator2::INPUT_D_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 10.633)), module, Vena_comparator2::INPUT_A_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 23.747)), module, Vena_comparator2::INPUT_B_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 72.415)), module, Vena_comparator2::INPUT_C_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 85.529)), module, Vena_comparator2::INPUT_D_INPUT));
 
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 39.262)), module, Vena_comparator2::OUTPUT_A_OUTPUT));
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 47.182)), module, Vena_comparator2::OUTPUT_B_OUTPUT));
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 101.044)), module, Vena_comparator2::OUTPUT_C_OUTPUT));
-		addOutput(createOutputCentered<Vena_out>(mm2px(Vec(7.62, 108.964)), module, Vena_comparator2::OUTPUT_D_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 39.262)), module, Vena_comparator2::OUTPUT_A_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 47.182)), module, Vena_comparator2::OUTPUT_B_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 101.044)), module, Vena_comparator2::OUTPUT_C_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 108.964)), module, Vena_comparator2::OUTPUT_D_OUTPUT));
 
 		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 32.586)), module, Vena_comparator2::TOP_LIGHT));
 		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 94.368)), module, Vena_comparator2::BOTTOM_LIGHT));

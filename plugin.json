@@ -14,8 +14,8 @@
   "changelogUrl": "",
   "modules": [
     {
-      "slug": "vena_comparator",
-      "name": "Vena's X-Wave Reflector",
+      "slug": "comparator_one",
+      "name": "Reflect",
       "description": "A simple logical dual comparator",
       "tags": [
         "Utility",
@@ -28,9 +28,9 @@
       ]
     },
     {
-      "slug": "vena_comparator2",
-      "name": "Vena's X-Wave 2 Reflector",
-      "description": "A logical dual comparator with included gate latch switches",
+      "slug": "comparator_two",
+      "name": "Reflections",
+      "description": "A logical dual comparator with included gate and latch switches",
       "tags": [
         "Utility",
         "Effect",
