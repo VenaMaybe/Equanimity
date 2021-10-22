@@ -19,7 +19,7 @@ struct Orange_In : app::SvgPort
 {
 	Orange_In()
 	{
-		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/orange_in.svg")));
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_in.svg")));
 	}
 };
 
@@ -27,7 +27,7 @@ struct Orange_Out : app::SvgPort
 {
 	Orange_Out()
 	{
-		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/orange_out.svg")));
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_out.svg")));
 	}
 };
 
@@ -35,8 +35,8 @@ struct Orange_Switch : app::SvgSwitch
 {
 	Orange_Switch()
 	{
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/orange_swichOne_frameOff.svg")));
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/orange_swichOne_frameOn.svg")));	
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_swichOne_frameOff.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_swichOne_frameOn.svg")));	
 	}
 };
 
@@ -48,7 +48,7 @@ struct Orange_Slider : app::SvgSlider {
 	maxHandlePos = mm2px(math::Vec(-0.225, -0.70));
 	minHandlePos = mm2px(math::Vec(-0.225, 11.91 - 2.35 - 0.70 - 0.70));
 	setBackgroundSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/grey_slider_background.svg")));
-	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/orange_swichOne_frameOn.svg")));
+	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_swichOne_frameOn.svg")));
 	}
 };
 
