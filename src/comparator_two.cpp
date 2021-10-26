@@ -1,6 +1,4 @@
 #include "plugin.hpp"
-#include <rack.hpp>
-using namespace rack;
 
 struct Comparator_two : Module {
 	enum ParamIds {
