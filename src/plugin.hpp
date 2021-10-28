@@ -9,6 +9,7 @@ extern Plugin* pluginInstance;
 //		extern Model* modelVena_lfo;
 extern Model* modelComparator_one;
 extern Model* modelComparator_two;
+extern Model* modelClock_divider_one;
 
 //		extern Model* modelVena_comparator2;
 //		extern Model* modelVena_drum;
@@ -51,6 +52,30 @@ struct Orange_Slider : app::SvgSlider {
 	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_swichOne_frameOn.svg")));
 	}
 };
+
+//  Utility
+	//Gate handler struct
+
+struct gateHandler {
+	//float to gate function, pass float return gate
+	bool ftg(float in) {
+		if(in > 1.f || in < -1.f) {
+			return 1;
+		} else { return 0;}
+	}
+	//gate to float function, pass gate return float
+	float gtf(bool in) {
+		if(in) {
+			return 10.f;
+		} else { return 0.f;}
+	}
+};
+
+
+
+
+
+//
 
 
 //----BEWARE BEWARE (bad code graveyard ahead)----//

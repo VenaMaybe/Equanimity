@@ -40,6 +40,12 @@
         "Limiter",
         "Dual"
       ]
+    },
+    {
+      "slug": "clock_divider_one",
+      "name": "Temp Clock Divider",
+      "description": "randomzied clock divider",
+      "tags": []
     }
   ]
 }

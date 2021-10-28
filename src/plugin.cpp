@@ -12,6 +12,7 @@ void init(Plugin* p) {
 //	p->addModel(modelVena_lfo);
 	p->addModel(modelComparator_one);
 	p->addModel(modelComparator_two);
+	p->addModel(modelClock_divider_one);
 
 //	p->addModel(modelVena_comparator2);
 //	p->addModel(modelVena_drum);

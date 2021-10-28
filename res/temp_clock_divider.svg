@@ -8,7 +8,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="temp new module.svg"
+   sodipodi:docname="temp_clock_divider.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -33,15 +33,15 @@
      inkscape:snap-object-midpoints="true"
      inkscape:snap-intersection-paths="true"
      inkscape:snap-global="true"
-     inkscape:zoom="2"
-     inkscape:cx="75.25"
-     inkscape:cy="237.25"
+     inkscape:zoom="4"
+     inkscape:cx="114.875"
+     inkscape:cy="120.625"
      inkscape:window-width="1820"
      inkscape:window-height="1245"
      inkscape:window-x="531"
      inkscape:window-y="17"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer3"
+     inkscape:current-layer="layer2"
      inkscape:snap-smooth-nodes="true"
      inkscape:object-paths="true"
      inkscape:snap-center="true"
@@ -435,7 +435,7 @@
      inkscape:groupmode="layer"
      id="layer10"
      inkscape:label="knob detail"
-     style="display:inline"
+     style="display:none"
      sodipodi:insensitive="true">
     <circle
        style="display:inline;fill:#1b1b1b;fill-opacity:1;stroke:none;stroke-width:0.3718;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
@@ -684,13 +684,12 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="components"
-     style="display:none"
-     sodipodi:insensitive="true">
+     style="display:none">
     <circle
-       style="fill:#ff00ff;fill-opacity:1;stroke-width:0.0676;stroke-miterlimit:10"
+       style="fill:#ff00df;fill-opacity:1;stroke-width:0.0676;stroke-miterlimit:10"
        id="circle1613"
-       cx="7.6199999"
-       cy="32.585579"
+       cx="61.859585"
+       cy="9.6991205"
        r="0.43182993"
        inkscape:label="top_light" />
     <rect
@@ -703,128 +702,128 @@
        inkscape:label="switch_top_latch" />
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.3718;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="path26970-6"
+       id="PROBABILITY_AMT_A"
        cx="22.821226"
        cy="53.545052"
        r="5.1187744" />
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.3718;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4975-5"
+       id="PROBABILITY_AMT_B"
        cx="22.821226"
        cy="69.003593"
        r="5.1187744" />
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.3718;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4977-3"
+       id="PROBABILITY_AMT_C"
        cx="22.821226"
        cy="84.462128"
        r="5.1187744" />
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.3718;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4979-8"
+       id="PROBABILITY_AMT_D"
        cx="22.821226"
        cy="99.92067"
        r="5.1187744" />
     <circle
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.3718;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4981-7"
+       id="PROBABILITY_AMT_E"
        cx="22.821226"
        cy="115.3792"
        r="5.1187744" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4983-6"
+       id="PROBABILITY_CV_A"
        cx="9.4930105"
        cy="53.545052"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4985-6"
+       id="PROBABILITY_CV_B"
        cx="9.4930105"
        cy="69.003593"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4987-6"
+       id="PROBABILITY_CV_C"
        cx="9.4930105"
        cy="84.462128"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4989-9"
+       id="PROBABILITY_CV_D"
        cx="9.4930105"
        cy="99.92067"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle4991-3"
+       id="PROBABILITY_CV_E"
        cx="9.4930105"
        cy="115.3792"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle5903-1"
+       id="CLOCK"
        cx="9.4930105"
        cy="12.144621"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle5905-4"
+       id="RESET"
        cx="9.4930105"
        cy="25.463163"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6227-6"
+       id="DIVISION_A"
        cx="46.460728"
        cy="53.545052"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6229-3"
+       id="DIVISION_B"
        cx="46.460728"
        cy="69.003593"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6231-6"
+       id="DIVISION_C"
        cx="46.460728"
        cy="84.462128"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6233-9"
+       id="DIVISION_D"
        cx="46.460728"
        cy="99.92067"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6235-1"
+       id="DIVISION_E"
        cx="46.460728"
        cy="115.3792"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6237-2"
+       id="TOTAL_IN_VOLTS"
        cx="46.460728"
        cy="12.144621"
        r="3.9050107" />
     <circle
        style="display:inline;fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.283639;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-       id="circle6239-9"
+       id="SUM"
        cx="46.460728"
        cy="25.463163"
        r="3.9050107" />
     <rect
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.44366;stroke-linecap:square;stroke-miterlimit:10;stroke-opacity:0.647059;paint-order:stroke fill markers;stop-color:#000000"
-       id="rect1278-1"
+       id="DIV_LEVEL"
        width="3.9050102"
        height="21.128565"
        x="24.03499"
        y="8.2396097" />
     <rect
        style="display:inline;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.44366;stroke-linecap:square;stroke-miterlimit:10;stroke-opacity:0.647059;paint-order:stroke fill markers;stop-color:#000000"
-       id="rect1872-3"
+       id="RATIO"
        width="3.9050102"
        height="21.128565"
        x="17.702457"
