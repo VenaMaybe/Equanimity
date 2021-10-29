@@ -43,6 +43,8 @@ struct Clock_divider_one : Module {
 
 	float clockDuration;
 	float clockRemaining;
+	float clockMult;
+	int oneShot = 1;
 
 	bool outcomes[5];
 
@@ -56,19 +58,61 @@ struct Clock_divider_one : Module {
 		configParam(PROBABILITY_AMT_D_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(PROBABILITY_AMT_E_PARAM, 0.f, 1.f, 0.f, "");
 	}
+//Notes on module!
+/* So what I have to do is have the three pulse stages. 
+
+		First orignal pulse, we measure its length and it's the only "original" signal allowed through with .isHigh()
+
+		Second pulse, we create a second pulse based off the original's length in sampleTime using a pulse gen.
+			The length of the pulse outputs will be: A - E will be, x4, x2, x1, /2, /4
+			This will also be able to be changed via the DIV_LEVEL_PARAM.
+			For example from 2x it will go up to 3x or down to 1.5x
+
+		Third pulse, on each output we will corralate a spread of probability.
+			The spread's distribution will range from 100% to 0%.
+			The default state shall be 50% and that default is controlled by RATIO_PARAM.
+				The Ratio Paramiter shall be implimented last as I still have to think on it!
+
+
+
+
+A log on corrilative spread.
+	We will be spreading our numbers via x1.5 outwards and x0.25 inwards. 
+		e.g. an x2 will go to x3 upwards and x1.5 downwards.
+		Also an /2 will go to /3 upwards and /1.5 downwards.
+
+
+*/
 
 	void process(const ProcessArgs& args) override {
 		//I don't think I need this for, could use an array!
 		bool clockHigh;
 
 		bool clockIn = clock.process(inputs[CLOCK_INPUT].getVoltage());
-		if(clock.state > 0.1f) {
+
+
+
+
+
+
+
+
+
+		if(clock.isHigh()) {
 			clockDuration += args.sampleTime;
 		} else {
+			if(oneShot == 1) {
+				clockMult = clockDuration;
+				oneShot = 0;
+			}
 			clockDuration = 0.f;
 		}
 
-		if(clockDuration > 0.f) {
+	//	clockMult = clockDuration *  4.f; 
+	//	clockMult *= 4.f;
+
+		//This isn't needed
+		if(clockMult > 0.f) {
 			clockHigh = 1;
 		} else {
 			clockHigh = 0;
@@ -78,7 +122,7 @@ struct Clock_divider_one : Module {
 		//DEBUG("my clock length is: %f", clockLength);
 
 		if(clockIn)
-   			cPulse.trigger();
+   			cPulse.trigger(1.f);
 		//float x = clockIn ? 10.f : 0.f;
 
 		//The pulse gen has to be used for divisions, not mani clock,
@@ -87,23 +131,19 @@ struct Clock_divider_one : Module {
 
 		//Returns 1 for remaining time
 		bool high = cPulse.process(args.sampleTime);
-		outputs[SUM_OUTPUT].setVoltage(10.f * clockHigh);
+
+		outputs[SUM_OUTPUT].setVoltage(10.f * high);
+		//outputs[SUM_OUTPUT].setVoltage(10.f * clockHigh);
 		
 		
-		
+		/*
 		for(int i = 0; i < 5; i++){
-
-
 			if(inputs[CLOCK_INPUT].isConnected()){
 				bool gateA = 1;
 				outputs[DIVISION_A_OUTPUT + i].setVoltage(gateA ? 10.f : 0.f);
 			}
-			
-			
-			
-
 		}
-
+		*/
 
 	}
 };
