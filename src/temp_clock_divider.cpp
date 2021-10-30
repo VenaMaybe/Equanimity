@@ -35,7 +35,41 @@ struct Clock_divider_one : Module {
 	enum LightIds {
 		NUM_LIGHTS
 	};
+//--- Clock Variables ----//
+	//Schmitte Trigger Struct for main clock.
+	dsp::SchmittTrigger clockInput;
+	//Detects when a boolean changes from false to true
+	dsp::BooleanTrigger clockPast;
+	//clockPresentLengthPhase is used to accumulate the phase to get the length in samples
+	float clockPresentLengthPhase = 0.f;
+	float clockPresentLength = 0.f;
 
+//--- Global Memory Variables ----//
+	//Used for routing hit detections
+	bool hitClock;
+	//Global counter for hits
+	int hitCount = 0;
+	//Global counter sense pulse width change for hits
+	int hitCountSenseChange = 0;
+	//Stores the past pulse's length
+	float clockPastLength = 0.f;
+
+//--- Output Variables ----//
+	//An array to contain top to bottom the five outputs.
+	float multToDivOutputs[5];
+
+
+
+//--- Teseting Pulse ----//
+	//An array to contain the pulse generators for each output.
+	dsp::PulseGenerator multToDivPulses[5];
+
+	dsp::PulseGenerator testPulse;
+
+	//We need a bool to check if it's the first open clock
+	//bool firstOpenClockCheck = true;
+
+	/*
 	gateHandler gH;
 	dsp::SchmittTrigger clock;
 	dsp::PulseGenerator cPulse;
@@ -47,6 +81,8 @@ struct Clock_divider_one : Module {
 	int oneShot = 1;
 
 	bool outcomes[5];
+	*/
+
 
 	Clock_divider_one() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -83,19 +119,116 @@ A log on corrilative spread.
 
 
 */
+//--- Math ----//
+	// t = time of clock pulse
+	// p = beginninig of clock pulse
+	// d = durration between "p"'s
 
 	void process(const ProcessArgs& args) override {
-		//I don't think I need this for, could use an array!
+//--- Struct Dealing ----//		
+		//The Schmitt Trigger struct for our main clock input
+		clockInput.process(inputs[CLOCK_INPUT].getVoltage());
+		//Vairable for routing hits
+		hitClock = clockPast.process(clockInput.isHigh());
+		//Function to count x clock hits
+		if(hitClock) {
+			hitCount++;
+			hitCountSenseChange++;
+		}
+//--- Length Section ----//
+	//--- Notes: I believe we have to mult phase *2 to even it
+
+		//Calculate the first entire clock length
+		if(clockInput.isHigh()) {
+			clockPresentLengthPhase += args.sampleTime;
+		} else {
+			if(clockPresentLengthPhase > 0.f)
+				clockPresentLength = clockPresentLengthPhase;
+			clockPresentLengthPhase = 0.f;
+		}
+		//If used to reset the counter when Present doesn't equal Past
+		if(clockPresentLength != clockPastLength)
+			hitCountSenseChange = 0;
+
+
+		/*	
+		DEBUG("Phase: %f", clockPresentLengthPhase);
+		DEBUG("Length: %f", clockPresentLength);
+		DEBUG("%s", clockInput.isHigh() ? "true" : "false");
+		*/
+
+//--- Pulse Gen Section ----//
+
+		if(hitClock) {
+			multToDivPulses[0].trigger(clockPresentLength);
+		}
+		
+		//DEBUG("High: %s", clockInput.isHigh() ? "true ---------------" : "false");
+		//DEBUG("Hit Clock: %s", hitClock ? "true -------- x87" : "false");
+		//DEBUG("Process: %s", clockPast.process(clockInput.isHigh()) ? "true x72 ---------------" : "false");
+
+
+		/*
+		testPulse.trigger(clockPastLength / 2.f);
+		outputs[SUM_OUTPUT].setVoltage(10.f * testPulse.process(args.sampleTime));
+		*/
+
+//--- Pulse Routing Section ---//
+
+		
+
+
+	//We need an if to see if it's the first gate so we can have the first pulse section
+		multToDivOutputs[0] = 10.f * multToDivPulses[0].process(args.sampleTime);
+//		multToDivOutputs[1] 
+//		multToDivOutputs[2]
+//		multToDivOutputs[3] 
+//		multToDivOutputs[4] 
+
+
+
+//--- Output Routing Section ----//
+		//Goes through the five outputs and outputs that location in the array
+	//	for(int i = 0; i < 5; i++) {
+			outputs[0].setVoltage(multToDivOutputs[0]);
+			outputs[1].setVoltage(hitCountSenseChange);
+	//	}
+
+
+	
+
+
+
+		//Used to set the Past Length equal to the Present Length every hit beginning
+		if(hitClock)
+			clockPastLength = clockPresentLength;
+/*
+first we need an initial length
+
+an if to check if it has changed from it's previous length?
+If so, save the clock length
+
+To do this, we would have to save length states
+*/
+		/*
+
+
+//Calculates the clock high time and pushes to past whenever changes
+		if(clockPastLength != clockPresentLength || firstOpenClockCheck) {
+			if(clockInput.isHigh()) {
+				clockPresentLengthPhase += args.sampleTime;
+			} else if(!clockInput.isHigh()) {
+				clockPastLengthPhase = clockPresentLengthPhase;
+			}
+		}
+
+
+
+
+/////////
 		bool clockHigh;
 
 		bool clockIn = clock.process(inputs[CLOCK_INPUT].getVoltage());
-
-
-
-
-
-
-
 
 
 		if(clock.isHigh()) {
@@ -136,7 +269,7 @@ A log on corrilative spread.
 		//outputs[SUM_OUTPUT].setVoltage(10.f * clockHigh);
 		
 		
-		/*
+		
 		for(int i = 0; i < 5; i++){
 			if(inputs[CLOCK_INPUT].isConnected()){
 				bool gateA = 1;
@@ -144,7 +277,6 @@ A log on corrilative spread.
 			}
 		}
 		*/
-
 	}
 };
 
