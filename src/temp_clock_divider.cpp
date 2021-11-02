@@ -136,8 +136,6 @@ A log on corrilative spread.
 			hitCountSenseChange++;
 		}
 //--- Length Section ----//
-	//--- Notes: I believe we have to mult phase *2 to even it
-
 		//Calculate the first entire clock length
 		if(clockInput.isHigh()) {
 			clockPresentLengthPhase += args.sampleTime;
@@ -147,8 +145,18 @@ A log on corrilative spread.
 			clockPresentLengthPhase = 0.f;
 		}
 		//If used to reset the counter when Present doesn't equal Past
-		if(clockPresentLength != clockPastLength)
-			hitCountSenseChange = 0;
+		/*
+			
+		
+		
+		*/
+		
+		if(hitClock) {
+			if(clockPresentLength != clockPastLength) {
+				hitCountSenseChange = 0;
+			}
+		}
+		
 
 
 		/*	
@@ -175,7 +183,8 @@ A log on corrilative spread.
 
 //--- Pulse Routing Section ---//
 
-		
+		//We need to make something to check if it's in a new pulse time so that we can let the first through
+		//if()
 
 
 	//We need an if to see if it's the first gate so we can have the first pulse section
