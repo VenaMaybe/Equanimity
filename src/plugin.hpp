@@ -54,8 +54,20 @@ struct Orange_Slider : app::SvgSlider {
 };
 
 //  Utility
-	//Gate handler struct
+	//I don't need a tFlipFLop but I want to learn to code one
+/*struct tFlipFlop {
 
+	bool state;
+
+	bool processTff(bool input) {
+
+
+	}
+}*/
+
+
+
+	//Gate handler struct
 struct gateHandler {
 	//float to gate function, pass float return gate
 	bool ftg(float in) {

@@ -54,6 +54,26 @@ struct Clock_divider_one : Module {
 	//Stores the past pulse's length
 	float clockPastLength = 0.f;
 
+//--- Comparison Variables ----//
+	//The state for our own Boolean Trigger
+	bool state = true;
+	//Timers
+	dsp::Timer pulseTimer;
+	dsp::Timer fallTimer;
+	//Last Pulse End 1 Sample Trigger
+	bool pulseE;
+	//Time ammount sense last rise end
+	float lengthPulseE;
+	//Last Fall End 1 Sample Trigger
+	bool fallE;
+	//Time ammount sense last fall end
+	float lengthFallE;
+
+	//Previous state for pulse and fall length
+	float lastLengthPulseE;
+	float lastLengthFallE;
+
+
 //--- Output Variables ----//
 	//An array to contain top to bottom the five outputs.
 	float multToDivOutputs[5];
@@ -125,6 +145,11 @@ A log on corrilative spread.
 	// d = durration between "p"'s
 
 	void process(const ProcessArgs& args) override {
+
+//Global TODO: Figure out how to detect changes in 
+//pulse width and the frequencies of pulses!
+
+
 //--- Struct Dealing ----//		
 		//The Schmitt Trigger struct for our main clock input
 		clockInput.process(inputs[CLOCK_INPUT].getVoltage());
@@ -137,6 +162,7 @@ A log on corrilative spread.
 		}
 //--- Length Section ----//
 		//Calculate the first entire clock length
+			//TODO: I could use a timer for this implimentation--------
 		if(clockInput.isHigh()) {
 			clockPresentLengthPhase += args.sampleTime;
 		} else {
@@ -144,15 +170,62 @@ A log on corrilative spread.
 				clockPresentLength = clockPresentLengthPhase;
 			clockPresentLengthPhase = 0.f;
 		}
+
+//--- Pulse and Fall end calculations + hit count reset ----//
+		//hitClock and Last Fall End are the same
+		fallE = hitClock;
+
+		//if the input is false and state is false set pulseE to true
+		pulseE = (!clockInput.isHigh() && !state);
+		//state is now set to input
+		state = !clockInput.isHigh();
+
+		//I have to accumulate the time between the pulse points
+		pulseTimer.process(args.sampleTime);
+		fallTimer.process(args.sampleTime);
+		//Time counter
+		if(pulseE) {
+			lengthPulseE = pulseTimer.time;
+			pulseTimer.reset();
+		}
+		if(fallE) {
+			lengthFallE = fallTimer.time;
+			fallTimer.reset();
+		}
+
+/*		DEBUG("PulseE: %s", pulseE ? "truePulse" : "false");
+		DEBUG("FallE: %s", fallE ? "trueFall" : "false");
+		DEBUG("Pulse: %f", lengthPulseE);
+		DEBUG("Fall : %f", lengthFallE);
+		DEBUG("Phase: %f", clockPresentLengthPhase);
+		DEBUG("---------------------------");
+*/
+		//I need something now to compare current pulse time
+		//to the last pulse time?
+
+		
+
+
+
+
+
+
+	/*	bool state = true;
+
+	void reset() {
+		state = true;
+	}
+
+	bool process(bool state) {
+		bool triggered = (state && !this->state);
+		this->state = state;
+		return triggered;
+	*/
+
+
 		//If used to reset the counter when Present doesn't equal Past
-		/*
-			
-		
-		
-		*/
-		
-		if(hitClock) {
-			if(clockPresentLength != clockPastLength) {
+		if(fallE || pulseE) {
+			if(lastLengthPulseE != lengthPulseE || lastLengthFallE != lengthFallE) {
 				hitCountSenseChange = 0;
 			}
 		}
@@ -176,10 +249,11 @@ A log on corrilative spread.
 		//DEBUG("Process: %s", clockPast.process(clockInput.isHigh()) ? "true x72 ---------------" : "false");
 
 
-		/*
-		testPulse.trigger(clockPastLength / 2.f);
+		if(fallE || pulseE) {
+		testPulse.trigger(lengthFallE / 4);
+		}
 		outputs[SUM_OUTPUT].setVoltage(10.f * testPulse.process(args.sampleTime));
-		*/
+		
 
 //--- Pulse Routing Section ---//
 
@@ -201,11 +275,20 @@ A log on corrilative spread.
 	//	for(int i = 0; i < 5; i++) {
 			outputs[0].setVoltage(multToDivOutputs[0]);
 			outputs[1].setVoltage(hitCountSenseChange);
+			outputs[2].setVoltage(pulseE * 10.f);
+			outputs[3].setVoltage(hitCount);
 	//	}
 
 
-	
 
+//--- End of Process Last Setters
+		//I need to figure out how to have there be a pulse of delay
+		if(fallE) {
+			lastLengthPulseE = lengthPulseE;
+		}
+		if(pulseE) {
+			lastLengthFallE = lengthFallE;
+		}
 
 
 		//Used to set the Past Length equal to the Present Length every hit beginning
