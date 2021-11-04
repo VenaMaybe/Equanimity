@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "C:/Dev/_Vcv_Dev/vena/**",
-                "C:/Dev/_Vcv_Dev/Rack-SDK-1.1.6/Rack-SDK/**"
+                "C:/Dev/_Vcv_Dev/Rack-SDK-1.1.6/Rack-SDK/**",
+                "C:/Dev/_Vcv_Dev/Rack-SDK-1.1.6/Rack-SDK/include"
             ],
             "defines": [
                 "_DEBUG",

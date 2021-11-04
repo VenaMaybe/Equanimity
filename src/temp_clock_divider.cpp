@@ -46,7 +46,7 @@ struct Clock_divider_one : Module {
 
 //--- Global Memory Variables ----//
 	//Used for routing hit detections
-	bool hitClock;
+	bool hitClock = false;
 	//Global counter for hits
 	int hitCount = 0;
 	//Global counter sense pulse width change for hits
@@ -61,17 +61,24 @@ struct Clock_divider_one : Module {
 	dsp::Timer pulseTimer;
 	dsp::Timer fallTimer;
 	//Last Pulse End 1 Sample Trigger
-	bool pulseE;
+	bool pulseE = false;
 	//Time ammount sense last rise end
-	float lengthPulseE;
+	float lengthPulseE = 0.f;
 	//Last Fall End 1 Sample Trigger
-	bool fallE;
+	bool fallE = false;
 	//Time ammount sense last fall end
-	float lengthFallE;
+	float lengthFallE = 0.f;
 
 	//Previous state for pulse and fall length
-	float lastLengthPulseE;
-	float lastLengthFallE;
+	float lastLengthPulseE = 0.f;
+	float lastLengthFallE = 0.f;
+	//Was the reset just triggered
+	bool lastResetTrigger = false;
+
+//--- Mult Variables
+	float ztimephase = 0.f;
+
+
 
 
 //--- Output Variables ----//
@@ -144,6 +151,14 @@ A log on corrilative spread.
 	// p = beginninig of clock pulse
 	// d = durration between "p"'s
 
+	bool near(float lhs, float rhs, float allowedDifference) {
+    		float delta = lhs - rhs;
+    		return delta < allowedDifference && delta > -allowedDifference;
+	}
+
+	
+
+
 	void process(const ProcessArgs& args) override {
 
 //Global TODO: Figure out how to detect changes in 
@@ -180,11 +195,8 @@ A log on corrilative spread.
 		//state is now set to input
 		state = !clockInput.isHigh();
 
-		//I have to accumulate the time between the pulse points
-		pulseTimer.process(args.sampleTime);
-		fallTimer.process(args.sampleTime);
 		//Time counter
-		if(pulseE) {
+		if(pulseE && hitCount > 1) {
 			lengthPulseE = pulseTimer.time;
 			pulseTimer.reset();
 		}
@@ -193,13 +205,11 @@ A log on corrilative spread.
 			fallTimer.reset();
 		}
 
-/*		DEBUG("PulseE: %s", pulseE ? "truePulse" : "false");
-		DEBUG("FallE: %s", fallE ? "trueFall" : "false");
-		DEBUG("Pulse: %f", lengthPulseE);
-		DEBUG("Fall : %f", lengthFallE);
-		DEBUG("Phase: %f", clockPresentLengthPhase);
-		DEBUG("---------------------------");
-*/
+//I have to accumulate the time between the pulse points
+		pulseTimer.process(args.sampleTime);
+		fallTimer.process(args.sampleTime);
+
+
 		//I need something now to compare current pulse time
 		//to the last pulse time?
 
@@ -220,15 +230,50 @@ A log on corrilative spread.
 		bool triggered = (state && !this->state);
 		this->state = state;
 		return triggered;
-	*/
+	*/	
 
 
+		
+		//This really is all a to do section and a big work in progress
+		//MAKE IT IN A SEPERATE MODULE TO LEARN LATER!!
 		//If used to reset the counter when Present doesn't equal Past
 		if(fallE || pulseE) {
-			if(lastLengthPulseE != lengthPulseE || lastLengthFallE != lengthFallE) {
-				hitCountSenseChange = 0;
+			if(!near(lastLengthPulseE, lengthPulseE, 5 * args.sampleTime) /*||
+				!near(lastLengthFallE, lengthFallE, 5 * args.sampleTime)*/) {
+				if(!lastResetTrigger && hitCount > 4){
+					hitCountSenseChange = 0;
+					lastResetTrigger = true;
+				}
 			}
 		}
+		if(hitCountSenseChange > 1)
+			lastResetTrigger = false;
+		
+
+
+/*
+		DEBUG("PulseEnd : %s", pulseE ? "truePulse" : "false");
+		DEBUG("FallEnd  : %s", fallE ? "trueFall" : "false");
+		DEBUG("INPUT    : %f", inputs[CLOCK_INPUT].getVoltage());
+		DEBUG("SampleTim: %f ::::", args.sampleTime);
+		//
+		DEBUG("PulseLng : %f", lengthPulseE);
+		DEBUG("LPulseLNG: %f", lastLengthPulseE);
+		DEBUG("FallLng  : %f", lengthFallE);
+		DEBUG("LFallLNG : %f", lastLengthFallE);
+		//
+		DEBUG("--\nClockLng : %f", clockPresentLengthPhase);
+		DEBUG("HitCntSC : %i", hitCountSenseChange);
+		DEBUG("Hit Cnt  : %i", hitCount);
+		DEBUG("\n---------------------------");
+*/
+
+
+//		if(fallE || pulseE) {
+//			if(lastLengthPulseE != lengthPulseE || lastLengthFallE != lengthFallE) {
+//				hitCountSenseChange = 0;
+//			}
+//		}
 		
 
 
@@ -247,12 +292,36 @@ A log on corrilative spread.
 		//DEBUG("High: %s", clockInput.isHigh() ? "true ---------------" : "false");
 		//DEBUG("Hit Clock: %s", hitClock ? "true -------- x87" : "false");
 		//DEBUG("Process: %s", clockPast.process(clockInput.isHigh()) ? "true x72 ---------------" : "false");
+			//float ytime = fallTimer.time / 4;
+		DEBUG("Time Phase: %f", ztimephase);
+		DEBUG("FallLength: %f", lengthFallE / 4);
+		if(ztimephase >= lengthFallE / 4) {
+			ztimephase += args.sampleTime;
+		} else {
+			ztimephase = 0.f;
+		}
+		if(hitCount > 3) {
+			ztimephase = 0.f;
+		}
+
+		bool multiplicationHit = false;
+		if(near(ztimephase, lengthFallE / 4, 5 * args.sampleTime)) {
+			multiplicationHit = true;
+		}
 
 
-		if(fallE || pulseE) {
-		testPulse.trigger(lengthFallE / 4);
+
+
+		if(multiplicationHit) {
+		testPulse.trigger(lengthFallE / 8);
 		}
 		outputs[SUM_OUTPUT].setVoltage(10.f * testPulse.process(args.sampleTime));
+
+		DEBUG("Mult Hit  : %s", multiplicationHit ? "trueXXX" : "false");
+		DEBUG("Time Phase: %f", ztimephase);
+		DEBUG("FallLength: %f", lengthFallE / 4);
+		DEBUG("Hit Cnt  : %i", hitCount);
+		DEBUG("------------");
 		
 
 //--- Pulse Routing Section ---//
