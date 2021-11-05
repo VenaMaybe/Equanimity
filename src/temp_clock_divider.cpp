@@ -76,8 +76,12 @@ struct Clock_divider_one : Module {
 	bool lastResetTrigger = false;
 
 //--- Mult Variables
-	float ztimephase = 0.f;
+	//not used
+	float multTimePhase = 0.f;
 
+	dsp::Timer multTimer;
+	bool multHit = false;
+	int multCounter = 0;
 
 
 
@@ -114,7 +118,7 @@ struct Clock_divider_one : Module {
 	Clock_divider_one() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam(RATIO_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(DIV_LEVEL_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(DIV_LEVEL_PARAM, 0.1f, 10.f, 2.f, "");
 		configParam(PROBABILITY_AMT_A_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(PROBABILITY_AMT_B_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(PROBABILITY_AMT_C_PARAM, 0.f, 1.f, 0.f, "");
@@ -146,25 +150,44 @@ A log on corrilative spread.
 
 
 */
-//--- Math ----//
-	// t = time of clock pulse
-	// p = beginninig of clock pulse
-	// d = durration between "p"'s
-
+//--- NEAR function ----//
+	//If lhs and rhs are within the allowedDifference of time returns true
 	bool near(float lhs, float rhs, float allowedDifference) {
     		float delta = lhs - rhs;
     		return delta < allowedDifference && delta > -allowedDifference;
 	}
+//--- IS FLOAT function ----//
+	//If inputted float is equal to an integer returns true
+	bool isFloatInt(float input) {
+    if (input == std::floor(input))
+        return true;
+    else
+        return false;
+	}
+//--- LCM function ----//	
+	//WARNING!!! If one input is not an intiger will not work!!!
+	//Calculates the Least Common Multiple of two floats, one being a mathematical integer
+	float lcmKinda(float a, float b) {
+    float lcm = 0.f;
+    if( a > b ) {
+        lcm = a;
+    } else {
+        lcm = b;
+    }
+    float lcmREF = lcm;
 
-	
+    while(1) {
+        if(isFloatInt(lcm/a) && isFloatInt(lcm/b)) {
+        return lcm;
+        break;
+        }
+    lcm+=lcmREF;
+    }
+	}
+//--- MAIN PROCESS function ----//
 
 
 	void process(const ProcessArgs& args) override {
-
-//Global TODO: Figure out how to detect changes in 
-//pulse width and the frequencies of pulses!
-
-
 //--- Struct Dealing ----//		
 		//The Schmitt Trigger struct for our main clock input
 		clockInput.process(inputs[CLOCK_INPUT].getVoltage());
@@ -293,35 +316,62 @@ A log on corrilative spread.
 		//DEBUG("Hit Clock: %s", hitClock ? "true -------- x87" : "false");
 		//DEBUG("Process: %s", clockPast.process(clockInput.isHigh()) ? "true x72 ---------------" : "false");
 			//float ytime = fallTimer.time / 4;
-		DEBUG("Time Phase: %f", ztimephase);
+		/*
+		DEBUG("Time Phase: %f", multTimePhase);
 		DEBUG("FallLength: %f", lengthFallE / 4);
-		if(ztimephase >= lengthFallE / 4) {
-			ztimephase += args.sampleTime;
+		if(multTimePhase >= lengthFallE / 4) {
+			multTimePhase += args.sampleTime;
 		} else {
-			ztimephase = 0.f;
+			multTimePhase = 0.f;
 		}
 		if(hitCount > 3) {
-			ztimephase = 0.f;
+			multTimePhase = 0.f;
 		}
 
 		bool multiplicationHit = false;
-		if(near(ztimephase, lengthFallE / 4, 5 * args.sampleTime)) {
+		if(near(multTimePhase, lengthFallE / 4, 5 * args.sampleTime)) {
 			multiplicationHit = true;
 		}
+		*/
 
+//		if(near(pulseTimer.time, lengthFallE / 4, 5 *args.sampleTime)) {
 
+//		}
+		float multLevel;
+		multLevel = params[DIV_LEVEL_PARAM].getValue();
 
+		if(near(multTimer.time, lengthFallE / multLevel, 1 * args.sampleTime)) {
+			multTimer.reset();
+			multHit = true;
+		}
+		//We need the lcm to reset properly
+			//We may not need this if I just += args.sampleTime difference to mult.time
 
-		if(multiplicationHit) {
-		testPulse.trigger(lengthFallE / 8);
+		
+
+		if(multCounter > lcmKinda(multLevel ,1.f)) {
+			multCounter = 0;
+			multTimer.reset();
+		}
+
+		if(fallE) {
+			multCounter++;
+		}
+		
+
+		if(multHit) {
+		testPulse.trigger(lengthFallE / (multLevel * 2));
 		}
 		outputs[SUM_OUTPUT].setVoltage(10.f * testPulse.process(args.sampleTime));
 
-		DEBUG("Mult Hit  : %s", multiplicationHit ? "trueXXX" : "false");
-		DEBUG("Time Phase: %f", ztimephase);
-		DEBUG("FallLength: %f", lengthFallE / 4);
-		DEBUG("Hit Cnt  : %i", hitCount);
-		DEBUG("------------");
+		multTimer.process(args.sampleTime);
+		multHit = false;
+
+	//	DEBUG("Mult Hit  : %s", multiplicationHit ? "trueXXX" : "false");
+	//	DEBUG("Time Phase: %f", multTimePhase);
+	//	DEBUG("FallLength: %f", lengthFallE / 4);
+	//	DEBUG("Hit Cnt  : %i", hitCount);
+	//	DEBUG("------------");
 		
 
 //--- Pulse Routing Section ---//
