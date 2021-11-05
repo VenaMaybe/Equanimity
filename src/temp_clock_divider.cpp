@@ -339,17 +339,33 @@ A log on corrilative spread.
 //		}
 		float multLevel;
 		multLevel = params[DIV_LEVEL_PARAM].getValue();
-
+		DEBUG("-----------------");
+		DEBUG("Time Phase 0: %f", multTimer.time);
 		if(near(multTimer.time, lengthFallE / multLevel, 1 * args.sampleTime)) {
+			DEBUG("-----------------");
+			DEBUG("Time Phase 1: %f", multTimer.time);
 			multTimer.reset();
+			DEBUG("Time Phase 2: %f", multTimer.time);
 			multHit = true;
+
+			//PERFECT!! so this works however it has to be 0.000013
+			//The fundimental idea worsk however TODO
+			//We have to be able to determ the fractional length each sample is
+			//rounded to with the near function then subtract that from the time!!
+			//Then it'll work perfect :>
+
+			//multTimer.time -= args.sampleTime;
+			DEBUG("Time Phase 3: %f", multTimer.time);
+			float temp = multTimer.time - lengthFallE;
+			DEBUG("Plus Ammt: %f", temp);
 		}
+		DEBUG("Mult Hit  : %s", multHit ? "trueXXX" : "false");
 		//We need the lcm to reset properly
 			//We may not need this if I just += args.sampleTime difference to mult.time
 
-		
+		//0.000021 0.000013
 
-		if(multCounter > lcmKinda(multLevel ,1.f)) {
+	/*	if(multCounter > lcmKinda(multLevel ,1.f)) {
 			multCounter = 0;
 			multTimer.reset();
 		}
@@ -357,7 +373,7 @@ A log on corrilative spread.
 		if(fallE) {
 			multCounter++;
 		}
-		
+	*/	
 
 		if(multHit) {
 		testPulse.trigger(lengthFallE / (multLevel * 2));
