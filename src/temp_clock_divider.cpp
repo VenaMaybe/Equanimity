@@ -79,7 +79,8 @@ struct Clock_divider_one : Module {
 	//not used
 	float multTimePhase = 0.f;
 	dsp::Timer tempTimer;
-	
+		//make this a struct later
+	int dncounter = 0;
 
 	dsp::Timer multTimer;
 	bool multHit = false;
@@ -155,37 +156,42 @@ A log on corrilative spread.
 //--- NEAR function ----//
 	//If lhs and rhs are within the allowedDifference of time returns true
 	bool near(float lhs, float rhs, float allowedDifference) {
-    		float delta = lhs - rhs;
-//			DEBUG("NEAR DELTA: %.10f", delta);
-    		return delta < allowedDifference && delta > -allowedDifference;
+    	float delta = lhs - rhs;
+	//DEBUG("NEAR DELTA: %.10f", delta);
+    	return delta < allowedDifference && delta > -allowedDifference;
+	}
+//--- ROUND DIGITS function ----//
+	float roundDigits(float input)
+	{
+		float output = static_cast<int>(input * 100000);
+		return static_cast<float>(output / 100000);
 	}
 //--- IS FLOAT function ----//
 	//If inputted float is equal to an integer returns true
 	bool isFloatInt(float input) {
-    if (input == std::floor(input))
-        return true;
-    else
-        return false;
+    	if (input == std::floor(input))
+        	return true;
+    	else
+        	return false;
 	}
 //--- LCM function ----//	
 	//WARNING!!! If one input is not an intiger will not work!!!
 	//Calculates the Least Common Multiple of two floats, one being a mathematical integer
 	float lcmKinda(float a, float b) {
-    float lcm = 0.f;
-    if( a > b ) {
-        lcm = a;
-    } else {
-        lcm = b;
-    }
+    	float lcm = 0.f;
+    	if( a > b ) {
+        	lcm = a;
+    	} else {
+        	lcm = b;
+    	}
     float lcmREF = lcm;
-
-    while(1) {
-        if(isFloatInt(lcm/a) && isFloatInt(lcm/b)) {
-        return lcm;
-        break;
-        }
-    lcm+=lcmREF;
-    }
+    	while(1) {
+			if(isFloatInt(lcm/a) && isFloatInt(lcm/b)) {
+			return lcm;
+			break;
+			}
+    	lcm+=lcmREF;
+    	}
 	}
 //--- MAIN PROCESS function ----//
 
@@ -344,47 +350,51 @@ A log on corrilative spread.
 
 //		}
 		if(inputs[PROBABILITY_CV_A_INPUT].isConnected())
+		{
 			multTimer.time = 0;
-
+		}
 		float multLevel;
 		multLevel = params[DIV_LEVEL_PARAM].getValue();
 //						DEBUG("---------------------------");
-						
-
 //						DEBUG("Time Phase 0: %.8f", multTimer.time);
-						float delta = std::abs(lengthFallE / multLevel);
+		float delta = std::abs(lengthFallE / multLevel);
 //						DEBUG("Delta       : %.8f", delta);
-		if(near(multTimer.time, lengthFallE / multLevel, 1 * args.sampleTime)) {
+		if(near(multTimer.time, lengthFallE / multLevel, 1 * args.sampleTime)) 
+		{
 //						DEBUG("-----------------");
-			double difference = multTimer.time - lengthFallE / multLevel;
+			float difference = multTimer.time - lengthFallE / multLevel;
 //						DEBUG("Differe Ammt: %.8f", difference);
 //						DEBUG("Time Phase 1: %.8f", multTimer.time);
-	multTimer.reset();
+			multTimer.reset();
 			multTimer.time -= (-1 * difference);
 //						DEBUG("Time Phase 2: %.8f", multTimer.time);
-	multHit = true;
+			multHit = true;
 
 
-		
+	
 
 
 
-			//PERFECT!! so this works however it has to be 0.000013
-			//The fundimental idea workS however TODO
-			//We have to be able to determ the fractional length each sample is
-			//rounded to with the near function then subtract that from the time!!
-			//Then it'll work perfect :>
-			
-			
-
-			//multTimer.time -= args.sampleTime;
-//			DEBUG("Time Phase 3: %.8f", multTimer.time);
-			
-			 
-
-			
+		//PERFECT!! so this works however it has to be 0.000013
+		//The fundimental idea workS however TODO
+		//We have to be able to determ the fractional length each sample is
+		//rounded to with the near function then subtract that from the time!!
+		//Then it'll work perfect :>	
 		}
-		
+
+		//dncounter
+		if(multHit)
+		{
+			dncounter = 10;
+		}
+		if((pulseE || fallE) && dncounter >= 0)
+		{
+			multTimer.reset();
+			DEBUG("Reset");
+		}
+		dncounter--;
+
+
 		
 //		DEBUG("Clock Hit : %s", hitClock ? "trueClock" : "false");
 //		DEBUG("Mult Hit  : %s", multHit ? "trueXXX" : "false");
