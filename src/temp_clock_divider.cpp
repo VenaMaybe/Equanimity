@@ -78,6 +78,8 @@ struct Clock_divider_one : Module {
 //--- Mult Variables
 	//not used
 	float multTimePhase = 0.f;
+	dsp::Timer tempTimer;
+	
 
 	dsp::Timer multTimer;
 	bool multHit = false;
@@ -154,6 +156,7 @@ A log on corrilative spread.
 	//If lhs and rhs are within the allowedDifference of time returns true
 	bool near(float lhs, float rhs, float allowedDifference) {
     		float delta = lhs - rhs;
+//			DEBUG("NEAR DELTA: %.10f", delta);
     		return delta < allowedDifference && delta > -allowedDifference;
 	}
 //--- IS FLOAT function ----//
@@ -185,6 +188,9 @@ A log on corrilative spread.
     }
 	}
 //--- MAIN PROCESS function ----//
+
+		//TODO, if you change the mult ammount, reset the timer for the
+		//multiplication ammount
 
 
 	void process(const ProcessArgs& args) override {
@@ -337,29 +343,51 @@ A log on corrilative spread.
 //		if(near(pulseTimer.time, lengthFallE / 4, 5 *args.sampleTime)) {
 
 //		}
+		if(inputs[PROBABILITY_CV_A_INPUT].isConnected())
+			multTimer.time = 0;
+
 		float multLevel;
 		multLevel = params[DIV_LEVEL_PARAM].getValue();
-		DEBUG("-----------------");
-		DEBUG("Time Phase 0: %f", multTimer.time);
+//						DEBUG("---------------------------");
+						
+
+//						DEBUG("Time Phase 0: %.8f", multTimer.time);
+						float delta = std::abs(lengthFallE / multLevel);
+//						DEBUG("Delta       : %.8f", delta);
 		if(near(multTimer.time, lengthFallE / multLevel, 1 * args.sampleTime)) {
-			DEBUG("-----------------");
-			DEBUG("Time Phase 1: %f", multTimer.time);
-			multTimer.reset();
-			DEBUG("Time Phase 2: %f", multTimer.time);
-			multHit = true;
+//						DEBUG("-----------------");
+			double difference = multTimer.time - lengthFallE / multLevel;
+//						DEBUG("Differe Ammt: %.8f", difference);
+//						DEBUG("Time Phase 1: %.8f", multTimer.time);
+	multTimer.reset();
+			multTimer.time -= (-1 * difference);
+//						DEBUG("Time Phase 2: %.8f", multTimer.time);
+	multHit = true;
+
+
+		
+
+
 
 			//PERFECT!! so this works however it has to be 0.000013
-			//The fundimental idea worsk however TODO
+			//The fundimental idea workS however TODO
 			//We have to be able to determ the fractional length each sample is
 			//rounded to with the near function then subtract that from the time!!
 			//Then it'll work perfect :>
+			
+			
 
 			//multTimer.time -= args.sampleTime;
-			DEBUG("Time Phase 3: %f", multTimer.time);
-			float temp = multTimer.time - lengthFallE;
-			DEBUG("Plus Ammt: %f", temp);
+//			DEBUG("Time Phase 3: %.8f", multTimer.time);
+			
+			 
+
+			
 		}
-		DEBUG("Mult Hit  : %s", multHit ? "trueXXX" : "false");
+		
+		
+//		DEBUG("Clock Hit : %s", hitClock ? "trueClock" : "false");
+//		DEBUG("Mult Hit  : %s", multHit ? "trueXXX" : "false");
 		//We need the lcm to reset properly
 			//We may not need this if I just += args.sampleTime difference to mult.time
 
