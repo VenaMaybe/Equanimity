@@ -10,8 +10,8 @@ void init(Plugin* p) {
 	// Add modules here
 	// p->addModel(modelMyModule);
 //	p->addModel(modelVena_lfo);
-	p->addModel(modelComparator_one);
-	p->addModel(modelComparator_two);
+	p->addModel(modelReflect);
+	p->addModel(modelReflections);
 	p->addModel(modelClock_divider_one);
 
 //	p->addModel(modelVena_comparator2);

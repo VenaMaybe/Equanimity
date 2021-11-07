@@ -134,7 +134,7 @@ struct Comparator_two : Module {
 struct Comparator_twoWidget : ModuleWidget {
 	Comparator_twoWidget(Comparator_two* module) {
 		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comparator_two.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/reflections_default.svg")));
 
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -168,4 +168,4 @@ struct Comparator_twoWidget : ModuleWidget {
 //addParam(createLightParam<LEDLightSliderFixed<GreenLight>>(mm2px(Vec(5.8993969, 44.33149).plus(Vec(-2, 0))), module, VCMixer::LVL_PARAMS + 0, VCMixer::LVL_LIGHTS + 0));
 
 
-Model* modelComparator_two = createModel<Comparator_two, Comparator_twoWidget>("comparator_two");
+Model* modelComparator_two = createModel<Comparator_two, Comparator_twoWidget>("Reflections");

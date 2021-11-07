@@ -14,7 +14,7 @@
   "changelogUrl": "",
   "modules": [
     {
-      "slug": "comparator_one",
+      "slug": "Reflect",
       "name": "Reflect",
       "description": "A simple logical dual comparator",
       "tags": [
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "slug": "comparator_two",
+      "slug": "Reflections",
       "name": "Reflections",
       "description": "A logical dual comparator with included gate and latch switches",
       "tags": [

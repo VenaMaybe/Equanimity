@@ -77,7 +77,7 @@ struct Comparator_one : Module
 struct Comparator_oneWidget : ModuleWidget {
 	Comparator_oneWidget(Comparator_one* module) {
 		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/comparator_one.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/reflect_default.svg")));
 
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -100,4 +100,4 @@ struct Comparator_oneWidget : ModuleWidget {
 };
 
 
-Model* modelComparator_one = createModel<Comparator_one, Comparator_oneWidget>("comparator_one");
+Model* modelComparator_one = createModel<Comparator_one, Comparator_oneWidget>("Reflect");

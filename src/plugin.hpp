@@ -7,8 +7,8 @@ using namespace rack;
 // Declare the Plugin, defined in plugin.cpp
 extern Plugin* pluginInstance;
 //		extern Model* modelVena_lfo;
-extern Model* modelComparator_one;
-extern Model* modelComparator_two;
+extern Model* modelReflect;
+extern Model* modelReflections;
 extern Model* modelClock_divider_one;
 
 //		extern Model* modelVena_comparator2;
