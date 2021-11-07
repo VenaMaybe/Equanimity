@@ -75,7 +75,7 @@ struct Clock_divider_one : Module {
 	//Was the reset just triggered
 	bool lastResetTrigger = false;
 
-//--- Mult Variables
+//--- Mult Variables ----//
 	//not used
 	float multTimePhase = 0.f;
 	dsp::Timer tempTimer;
@@ -157,7 +157,7 @@ A log on corrilative spread.
 	//If lhs and rhs are within the allowedDifference of time returns true
 	bool near(float lhs, float rhs, float allowedDifference) {
     	float delta = lhs - rhs;
-	//DEBUG("NEAR DELTA: %.10f", delta);
+	DEBUG("INSIDE NEAR DELTA: %.10f", delta);
     	return delta < allowedDifference && delta > -allowedDifference;
 	}
 //--- ROUND DIGITS function ----//
@@ -197,6 +197,15 @@ A log on corrilative spread.
 
 		//TODO, if you change the mult ammount, reset the timer for the
 		//multiplication ammount
+
+		//Fix the inital input
+
+		//Make just clock multiplier module with testing
+		//with an int as a sample clocker to use for perfect mults and divs in int time not float!
+		//measure everything as an int or long int for figuring out lengths of stuff relative to
+		//sample ammount rather then sample time?
+
+		//Maybe use knowledge to redesign comparator two!!! You've learned a lot!
 
 
 	void process(const ProcessArgs& args) override {
@@ -249,7 +258,6 @@ A log on corrilative spread.
 		//to the last pulse time?
 
 		
-
 
 
 
@@ -349,25 +357,35 @@ A log on corrilative spread.
 //		if(near(pulseTimer.time, lengthFallE / 4, 5 *args.sampleTime)) {
 
 //		}
-		if(inputs[PROBABILITY_CV_A_INPUT].isConnected())
+		if(pulseE)
 		{
 			multTimer.time = 0;
 		}
 		float multLevel;
+
+
+
 		multLevel = params[DIV_LEVEL_PARAM].getValue();
-//						DEBUG("---------------------------");
-//						DEBUG("Time Phase 0: %.8f", multTimer.time);
-		float delta = std::abs(lengthFallE / multLevel);
-//						DEBUG("Delta       : %.8f", delta);
+						DEBUG("---------------------------");
+						DEBUG("multTimer always: %.8f", multTimer.time);
+						float delta = -1 * (multTimer.time - lengthFallE / multLevel);
+						DEBUG("Differ Sample   : %.8f", delta);
+						float deltaTwo = lengthFallE / multLevel;
+						DEBUG("=======================");
+						DEBUG("multTimer.time: %.8f", multTimer.time);
+						DEBUG("LengthOfClock : %.8f", deltaTwo);
+						DEBUG("SampleTime 	 : %.8f", args.sampleTime);
 		if(near(multTimer.time, lengthFallE / multLevel, 1 * args.sampleTime)) 
 		{
-//						DEBUG("-----------------");
-			float difference = multTimer.time - lengthFallE / multLevel;
-//						DEBUG("Differe Ammt: %.8f", difference);
-//						DEBUG("Time Phase 1: %.8f", multTimer.time);
+						DEBUG("-----------------");
+						DEBUG("lengthFallE     : %.8f", lengthFallE);
+						
+			float difference = -1 * (multTimer.time - lengthFallE / multLevel);
+						DEBUG("Differ InIf     : %.8f", difference);
+						DEBUG("multTimer before: %.8f", multTimer.time);
 			multTimer.reset();
-			multTimer.time -= (-1 * difference);
-//						DEBUG("Time Phase 2: %.8f", multTimer.time);
+			multTimer.time -= difference;
+						DEBUG("multTimer  after: %.8f", multTimer.time);
 			multHit = true;
 
 
@@ -383,6 +401,7 @@ A log on corrilative spread.
 		}
 
 		//dncounter
+		/*
 		if(multHit)
 		{
 			dncounter = 10;
@@ -393,7 +412,7 @@ A log on corrilative spread.
 			DEBUG("Reset");
 		}
 		dncounter--;
-
+		*/
 
 		
 //		DEBUG("Clock Hit : %s", hitClock ? "trueClock" : "false");
@@ -412,6 +431,9 @@ A log on corrilative spread.
 			multCounter++;
 		}
 	*/	
+		DEBUG("PulseE Hit: %s", pulseE ? "trueYYY" : "false");
+		DEBUG("FallE  Hit: %s", fallE ? "trueZZZ" : "false");
+		DEBUG("Mult   Hit: %s", multHit ? "trueXXX" : "false");
 
 		if(multHit) {
 		testPulse.trigger(lengthFallE / (multLevel * 2));
@@ -421,7 +443,7 @@ A log on corrilative spread.
 		multTimer.process(args.sampleTime);
 		multHit = false;
 
-	//	DEBUG("Mult Hit  : %s", multiplicationHit ? "trueXXX" : "false");
+		
 	//	DEBUG("Time Phase: %f", multTimePhase);
 	//	DEBUG("FallLength: %f", lengthFallE / 4);
 	//	DEBUG("Hit Cnt  : %i", hitCount);
@@ -467,81 +489,6 @@ A log on corrilative spread.
 		//Used to set the Past Length equal to the Present Length every hit beginning
 		if(hitClock)
 			clockPastLength = clockPresentLength;
-/*
-first we need an initial length
-
-an if to check if it has changed from it's previous length?
-If so, save the clock length
-
-To do this, we would have to save length states
-*/
-		/*
-
-
-//Calculates the clock high time and pushes to past whenever changes
-		if(clockPastLength != clockPresentLength || firstOpenClockCheck) {
-			if(clockInput.isHigh()) {
-				clockPresentLengthPhase += args.sampleTime;
-			} else if(!clockInput.isHigh()) {
-				clockPastLengthPhase = clockPresentLengthPhase;
-			}
-		}
-
-
-
-
-/////////
-		bool clockHigh;
-
-		bool clockIn = clock.process(inputs[CLOCK_INPUT].getVoltage());
-
-
-		if(clock.isHigh()) {
-			clockDuration += args.sampleTime;
-		} else {
-			if(oneShot == 1) {
-				clockMult = clockDuration;
-				oneShot = 0;
-			}
-			clockDuration = 0.f;
-		}
-
-	//	clockMult = clockDuration *  4.f; 
-	//	clockMult *= 4.f;
-
-		//This isn't needed
-		if(clockMult > 0.f) {
-			clockHigh = 1;
-		} else {
-			clockHigh = 0;
-		}
-		
-
-		//DEBUG("my clock length is: %f", clockLength);
-
-		if(clockIn)
-   			cPulse.trigger(1.f);
-		//float x = clockIn ? 10.f : 0.f;
-
-		//The pulse gen has to be used for divisions, not mani clock,
-		//set length equal to while gate in is high (ext clock)
-
-
-		//Returns 1 for remaining time
-		bool high = cPulse.process(args.sampleTime);
-
-		outputs[SUM_OUTPUT].setVoltage(10.f * high);
-		//outputs[SUM_OUTPUT].setVoltage(10.f * clockHigh);
-		
-		
-		
-		for(int i = 0; i < 5; i++){
-			if(inputs[CLOCK_INPUT].isConnected()){
-				bool gateA = 1;
-				outputs[DIVISION_A_OUTPUT + i].setVoltage(gateA ? 10.f : 0.f);
-			}
-		}
-		*/
 	}
 };
 
