@@ -29,7 +29,7 @@ struct Lilies : Module {
 	float fallE; //This is unneeded!!!!!!!
 	//Measuring incoming clock length
 	float phaseClock = 0.f;
-	float clockCycle = 1.f; //Usecase for this should be measured by cnt of rising edges
+	float clockCycle = 0.f; //Usecase for this should be measured by cnt of rising edges
 	//Pulse end calculations
 		//pulseE is the falling edge
 	bool  pulseE;
@@ -75,29 +75,27 @@ struct Lilies : Module {
 		int i = 0;
 
 		//Set multiplicaiton level
-		levelMult[i] = 5.f;
+		levelMult[i] = 2.f;
 		
-		DEBUG("-------------------------");
-		DEBUG("clockCycle * 2 : %f", clockCycle * 2);
-		DEBUG("phaseMultpreIfequation : %f", args.sampleTime * levelMult[i]);
-		DEBUG("phaseMult : %f", phaseMult[i]);
+//		DEBUG("-------------------------");
+//		DEBUG("clockCycle * 2 : %f", clockCycle * 2);
+//		DEBUG("phaseMultpreIfequation : %f", args.sampleTime * levelMult[i]);
+//		DEBUG("phaseMult : %f", phaseMult[i]);
 		//Calculates the multiplication phase level?
 		phaseMult[i] += args.sampleTime * levelMult[i];
-		DEBUG("phaseMult2 : %f", phaseMult[i]);
+//		DEBUG("phaseMult2 : %f", phaseMult[i]);
 		if (phaseMult[i] >= clockCycle * 2) {
 			phaseMult[i] -= clockCycle * 2;
 			triggerMult[i] = true;
-			DEBUG("										if triggered");
+//			DEBUG("										if triggered");
 		}
 
-		DEBUG("phaseMultequation : %f", args.sampleTime * levelMult[i]);
-		DEBUG("phaseMult3 : %f", phaseMult[i]);
-		DEBUG("args.sampleTime : %f", args.sampleTime);
-		DEBUG("levelMult : %f", levelMult[i]);
+//		DEBUG("phaseMultequation : %f", args.sampleTime * levelMult[i]);
+//		DEBUG("phaseMult3 : %f", phaseMult[i]);
+//		DEBUG("args.sampleTime : %f", args.sampleTime);
+//		DEBUG("levelMult : %f", levelMult[i]);
 		
-
-
-		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
+//		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
 
 		//Pulse generator section
 		//TODO, take into account pulse width;
