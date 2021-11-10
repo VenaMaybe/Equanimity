@@ -13,6 +13,7 @@ void init(Plugin* p) {
 	p->addModel(modelReflect);
 	p->addModel(modelReflections);
 	p->addModel(modelClock_divider_one);
+	p->addModel(modelLilies);
 
 //	p->addModel(modelVena_comparator2);
 //	p->addModel(modelVena_drum);

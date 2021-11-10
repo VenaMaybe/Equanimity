@@ -1,6 +1,6 @@
 #include "plugin.hpp"
 
-struct Comparator_two : Module {
+struct Reflections : Module {
 	enum ParamIds {
 		SWITCH_TOP_LATCH_PARAM,
 		SWITCH_TOP_GATE_PARAM,
@@ -32,7 +32,7 @@ struct Comparator_two : Module {
 
 	dsp::ClockDivider lightDivider;
 
-	Comparator_two() {
+	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam(SWITCH_TOP_LATCH_PARAM, 0.f, 1.f, 0.f, "Latch");
 		configParam(SWITCH_TOP_GATE_PARAM, 0.f, 1.f, 0.f, "Gate");
@@ -131,8 +131,8 @@ struct Comparator_two : Module {
 };
 
 
-struct Comparator_twoWidget : ModuleWidget {
-	Comparator_twoWidget(Comparator_two* module) {
+struct ReflectionsWidget : ModuleWidget {
+	ReflectionsWidget(Reflections* module) {
 		setModule(module);
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/reflections_default.svg")));
 
@@ -141,26 +141,26 @@ struct Comparator_twoWidget : ModuleWidget {
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 8.278)), module, Comparator_two::SWITCH_TOP_LATCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 21.386)), module, Comparator_two::SWITCH_TOP_GATE_PARAM));
-		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 36.909).plus(Vec(0.225, 0.72/2))), module, Comparator_two::SLIDER_TOP_LATCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 8.278)), module, Reflections::SWITCH_TOP_LATCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 21.386)), module, Reflections::SWITCH_TOP_GATE_PARAM));
+		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 36.909).plus(Vec(0.225, 0.72/2))), module, Reflections::SLIDER_TOP_LATCH_PARAM));
 
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 70.06)), module, Comparator_two::SWITCH_BOTTOM_LATCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 83.168)), module, Comparator_two::SWITCH_BOTTOM_GATE_PARAM));
-		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 98.691).plus(Vec(0.225, 0.72/2))), module, Comparator_two::SLIDER_BOTTOM_LATCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 70.06)), module, Reflections::SWITCH_BOTTOM_LATCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 83.168)), module, Reflections::SWITCH_BOTTOM_GATE_PARAM));
+		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 98.691).plus(Vec(0.225, 0.72/2))), module, Reflections::SLIDER_BOTTOM_LATCH_PARAM));
 
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 10.633)), module, Comparator_two::INPUT_A_INPUT));
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 23.747)), module, Comparator_two::INPUT_B_INPUT));
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 72.415)), module, Comparator_two::INPUT_C_INPUT));
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 85.529)), module, Comparator_two::INPUT_D_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 10.633)), module, Reflections::INPUT_A_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 23.747)), module, Reflections::INPUT_B_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 72.415)), module, Reflections::INPUT_C_INPUT));
+		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 85.529)), module, Reflections::INPUT_D_INPUT));
 
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 39.262)), module, Comparator_two::OUTPUT_A_OUTPUT));
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 47.182)), module, Comparator_two::OUTPUT_B_OUTPUT));
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 101.044)), module, Comparator_two::OUTPUT_C_OUTPUT));
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 108.964)), module, Comparator_two::OUTPUT_D_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 39.262)), module, Reflections::OUTPUT_A_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 47.182)), module, Reflections::OUTPUT_B_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 101.044)), module, Reflections::OUTPUT_C_OUTPUT));
+		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 108.964)), module, Reflections::OUTPUT_D_OUTPUT));
 
-		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 32.586)), module, Comparator_two::TOP_LIGHT));
-		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 94.368)), module, Comparator_two::BOTTOM_LIGHT));
+		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 32.586)), module, Reflections::TOP_LIGHT));
+		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 94.368)), module, Reflections::BOTTOM_LIGHT));
 	}
 };
 
@@ -168,4 +168,4 @@ struct Comparator_twoWidget : ModuleWidget {
 //addParam(createLightParam<LEDLightSliderFixed<GreenLight>>(mm2px(Vec(5.8993969, 44.33149).plus(Vec(-2, 0))), module, VCMixer::LVL_PARAMS + 0, VCMixer::LVL_LIGHTS + 0));
 
 
-Model* modelComparator_two = createModel<Comparator_two, Comparator_twoWidget>("Reflections");
+Model* modelReflections = createModel<Reflections, ReflectionsWidget>("Reflections");

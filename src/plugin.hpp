@@ -10,6 +10,7 @@ extern Plugin* pluginInstance;
 extern Model* modelReflect;
 extern Model* modelReflections;
 extern Model* modelClock_divider_one;
+extern Model* modelLilies;
 
 //		extern Model* modelVena_comparator2;
 //		extern Model* modelVena_drum;
