@@ -58,9 +58,8 @@ struct Lilies : Module {
 		//Calculates the clock phase and cycle
 		//		NOTE calculate the phase more efficiently to reduce phase shift
 
-		if(clockInput.isHigh()) {
-			phaseClock += args.sampleTime;
-		}
+		
+		phaseClock += args.sampleTime;
 
 		if(pulseE) {
 			clockCycle = phaseClock;
@@ -78,25 +77,29 @@ struct Lilies : Module {
 		//Set multiplicaiton level
 		levelMult[i] = 1.f;
 		
-		DEBUG("-------------------------");
-		DEBUG("Incoming Wave: %f", inputs[CLOCK_INPUT].getVoltage());
+//		DEBUG("-------------------------");
+//		DEBUG("Incoming Wave: %f", inputs[CLOCK_INPUT].getVoltage());
 
 
 		//Calculates the multiplication phase level?
-		phaseMult[i] += args.sampleTime * levelMult[i];
+		phaseMult[i] += args.sampleTime;
 
-		DEBUG("phaseMult preIf: %f", phaseMult[i]);
-		DEBUG("clockCycle * 2 : %f", clockCycle * 2);
+//		DEBUG("phaseMult preIf: %f", phaseMult[i]);
+//		DEBUG("clockCycle * 2 : %f", (clockCycle * 2) / levelMult[i]);
 		
-		if (phaseMult[i] >= clockCycle * 2) {
-			phaseMult[i] -= clockCycle * 2;
+		if (phaseMult[i] >= clockCycle / levelMult[i]) {
+			//phaseMult[i] = 0.f;
+			phaseMult[i] -= clockCycle / levelMult[i];
 			triggerMult[i] = true;
-			DEBUG("										if triggered");
+//		DEBUG("										if triggered");
 		}
-		
 
-		DEBUG("PulseE       : %s", pulseE ? "trueXXX" : "false");
-		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
+
+//		DEBUG("PulseE       : %s", pulseE ? "trueXXX" : "false");
+//		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
+
+
+
 
 		//Pulse generator section
 		//TODO, take into account pulse width;
