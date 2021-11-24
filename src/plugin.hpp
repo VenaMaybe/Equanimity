@@ -55,16 +55,8 @@ struct Orange_Slider : app::SvgSlider {
 };
 
 //  Utility
-	//I don't need a tFlipFLop but I want to learn to code one
-/*struct tFlipFlop {
-
-	bool state;
-
-	bool processTff(bool input) {
 
 
-	}
-}*/
 
 
 
