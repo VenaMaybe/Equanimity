@@ -23,6 +23,7 @@
 		Reset
 			BPM/Freq change reset
 			Ratio reset when finished moving
+			Pulsewidth take-in?
 
 		Slider
 			Some kinda liniar or exponential option
@@ -89,12 +90,13 @@ struct Lilies : Module {
 	dsp::BooleanTrigger resetTrigger;
 	bool resetTFF = false;
 	double clockCyclePast = 0.f;
+
+
 	//Ratio y = b^x
 	double ratioIn;		// x
 	double ratioOut;	// y
 	double ratioBase;	// b
 	double ratioParamLast;
-
 	//Context Menu
 	bool freqReset = true;
 	bool ratioReset = false;
@@ -139,8 +141,8 @@ struct Lilies : Module {
 
 		//Something to rest it if the clockCycle changes ||| Set this code as a context menu or smt
 			if(
-				!near(clockCycle, clockCyclePast, 3 * args.sampleTime)/* ||
-				ratioParam != ratioParamLast*/
+				(freqReset  &&  !near(clockCycle, clockCyclePast, 3 * args.sampleTime))
+			||	(ratioReset &&  ratioParam != ratioParamLast)
 			) {
 				resetTrig = true;
 			}
@@ -286,28 +288,103 @@ struct LiliesWidget : ModuleWidget {
 					module->freqReset = !module->freqReset;
 				}
 			};
+
+			struct RatioResetItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->ratioReset = !module->ratioReset;
+				}
+			};
+
+
 			Menu* createChildMenu() override {
 				Menu* menu = new Menu;
 				menu->addChild(createMenuLabel("And to god he said:"));
-				
-				FreqResetItem* freqResetItem = createMenuItem<FreqResetItem>("Rest on Freq change", CHECKMARK(module->freqReset));
+					//My frequency reset item
+				FreqResetItem* freqResetItem = createMenuItem<FreqResetItem>("Reset on frequency", CHECKMARK(module->freqReset));
 				freqResetItem->module = module;
+					//My ratio rest item
+				RatioResetItem* ratioResetItem = createMenuItem<RatioResetItem>("Reset on ratio", CHECKMARK(module->ratioReset));
+				ratioResetItem->module = module;
+
+				menu->addChild(new MenuSeparator);
 				menu->addChild(freqResetItem);
+				menu->addChild(ratioResetItem);
 
 				return menu;
 			};
 		};
-		
+
+//		menu->addChild(new MenuSeparator);
+		//Remember it's like a train line of pointers ponting to pointers
+		struct RangeMenuItem : MenuItem {
+			Lilies* module;
+
+			struct ExpoSwitchItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->exponential = !module->exponential;
+				}
+			};
+//
+			struct RangeZeroItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->range = 0;
+				}
+			};
+			struct RangeOneItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->range = 1;
+				}
+			};
+			struct RangeTwoItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->range = 2;
+				}
+			};
+
+			Menu* createChildMenu() override {
+				Menu* menu = new Menu;
+				menu->addChild(createMenuLabel("Let the waves rise."));
+
+					//My expo switch item
+				ExpoSwitchItem* expoSwitchItem = createMenuItem<ExpoSwitchItem>("Exponential", CHECKMARK(module->exponential));
+				expoSwitchItem->module = module;
+					//My range switches
+				RangeZeroItem* rangeZeroItem = createMenuItem<RangeZeroItem>("Range: ±0.5", CHECKMARK(module->range == 0));
+				rangeZeroItem->module = module;
+				RangeOneItem* rangeOneItem = createMenuItem<RangeOneItem>("Range: ±2", CHECKMARK(module->range == 1));
+				rangeOneItem->module = module;
+				RangeTwoItem* rangeTwoItem = createMenuItem<RangeTwoItem>("Range: ±10", CHECKMARK(module->range == 2));
+				rangeTwoItem->module = module;
+
+				menu->addChild(new MenuSeparator);
+				menu->addChild(expoSwitchItem);
+				menu->addChild(new MenuSeparator);
+				menu->addChild(rangeZeroItem);
+				menu->addChild(rangeOneItem);
+				menu->addChild(rangeTwoItem);
+
+
+			return menu;
+			};
+		};
+
+
 		ResetMenuItem *resetItem = createMenuItem<ResetMenuItem>("Water", RIGHT_ARROW);
 		resetItem->module = reinterpret_cast<Lilies*>(this->module);
 		menu->addChild(resetItem);
 		
+		RangeMenuItem *rangeItem = createMenuItem<RangeMenuItem>("Waves", RIGHT_ARROW);
+		rangeItem->module = reinterpret_cast<Lilies*>(this->module);
+		menu->addChild(rangeItem);
 		
-		
-		menu->addChild(createMenuLabel("Begining the water2"));
 
 		menu->addChild(new MenuSeparator);
-		menu->addChild(createMenuLabel("Hight of the waves"));
+	//	menu->addChild(createMenuLabel("Hight of the waves"));
 
 	}
 };
