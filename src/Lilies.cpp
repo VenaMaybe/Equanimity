@@ -90,28 +90,61 @@ struct Lilies : Module {
 	dsp::BooleanTrigger resetTrigger;
 	bool resetTFF = false;
 	double clockCyclePast = 0.f;
+		//ratio reset
+	//std::array<double, 10> ratioParamBuffer;
+	double ratioParamBuffer[10];
+	bool ratioStill = false;
 
 
 	//Ratio y = b^x
 	double ratioIn;		// x
 	double ratioOut;	// y
 	double ratioBase;	// b
-	double ratioParamLast;
+	
 	//Context Menu
 	bool freqReset = true;
 	bool ratioReset = false;
 	bool exponential = true;
+	bool hardReset = false;
 		//(+-0.5, +-2, +-10) (0, 1, 2)
 	int  range = 1;
-
+	int  lastRange = -1;
+	float rangeImp = 2.f;
+	ParamQuantity ratioRange;
 
 	Lilies() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(RATIO_PARAM, -4.f, 4.f, 1.f, "Exponential Ratio");
+		configParam(RATIO_PARAM, -2.f, 2.f, 0.f, "Exponential Ratio");
 	}
 
 	void process(const ProcessArgs& args) override {
 		//TODO context menu stuff!
+		ratioRange.paramId = RATIO_PARAM;
+			if(range != lastRange) {
+				switch(range) {
+				case 0 :
+					rangeImp = 0.5f;
+					ratioRange.minValue = -0.5f;
+					ratioRange.maxValue = 0.5f;
+					DEBUG("case 1");
+				break;
+				case 1 :
+					rangeImp = 2.f;
+					ratioRange.minValue = -2.f;
+					ratioRange.maxValue = 2.f;
+					DEBUG("case 2");
+				break;
+				case 2 :
+					rangeImp = 10.f;
+					ratioRange.minValue = -10.f;
+					ratioRange.maxValue = 10.f;
+					DEBUG("case 3");
+				break;
+			}
+		}
+		lastRange = range;
+		
+		
 
 		float ratioParam = params[RATIO_PARAM].getValue();
 		//processing input with proper schmitt trigger
@@ -134,24 +167,31 @@ struct Lilies : Module {
 		//
 		//Trying to get rid of start messup ----- if(fallE && phaseClock > (2 * args.sampleTime)) {
 		
-		
+		//Detecting ratio change
+		ratioStill = true;
+		for(int i = 2; i < 10 && ratioStill; i++) {
+			if(ratioParamBuffer[i] != ratioParamBuffer[1] || ratioParamBuffer[i] == ratioParamBuffer[0]) {
+				ratioStill = false;
+			}
+		}
+
+		if(ratioReset && ratioStill) {
+			resetTrig = true;
+		}
+
 		if(fallE) {
 			clockCycle = phaseClock;
 			phaseClock -= phaseClock;
-
-		//Something to rest it if the clockCycle changes ||| Set this code as a context menu or smt
-			if(
-				(freqReset  &&  !near(clockCycle, clockCyclePast, 3 * args.sampleTime))
-			||	(ratioReset &&  ratioParam != ratioParamLast)
-			) {
+			if(freqReset  &&  !near(clockCycle, clockCyclePast, 3 * args.sampleTime))
+			{
 				resetTrig = true;
 			}
 			clockCyclePast = clockCycle;
-			ratioParamLast = ratioParam;
 		}
 		phaseClock += args.sampleTime;
 
-
+		
+		
 
 
 //		DEBUG("-------------------------");
@@ -174,17 +214,15 @@ struct Lilies : Module {
 		//Set the goal for the rising phase
 		phaseTimeFM[i] = clockCycle / levelMult[i];
 		
-		//Reset stuff;
-
-		//We need a way to buffer the reset, 
-		//Or actually I think we could reset it to a length?
-		//Because
-		
+		//Reset stuff buffer;
 		if(resetTrig) {
 			resetTFF = true;
 		}
 		
 		if(fallE && resetTFF) {
+			if(hardReset) {
+				triggerMult[i] = true;
+			}
 			phaseMult[i] = 0.f;
 			phaseClock = 0.f;
 			if(i == 4) {
@@ -194,6 +232,19 @@ struct Lilies : Module {
 
 //		DEBUG("differenc: %f", clockCycle - (phaseTimeFM[i] * 4.f));
 //		DEBUG("Incoming Wave: %f", inputs[CLOCK_INPUT].getVoltage());
+
+
+/*		if(fallE && resetTFF)  {
+			triggerMult[i] = true;
+
+
+		}
+*/
+
+
+
+
+
 
 
 		//Calculates the multiplication phase level?
@@ -227,15 +278,29 @@ struct Lilies : Module {
 */		
 		//Outputs
 		outputs[i].setVoltage(10.f * triggerMult[i]);
+		outputs[5].setVoltage(10.f * resetTrig);
 
-
-		
+//		outputs[5].setVoltage(10.f * resetTrig);
 
 		//Trigger Reset
 		triggerMult[i] = false;
 		}
 
-		outputs[5].setVoltage(10.f * resetTrig);
+		
+		
+		//10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
+
+	
+		//Shifting the buffer
+		
+		std::memmove(ratioParamBuffer + 1, ratioParamBuffer, 9 * sizeof(double));
+		ratioParamBuffer[0] = ratioParam;
+
+		//Causing it to be a momentary trigger
+	//	if(ratioStill) {
+	//		ratioStill = false;
+	//	}
+
 
 		ratioIn = 2;
 	}
@@ -296,6 +361,13 @@ struct LiliesWidget : ModuleWidget {
 				}
 			};
 
+			struct HardResetItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->hardReset = !module->hardReset;
+				}
+			};
+
 
 			Menu* createChildMenu() override {
 				Menu* menu = new Menu;
@@ -303,13 +375,17 @@ struct LiliesWidget : ModuleWidget {
 					//My frequency reset item
 				FreqResetItem* freqResetItem = createMenuItem<FreqResetItem>("Reset on frequency", CHECKMARK(module->freqReset));
 				freqResetItem->module = module;
-					//My ratio rest item
+					//My ratio reset item
 				RatioResetItem* ratioResetItem = createMenuItem<RatioResetItem>("Reset on ratio", CHECKMARK(module->ratioReset));
 				ratioResetItem->module = module;
+					//My hard reset item
+				HardResetItem* hardResetItem = createMenuItem<HardResetItem>("Hard reset", CHECKMARK(module->hardReset));
+				hardResetItem->module = module;
 
 				menu->addChild(new MenuSeparator);
 				menu->addChild(freqResetItem);
 				menu->addChild(ratioResetItem);
+				menu->addChild(hardResetItem);
 
 				return menu;
 			};
