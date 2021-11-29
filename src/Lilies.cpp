@@ -108,42 +108,31 @@ struct Lilies : Module {
 	bool hardReset = false;
 		//(+-0.5, +-2, +-10) (0, 1, 2)
 	int  range = 1;
+	bool hasLoaded = false;
+
 	int  lastRange = -1;
 	float rangeImp = 2.f;
 	ParamQuantity ratioRange;
+	MultiRangeParam* ratioParam;
 
 	Lilies() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(RATIO_PARAM, -2.f, 2.f, 0.f, "Exponential Ratio");
+		//DEBUG("range: %d", range);
+		configParam<MultiRangeParam>(RATIO_PARAM, -10.f, 10.f, 1.f, "Exponential Ratio");
+		ratioParam = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
+		//DEBUG("module Constructed");
 	}
+
+	
 
 	void process(const ProcessArgs& args) override {
 		//TODO context menu stuff!
-		ratioRange.paramId = RATIO_PARAM;
-			if(range != lastRange) {
-				switch(range) {
-				case 0 :
-					rangeImp = 0.5f;
-					ratioRange.minValue = -0.5f;
-					ratioRange.maxValue = 0.5f;
-					DEBUG("case 1");
-				break;
-				case 1 :
-					rangeImp = 2.f;
-					ratioRange.minValue = -2.f;
-					ratioRange.maxValue = 2.f;
-					DEBUG("case 2");
-				break;
-				case 2 :
-					rangeImp = 10.f;
-					ratioRange.minValue = -10.f;
-					ratioRange.maxValue = 10.f;
-					DEBUG("case 3");
-				break;
-			}
-		}
-		lastRange = range;
 		
+
+		if(!hasLoaded) {
+			ratioParam->setRange(range, false);
+			hasLoaded = true;
+		}
 		
 
 		float ratioParam = params[RATIO_PARAM].getValue();
@@ -304,10 +293,45 @@ struct Lilies : Module {
 
 		ratioIn = 2;
 	}
+
+	void dataFromJson(json_t* data) override {
+		json_t* jsonObjectRange = json_object_get(data, "RangeSave");
+    	int range = json_integer_value(jsonObjectRange);
+		ratioParam->setRange(range, false);
+		hasLoaded = true;
+
+		json_t* jsonObjectFreqReset = json_object_get(data, "freqReset");
+    	freqReset = json_integer_value(jsonObjectFreqReset);
+		json_t* jsonObjectRatioReset = json_object_get(data, "ratioReset");
+    	ratioReset = json_integer_value(jsonObjectRatioReset);
+		json_t* jsonObjectExponential = json_object_get(data, "exponential");
+    	exponential = json_integer_value(jsonObjectExponential);
+		json_t* jsonObjectHardReset = json_object_get(data, "hardReset");
+    	hardReset = json_integer_value(jsonObjectHardReset);
+
+		//DEBUG("dataFromJson");
+	}
+
+	json_t* dataToJson() override {
+		json_t* data = json_object();
+		MultiRangeParam* ratioParamSave = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
+		json_object_set_new(data, "RangeSave", json_integer(ratioParamSave->rangeSelection));
+
+		json_object_set_new(data, "freqReset", json_integer(freqReset));
+		json_object_set_new(data, "ratioReset", json_integer(ratioReset));
+		json_object_set_new(data, "exponential", json_integer(exponential));
+		json_object_set_new(data, "hardReset", json_integer(hardReset));
+
+		return data;
+
+		//DEBUG("dataToJson");
+	}
+
 };
 
 
 struct LiliesWidget : ModuleWidget {
+	MultiRangeParam* multiRangeParam;
 	LiliesWidget(Lilies* module) {
 		setModule(module);
 		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/lilies_default.svg")));
@@ -317,7 +341,10 @@ struct LiliesWidget : ModuleWidget {
 //		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 //		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<Orange_Slider>(mm2px(Vec(6.944, 47.731)), module, Lilies::RATIO_PARAM));
+		Orange_Slider* orange_Slider_Ratio = createParam<Orange_Slider>(mm2px(Vec(6.944, 47.731)), module, Lilies::RATIO_PARAM);
+		multiRangeParam = reinterpret_cast<MultiRangeParam*>(orange_Slider_Ratio->paramQuantity);
+
+		addParam(orange_Slider_Ratio);
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 19.894)), module, Lilies::RESET_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 35.134)), module, Lilies::CLOCK_INPUT));
@@ -339,7 +366,8 @@ struct LiliesWidget : ModuleWidget {
 
 	void appendContextMenu(Menu* menu) override {
 		Lilies* lilies = (Lilies*)(this->module);
-		assert( lilies);
+		assert(lilies);
+
 
 
 		menu->addChild(new MenuSeparator);
@@ -395,6 +423,7 @@ struct LiliesWidget : ModuleWidget {
 		//Remember it's like a train line of pointers ponting to pointers
 		struct RangeMenuItem : MenuItem {
 			Lilies* module;
+			MultiRangeParam* multiRangeParam;
 
 			struct ExpoSwitchItem : MenuItem {
 				Lilies* module;
@@ -404,21 +433,21 @@ struct LiliesWidget : ModuleWidget {
 			};
 //
 			struct RangeZeroItem : MenuItem {
-				Lilies* module;
+				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
-					module->range = 0;
+					multiRangeParam->setRange(0);
 				}
 			};
 			struct RangeOneItem : MenuItem {
-				Lilies* module;
+				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
-					module->range = 1;
+					multiRangeParam->setRange(1);
 				}
 			};
 			struct RangeTwoItem : MenuItem {
-				Lilies* module;
+				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
-					module->range = 2;
+					multiRangeParam->setRange(2);
 				}
 			};
 
@@ -430,12 +459,12 @@ struct LiliesWidget : ModuleWidget {
 				ExpoSwitchItem* expoSwitchItem = createMenuItem<ExpoSwitchItem>("Exponential", CHECKMARK(module->exponential));
 				expoSwitchItem->module = module;
 					//My range switches
-				RangeZeroItem* rangeZeroItem = createMenuItem<RangeZeroItem>("Range: ±0.5", CHECKMARK(module->range == 0));
-				rangeZeroItem->module = module;
-				RangeOneItem* rangeOneItem = createMenuItem<RangeOneItem>("Range: ±2", CHECKMARK(module->range == 1));
-				rangeOneItem->module = module;
-				RangeTwoItem* rangeTwoItem = createMenuItem<RangeTwoItem>("Range: ±10", CHECKMARK(module->range == 2));
-				rangeTwoItem->module = module;
+				RangeZeroItem* rangeZeroItem = createMenuItem<RangeZeroItem>("Range: ±0.5", CHECKMARK(multiRangeParam->rangeSelection == 0));
+				rangeZeroItem->multiRangeParam = multiRangeParam;
+				RangeOneItem* rangeOneItem = createMenuItem<RangeOneItem>("Range: ±2", CHECKMARK(multiRangeParam->rangeSelection == 1));
+				rangeOneItem->multiRangeParam = multiRangeParam;
+				RangeTwoItem* rangeTwoItem = createMenuItem<RangeTwoItem>("Range: ±10", CHECKMARK(multiRangeParam->rangeSelection == 2));
+				rangeTwoItem->multiRangeParam = multiRangeParam;
 
 				menu->addChild(new MenuSeparator);
 				menu->addChild(expoSwitchItem);
@@ -456,7 +485,12 @@ struct LiliesWidget : ModuleWidget {
 		
 		RangeMenuItem *rangeItem = createMenuItem<RangeMenuItem>("Waves", RIGHT_ARROW);
 		rangeItem->module = reinterpret_cast<Lilies*>(this->module);
+		rangeItem->multiRangeParam = this->multiRangeParam;
 		menu->addChild(rangeItem);
+
+
+
+
 		
 
 		menu->addChild(new MenuSeparator);

@@ -17,6 +17,52 @@ extern Model* modelLilies;
 // Declare each Model, defined in each module source file
 // extern Model* modelMyModule;
 
+
+
+struct MultiRangeParam : ParamQuantity {
+	//selector to make checkmarks :>
+	int rangeSelection;
+	
+
+	void setRange(int rangeChoice, bool normalize = true) {
+		rangeSelection = rangeChoice;
+		float normalized;
+		if(normalize) {
+			normalized = rescale(getValue(), minValue, maxValue, 0, 1);
+		}
+		switch(rangeChoice) {
+				case 0 :
+					
+					minValue = -0.5f;
+					maxValue = 0.5f;
+					
+				break;
+				case 1 :
+					
+					minValue = -2.f;
+					maxValue = 2.f;
+					
+				break;
+				case 2 :
+					
+					minValue = -10.f;
+					maxValue = 10.f;
+					
+				break;
+		}
+		if(normalize) {
+			setValue(rescale(normalized, 0, 1, minValue, maxValue));
+		}
+	}
+};
+
+
+
+
+
+
+
+
 struct Orange_In : app::SvgPort
 {
 	Orange_In()
