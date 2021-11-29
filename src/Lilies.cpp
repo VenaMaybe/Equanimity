@@ -123,8 +123,6 @@ struct Lilies : Module {
 		//DEBUG("module Constructed");
 	}
 
-	
-
 	void process(const ProcessArgs& args) override {
 		//TODO context menu stuff!
 		
@@ -296,9 +294,13 @@ struct Lilies : Module {
 
 	void dataFromJson(json_t* data) override {
 		json_t* jsonObjectRange = json_object_get(data, "RangeSave");
-    	int range = json_integer_value(jsonObjectRange);
-		ratioParam->setRange(range, false);
-		hasLoaded = true;
+    	//if json file is corrupted
+		if(jsonObjectRange != NULL) {
+			int range = json_integer_value(jsonObjectRange);
+			ratioParam->setRange(range, false);
+			hasLoaded = true;
+		}
+		
 
 		json_t* jsonObjectFreqReset = json_object_get(data, "freqReset");
     	freqReset = json_integer_value(jsonObjectFreqReset);
@@ -328,7 +330,6 @@ struct Lilies : Module {
 	}
 
 };
-
 
 struct LiliesWidget : ModuleWidget {
 	MultiRangeParam* multiRangeParam;
@@ -498,6 +499,5 @@ struct LiliesWidget : ModuleWidget {
 
 	}
 };
-
 
 Model* modelLilies = createModel<Lilies, LiliesWidget>("Lilies");
