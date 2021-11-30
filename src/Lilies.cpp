@@ -156,17 +156,25 @@ struct Lilies : Module {
 		//
 		//Trying to get rid of start messup ----- if(fallE && phaseClock > (2 * args.sampleTime)) {
 		
-		//Detecting ratio change
-		ratioStill = true;
-		for(int i = 2; i < 10 && ratioStill; i++) {
-			if(ratioParamBuffer[i] != ratioParamBuffer[1] || ratioParamBuffer[i] == ratioParamBuffer[0]) {
+		//Detecting ratio change DOESN'T WORK FIX!!!
+		//		what it's doing right now is waiting for if you stop for 10 samples
+		//		and then if it starts moving again reset it
+
+		ratioStill = false;
+		for(int i = 0; i < 8 /*&& ratioStill*/; i++) {
+			if(ratioParamBuffer[i] != ratioParamBuffer[8] || ratioParamBuffer[i] == ratioParamBuffer[9]) {
 				ratioStill = false;
+			} else {
+				ratioStill = true;
 			}
 		}
 
 		if(ratioReset && ratioStill) {
 			resetTrig = true;
 		}
+
+		
+
 
 		if(fallE) {
 			clockCycle = phaseClock;
@@ -179,23 +187,22 @@ struct Lilies : Module {
 		}
 		phaseClock += args.sampleTime;
 
-		
-		
-
-
 //		DEBUG("-------------------------");
 //		DEBUG("clockCycle: %f", clockCycle);
 
 		//Ratio stuff
-		
-		
 
 		for(int i = 0; i < 5; i++) {
 
 		//make a selection between expo and lin
 		ratioBase = ratioParam;
 		if(!exponential) {
-			ratioOut = ratioIn;
+			
+			if(0 <= ratioIn) {
+				ratioOut = ratioIn + 1;
+			} else if(0 > ratioIn) {
+				ratioOut = 1.f / std::abs(ratioIn - 1);
+			}
 			
 		} else {
 			//ratioOut = pow(ratioBase, ratioIn);
@@ -206,11 +213,10 @@ struct Lilies : Module {
 		
 		
 
-
 		//Set multiplicaiton level
 		levelMult[i] = ratioOut;
-		DEBUG("------");
-		DEBUG("ratioOut %f", ratioOut);
+	//	DEBUG("------");
+	//	DEBUG("ratioOut %f", ratioOut);
 		//Set the goal for the rising phase
 		phaseTimeFM[i] = clockCycle / levelMult[i];
 		
@@ -242,11 +248,6 @@ struct Lilies : Module {
 */
 
 
-
-
-
-
-
 		//Calculates the multiplication phase level?
 		phaseMult[i] += args.sampleTime;
 
@@ -263,8 +264,6 @@ struct Lilies : Module {
 
 //		DEBUG("fallE        : %s", fallE ? "trueXXX" : "false");
 //		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
-
-
 
 
 		//Pulse generator section
@@ -289,12 +288,11 @@ struct Lilies : Module {
 		
 		
 		//10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
-
-	
-		//Shifting the buffer
 		
+
+		//Shifting the buffer		
 		std::memmove(ratioParamBuffer + 1, ratioParamBuffer, 9 * sizeof(double));
-		ratioParamBuffer[0] = ratioParam;
+	    ratioParamBuffer[0] = ratioParam;
 
 		//Causing it to be a momentary trigger
 	//	if(ratioStill) {
