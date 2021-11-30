@@ -156,9 +156,7 @@ struct Lilies : Module {
 		//
 		//Trying to get rid of start messup ----- if(fallE && phaseClock > (2 * args.sampleTime)) {
 		
-		//Detecting ratio change DOESN'T WORK FIX!!!
-		//		what it's doing right now is waiting for if you stop for 10 samples
-		//		and then if it starts moving again reset it
+		//Detecting ratio change SHOULD BE FIXED!!!
 
 		ratioStill = false;
 		for(int i = 0; i < 8 /*&& ratioStill*/; i++) {
