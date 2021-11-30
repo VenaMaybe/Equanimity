@@ -95,19 +95,21 @@ struct Lilies : Module {
 	double ratioParamBuffer[10];
 	bool ratioStill = false;
 
-
-	//Ratio y = b^x
-	double ratioIn;		// x
-	double ratioOut;	// y
-	double ratioBase;	// b
+	//EXPONENTIAL
+		//Ratio y = b^x
+		double ratioIn;		// x
+		double ratioOut;	// y
+		double ratioBase;	// b
+	//LINIAR
+		//Ratio y = x;
 	
 	//Context Menu
-	bool freqReset = true;
-	bool ratioReset = false;
-	bool exponential = true;
+	bool freqReset = true;		//implimented
+	bool ratioReset = false;	//implimented
+	bool exponential = true;	//implimented
 	bool hardReset = false;
 		//(+-0.5, +-2, +-10) (0, 1, 2)
-	int  range = 1;
+	int  range = 1;				//implimented
 	bool hasLoaded = false;
 
 	int  lastRange = -1;
@@ -190,14 +192,25 @@ struct Lilies : Module {
 
 		for(int i = 0; i < 5; i++) {
 
+		//make a selection between expo and lin
 		ratioBase = ratioParam;
-	//	ratioOut = pow(ratioBase, ratioIn);
-		ratioOut = (pow(pow(2, ratioBase), ratioIn));
+		if(!exponential) {
+			ratioOut = ratioIn;
+			
+		} else {
+			//ratioOut = pow(ratioBase, ratioIn);
+			ratioOut = (pow(pow(2, ratioBase), ratioIn));
+			
+		}
 		ratioIn--;
+		
+		
 
 
 		//Set multiplicaiton level
-		levelMult[i] = ratioOut;	
+		levelMult[i] = ratioOut;
+		DEBUG("------");
+		DEBUG("ratioOut %f", ratioOut);
 		//Set the goal for the rising phase
 		phaseTimeFM[i] = clockCycle / levelMult[i];
 		
