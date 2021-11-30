@@ -158,12 +158,10 @@ struct Lilies : Module {
 		
 		//Detecting ratio change SHOULD BE FIXED!!!
 
-		ratioStill = false;
+		ratioStill = true;
 		for(int i = 0; i < 8 /*&& ratioStill*/; i++) {
 			if(ratioParamBuffer[i] != ratioParamBuffer[8] || ratioParamBuffer[i] == ratioParamBuffer[9]) {
 				ratioStill = false;
-			} else {
-				ratioStill = true;
 			}
 		}
 
@@ -197,9 +195,9 @@ struct Lilies : Module {
 		if(!exponential) {
 			
 			if(0 <= ratioIn) {
-				ratioOut = ratioIn + 1;
+				ratioOut = ratioBase * ratioIn + 1;
 			} else if(0 > ratioIn) {
-				ratioOut = 1.f / std::abs(ratioIn - 1);
+				ratioOut = 1.f / std::abs(ratioBase * ratioIn - 1);
 			}
 			
 		} else {
