@@ -27,6 +27,7 @@
 
 		Slider
 			Some kinda liniar or exponential option
+			Some kinda oneshot mode if it doesn't do too much cpu
 			Range options (+-0.5, +-2, +-10) for voltage remap
 
 	Tips
@@ -192,8 +193,10 @@ struct Lilies : Module {
 
 		//make a selection between expo and lin
 		ratioBase = ratioParam;
+
+		
 		if(!exponential) {
-			
+			ratioBase = std::abs(ratioBase);
 			if(0 <= ratioIn) {
 				ratioOut = ratioBase * ratioIn + 1;
 			} else if(0 > ratioIn) {
@@ -201,11 +204,14 @@ struct Lilies : Module {
 			}
 			
 		} else {
+			if(ratioParam != ratioParamBuffer[1]) {
 			//ratioOut = pow(ratioBase, ratioIn);
 			ratioOut = (pow(pow(2, ratioBase), ratioIn));
-			
+			}
 		}
 		ratioIn--;
+		
+		
 		
 		
 
