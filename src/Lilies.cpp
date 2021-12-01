@@ -202,21 +202,36 @@ struct Lilies : Module {
 			} else if(0 > ratioIn) {
 				ratioOut = 1.f / std::abs(ratioBase * ratioIn - 1);
 			}
-			
+
+			//Set multiplicaiton level
+			levelMult[i] = ratioOut;
 		} else {
-			if(ratioParam != ratioParamBuffer[1]) {
-			//ratioOut = pow(ratioBase, ratioIn);
-			ratioOut = (pow(pow(2, ratioBase), ratioIn));
+			bool TFF = false;
+			if(ratioParam == ratioParamBuffer[1]) {
+				//ratioOut = pow(ratioBase, ratioIn);
+				//ratioOut = (pow(pow(2, ratioBase), ratioIn));
+					//Holds exponenent when not in use for optimization
+				for(int i = 0; i < 5 && TFF; i++) {
+					ratioOut = pow(2, (ratioBase * ratioIn));
+					//Set multiplicaiton level
+					levelMult[i] = ratioOut;
+					if(i == 4) {
+						TFF = false;
+					}
+				}
+			} else {
+				ratioOut = pow(2, (ratioBase * ratioIn));
+				//Set multiplicaiton level
+				levelMult[i] = ratioOut;
+				TFF = true;
 			}
 		}
 		ratioIn--;
 		
-		
-		
-		
+		//TODO:: Later add in a low cpu useage mode
+		//which updates it ever 32-124 samples or smt
 
-		//Set multiplicaiton level
-		levelMult[i] = ratioOut;
+		
 	//	DEBUG("------");
 	//	DEBUG("ratioOut %f", ratioOut);
 		//Set the goal for the rising phase
