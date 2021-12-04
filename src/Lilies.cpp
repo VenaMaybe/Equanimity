@@ -44,6 +44,25 @@ bool near(float lhs, float rhs, float allowedDifference) {
 	return delta < allowedDifference && delta > -allowedDifference;
 }
 
+double divCurve(double ratioIn, double ratioOut, double ratioBase) {
+	ratioIn = (ratioBase < 0) * (-2 * ratioIn) + ratioIn;
+
+	ratioOut = (ratioIn > 0) * (std::abs(ratioBase * ratioIn) + 1) +
+		(ratioIn <= 0) * (1/(std::abs(ratioBase * ratioIn) + 1));
+
+	return ratioOut;
+};
+
+inline double fastPow(double a, double b) {
+  union {
+    double d;
+    int x[2];
+  } u = { a };
+  u.x[1] = (int)(b * (u.x[1] - 1072632447) + 1072632447);
+  u.x[0] = 0;
+  return u.d;
+}
+
 struct Lilies : Module {
 	enum ParamIds {
 		RATIO_PARAM,
@@ -96,47 +115,61 @@ struct Lilies : Module {
 	double ratioParamBuffer[10];
 	bool ratioStill = false;
 
-	//EXPONENTIAL
-		//Ratio y = b^x
-		double ratioIn;		// x
-		double ratioOut;	// y
-		double ratioBase;	// b
-	//LINIAR
-		//Ratio y = x;
+	//Ratio
+	//Ratio y = b^x (for expo)
+	double ratioIn;		// x
+	double ratioOut;	// y
+	double ratioBase;	// b
+	
+	//CV Input
+	double ratioParam;
 	
 	//Context Menu
 	bool freqReset = true;		//implimented
 	bool ratioReset = false;	//implimented
 	bool exponential = true;	//implimented
-	bool hardReset = false;
+	bool hardReset = false;		//implimented
 		//(+-0.5, +-2, +-10) (0, 1, 2)
 	int  range = 1;				//implimented
 	bool hasLoaded = false;
+	bool expoTFF = false;	//exponential optimizing tff
 
 	int  lastRange = -1;
-	float rangeImp = 2.f;
+//	float rangeImp = 2.f;
 	ParamQuantity ratioRange;
-	MultiRangeParam* ratioParam;
+	MultiRangeParam* ratioParamPointer;
 
 	Lilies() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		//DEBUG("range: %d", range);
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.f, 10.f, 1.f, "Exponential Ratio");
-		ratioParam = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
+		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		//DEBUG("module Constructed");
 	}
 
 	void process(const ProcessArgs& args) override {
-		//TODO context menu stuff!
-		
-
+		//TODO when switching to expo mode and back reset something so that
+		//it actually changes, bc rn it won't change till an update!
+			//Range stuff
 		if(!hasLoaded) {
-			ratioParam->setRange(range, false);
+			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
 		}
+
+			//Input
+		if(inputs[RATIO_CV_INPUT].isConnected()) {
+			ratioParam = inputs[RATIO_CV_INPUT].getVoltage();
+
+			//use slider as atenuverter, make percent appear on slider?
+			//ADD CONTEXT MENU TO MAKE UNIPOLAR?
+		} else {
+			ratioParam = params[RATIO_PARAM].getValue();
+		}
+
 		
 
-		float ratioParam = params[RATIO_PARAM].getValue();
+
+
 		//processing input with proper schmitt trigger
 		clockInput.process(rescale(inputs[CLOCK_INPUT].getVoltage(), 0.1f, 2.f, 0.f, 1.f));
 		resetInput.process(rescale(inputs[RESET_INPUT].getVoltage(), 0.1f, 2.f, 0.f, 1.f));
@@ -196,34 +229,59 @@ struct Lilies : Module {
 
 		
 		if(!exponential) {
+
+			/*
 			ratioBase = std::abs(ratioBase);
 			if(0 <= ratioIn) {
 				ratioOut = ratioBase * ratioIn + 1;
 			} else if(0 > ratioIn) {
 				ratioOut = 1.f / std::abs(ratioBase * ratioIn - 1);
 			}
+			*/
 
+				//Forcing expo switch
+			expoTFF = true;
+			ratioParamBuffer[1] =  ratioParam + 1.f;
+
+			levelMult[i] = divCurve(ratioIn, ratioOut, ratioBase);
+
+			
 			//Set multiplicaiton level
-			levelMult[i] = ratioOut;
+//			levelMult[i] = ratioOut;
 		} else {
-			bool TFF = false;
-			if(ratioParam == ratioParamBuffer[1]) {
+			expoTFF = false;
+			if(false/* && ratioParam == ratioParamBuffer[1]*/) {
 				//ratioOut = pow(ratioBase, ratioIn);
 				//ratioOut = (pow(pow(2, ratioBase), ratioIn));
-					//Holds exponenent when not in use for optimization
-				for(int i = 0; i < 5 && TFF; i++) {
+					//Holds exponenent when not in use for optimization	
+				if(expoTFF) {
+					ratioOut = pow(2, (ratioBase * ratioIn));
+					levelMult[0] = levelMult[1] = levelMult[2] = levelMult[3] = levelMult[4] = ratioOut;
+					expoTFF = false;
+				}
+
+/*
+				int i = 0;
+				i++;
+				expoTFF = (i > 32);
+				i = i * !(i > 32);
+
+/*
+				for(int i = 0; i < 5 && expoTFF; i++) {
 					ratioOut = pow(2, (ratioBase * ratioIn));
 					//Set multiplicaiton level
 					levelMult[i] = ratioOut;
 					if(i == 4) {
-						TFF = false;
+						expoTFF = false;
 					}
-				}
+				}*/
 			} else {
 				ratioOut = pow(2, (ratioBase * ratioIn));
+				//ratioOut = fastPow(2, (ratioBase * ratioIn));
+
 				//Set multiplicaiton level
 				levelMult[i] = ratioOut;
-				TFF = true;
+				expoTFF = true;
 			}
 		}
 		ratioIn--;
@@ -325,7 +383,7 @@ struct Lilies : Module {
     	//if json file is corrupted
 		if(jsonObjectRange != NULL) {
 			int range = json_integer_value(jsonObjectRange);
-			ratioParam->setRange(range, false);
+			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
 		}
 		
@@ -458,6 +516,10 @@ struct LiliesWidget : ModuleWidget {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
 					module->exponential = !module->exponential;
+
+					//TODO impliment expo reset trigger?
+					//also some sort of override
+
 				}
 			};
 //
