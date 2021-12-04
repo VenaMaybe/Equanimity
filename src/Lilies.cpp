@@ -222,12 +222,13 @@ struct Lilies : Module {
 
 		//Ratio stuff
 
+//		DEBUG("-------------BEGINNING-------------");
 		for(int i = 0; i < 5; i++) {
 
 		//make a selection between expo and lin
 		ratioBase = ratioParam;
 
-		
+		/*
 		if(!exponential) {
 
 			/*
@@ -237,10 +238,10 @@ struct Lilies : Module {
 			} else if(0 > ratioIn) {
 				ratioOut = 1.f / std::abs(ratioBase * ratioIn - 1);
 			}
-			*/
+			//----end
 
 				//Forcing expo switch
-			expoTFF = true;
+			//expoTFF = true;
 			ratioParamBuffer[1] =  ratioParam + 1.f;
 
 			levelMult[i] = divCurve(ratioIn, ratioOut, ratioBase);
@@ -249,8 +250,17 @@ struct Lilies : Module {
 			//Set multiplicaiton level
 //			levelMult[i] = ratioOut;
 		} else {
+
+
+
+
+
+
+
+
+
 			expoTFF = false;
-			if(false/* && ratioParam == ratioParamBuffer[1]*/) {
+			if(false/* && ratioParam == ratioParamBuffer[1]) {
 				//ratioOut = pow(ratioBase, ratioIn);
 				//ratioOut = (pow(pow(2, ratioBase), ratioIn));
 					//Holds exponenent when not in use for optimization	
@@ -274,23 +284,46 @@ struct Lilies : Module {
 					if(i == 4) {
 						expoTFF = false;
 					}
-				}*/
+				} //---------End
 			} else {
-				ratioOut = pow(2, (ratioBase * ratioIn));
+				ratioOut = std::pow(2, (ratioBase * ratioIn));
 				//ratioOut = fastPow(2, (ratioBase * ratioIn));
 
 				//Set multiplicaiton level
 				levelMult[i] = ratioOut;
 				expoTFF = true;
 			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		}
+		*/
+
+//		DEBUG("------Loop-----");
+		ratioOut = std::pow(2, (ratioBase * ratioIn));
+		levelMult[i] = 0.5;
+
+//		DEBUG("phaseMult preIf: %f", levelMult[i]);
+
 		ratioIn--;
 		
 		//TODO:: Later add in a low cpu useage mode
 		//which updates it ever 32-124 samples or smt
 
 		
-	//	DEBUG("------");
+	
 	//	DEBUG("ratioOut %f", ratioOut);
 		//Set the goal for the rising phase
 		phaseTimeFM[i] = clockCycle / levelMult[i];
@@ -338,6 +371,8 @@ struct Lilies : Module {
 
 
 //		DEBUG("fallE        : %s", fallE ? "trueXXX" : "false");
+
+
 //		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
 
 
