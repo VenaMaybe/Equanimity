@@ -185,7 +185,7 @@ struct Lilies : Module {
 		//Calculates the clock phase and cycle
 		//		NOTE calculate the phase more efficiently to reduce phase shift
 
-		
+		if(!resetTrig)
 		resetTrig = resetTrigger.process(resetInput.isHigh());
 
 		//
@@ -225,7 +225,6 @@ struct Lilies : Module {
 		}
 */
 
-//		DEBUG("-------------------------");
 //		DEBUG("clockCycle: %f", clockCycle);
 
 		//Ratio stuff
@@ -233,7 +232,8 @@ struct Lilies : Module {
 //		DEBUG("-------------BEGINNING-------------");
 		ratioBase = ratioParam;
 		//ratioBase = 1.0;
-		for(int i = 0; i < 5; i++) {
+		int i = 0;
+		for(i = 0; i < 5; i++) {
 			//int i = 1;
 
 		//make a selection between expo and lin
@@ -320,22 +320,25 @@ struct Lilies : Module {
 //		DEBUG("clockCycle %f", clockCycle);
 //		DEBUG("levelMult  %f", levelMult[i]);
 		
+
+//		DEBUG("resetTFF     : %s", resetTFF ? "trueTFF" : "false");
 		//Reset stuff buffer;
 		if(resetTrig) {
 			resetTFF = true;
 		}
-		
+//		DEBUG("resetTFF2    : %s", resetTFF ? "trueTFF" : "false");
 		if(fallE && resetTFF) {
 			if(hardReset) {
 				triggerMult[i] = true;
 			}
-			phaseMult[i] = 0.0;
+			phaseMult[0] = phaseMult[1] = phaseMult[2] = phaseMult[3] = phaseMult[4] = 0.0;
+			expoTFFforChange = true;
 			phaseClock = 0.0;
 			if(i == 4) {
 				resetTFF = false;
 			}
 		}
-
+//		DEBUG("resetTF3     : %s", resetTFF ? "trueTFF" : "false");
 /*		if(fallE && resetTFF)  {
 			triggerMult[i] = true;
 
@@ -376,6 +379,7 @@ struct Lilies : Module {
 	    ratioParamBuffer[0] = ratioParam;
 
 		ratioIn = 2.0;
+		resetTrig = false;
 	}
 
 	void dataFromJson(json_t* data) override {
@@ -516,7 +520,8 @@ struct LiliesWidget : ModuleWidget {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
 					module->exponential = !module->exponential;
-					module->resetTFF = true;
+					module->resetTrig = true;
+//					DEBUG("Expo Switch Clicked");
 					//TODO impliment expo reset trigger?
 					//also some sort of override
 
