@@ -151,25 +151,17 @@ struct Lilies : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
-//		DEBUG("rangePicker inside3 %i", rangePicker);
-		//TODO when switching to expo mode and back reset something so that
-		//it actually changes, bc rn it won't change till an update!
-			//Range stuff
+		//Range stuff
 		if(!hasLoaded) {
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
 		}
-//		DEBUG("rangePicker inside4 %i", rangePicker);
 		//Input
 		ratioParamIn = params[RATIO_PARAM].getValue();
 		if(inputs[RATIO_CV_INPUT].isConnected()) {
 			ratioParam = inputs[RATIO_CV_INPUT].getVoltage();
-			ratioParam *= rescale(ratioParamIn, ratioParamPointer->getMinValue(), ratioParamPointer->getMaxValue(), -1.0, 1.0);
-//			rescaleRange = 0.0;
-//			DEBUG("rescaleRange %f", rescaleRange);
-
-			//use slider as atenuverter, make percent appear on slider?
-			//ADD CONTEXT MENU TO MAKE UNIPOLAR?
+			ratioParam *= ratioParamIn / 10.0;
+			//The slider now acts also as an atenuverter!
 		} else {
 			ratioParam = ratioParamIn;
 		}
