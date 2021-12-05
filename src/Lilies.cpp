@@ -126,25 +126,24 @@ struct Lilies : Module {
 	double ratioParam;
 	
 	//Context Menu
+		//Water
 	bool freqReset = true;		//implimented
 	bool ratioReset = false;	//implimented
-	bool exponential = true;	//implimented
 	bool hardReset = false;		//implimented
-		//(+-0.5, +-2, +-10) (0, 1, 2)
-	int  range = 1;				//implimented
-	int  rangePicker = 1;
+		//Waves
+	bool exponential = true;	//implimented
+	bool trigger = true;
+	int  range = 1;				//implimented (+-0.5, +-2, +-10) (0, 1, 2)
 	bool hasLoaded = false;
 	bool expoTFF = false;	//exponential optimizing tff
 	bool expoTFFforChange = false;
+//	int  lastRange = -1;
 
-	int  lastRange = -1;
-//	double rangeImp = 2.0;
 	ParamQuantity ratioRange;
 	MultiRangeParam* ratioParamPointer;
 
 	Lilies() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		//DEBUG("range: %d", range);
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		//DEBUG("module Constructed");
@@ -330,20 +329,18 @@ struct Lilies : Module {
 			triggerMult[i] = true;
 		}
 
-//		DEBUG("fallE        : %s", fallE ? "trueXXX" : "false");
-//		DEBUG("triggerMult  : %s", triggerMult[i] ? "true" : "false");
-
 		//Pulse generator section
 		//TODO, take into account pulse width;
 
-/*		if (triggerMult[i]) {
-			generatorMult[i].reset();
-			generatorMult[i].trigger((clockCycle / levelMult[i]) / 2);
+		if (triggerMult[i]) {
+			generatorMult[i].reset(); //Stinky branchless stuff to learn
+			generatorMult[i].trigger( ((1e-3f) * trigger) + (((clockCycle / levelMult[i]) / 2) * !trigger) );
 		}
-		generatorMult[i].process(args.sampleTime);
-*/		
+		bool outHigh = generatorMult[i].process(args.sampleTime);
+		
 		//Outputs
-		outputs[i].setVoltage(10.0 * triggerMult[i]);
+//		outputs[i].setVoltage(10.0 * triggerMult[i]);
+		outputs[i].setVoltage(10.0 * outHigh);
 		outputs[5].setVoltage(ratioParam);
 
 		//Trigger Reset
@@ -354,6 +351,7 @@ struct Lilies : Module {
 		std::memmove(ratioParamBuffer + 1, ratioParamBuffer, 9 * sizeof(double));
 	    ratioParamBuffer[0] = ratioParam;
 
+		//That stuff I forgot about
 		ratioIn = 2.0;
 		resetTrig = false;
 	}
@@ -372,10 +370,12 @@ struct Lilies : Module {
     	freqReset = json_integer_value(jsonObjectFreqReset);
 		json_t* jsonObjectRatioReset = json_object_get(data, "ratioReset");
     	ratioReset = json_integer_value(jsonObjectRatioReset);
-		json_t* jsonObjectExponential = json_object_get(data, "exponential");
-    	exponential = json_integer_value(jsonObjectExponential);
 		json_t* jsonObjectHardReset = json_object_get(data, "hardReset");
     	hardReset = json_integer_value(jsonObjectHardReset);
+		json_t* jsonObjectExponential = json_object_get(data, "exponential");
+    	exponential = json_integer_value(jsonObjectExponential);
+		json_t* jsonObjectTrigger = json_object_get(data, "trigger");
+    	trigger = json_integer_value(jsonObjectTrigger);
 
 		//DEBUG("dataFromJson");
 	}
@@ -387,8 +387,10 @@ struct Lilies : Module {
 
 		json_object_set_new(data, "freqReset", json_integer(freqReset));
 		json_object_set_new(data, "ratioReset", json_integer(ratioReset));
-		json_object_set_new(data, "exponential", json_integer(exponential));
 		json_object_set_new(data, "hardReset", json_integer(hardReset));
+		json_object_set_new(data, "exponential", json_integer(exponential));
+		json_object_set_new(data, "trigger", json_integer(trigger));
+
 
 		return data;
 
@@ -499,6 +501,14 @@ struct LiliesWidget : ModuleWidget {
 					module->resetTrig = true;
 				}
 			};
+			struct TriggerSwitchItem : MenuItem {
+				Lilies* module;
+				void onAction(const event::Action &e) override {
+					module->trigger = !module->trigger;
+					//module->resetTrig = true;
+				}
+			};
+			
 			struct RangeZeroItem : MenuItem {
 				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
@@ -526,6 +536,8 @@ struct LiliesWidget : ModuleWidget {
 					//My expo switch item
 				ExpoSwitchItem* expoSwitchItem = createMenuItem<ExpoSwitchItem>("Exponential", CHECKMARK(module->exponential));
 				expoSwitchItem->module = module;
+				TriggerSwitchItem* triggerSwitchItem = createMenuItem<TriggerSwitchItem>("Trigger", CHECKMARK(module->trigger));
+				triggerSwitchItem->module = module;
 					//My range switches
 				RangeZeroItem* rangeZeroItem = createMenuItem<RangeZeroItem>("Range: ±0.5", CHECKMARK(multiRangeParam->rangeSelection == 0));
 				rangeZeroItem->multiRangeParam = multiRangeParam;
@@ -537,6 +549,7 @@ struct LiliesWidget : ModuleWidget {
 
 				menu->addChild(new MenuSeparator);
 				menu->addChild(expoSwitchItem);
+				menu->addChild(triggerSwitchItem);
 				menu->addChild(new MenuSeparator);
 				menu->addChild(rangeZeroItem);
 				menu->addChild(rangeOneItem);
