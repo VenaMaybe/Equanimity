@@ -38,7 +38,7 @@
 
 */
 
-
+	//DELETE LATER!!!
 bool near(double lhs, double rhs, double allowedDifference) {
 	double delta = lhs - rhs;
 	return delta < allowedDifference && delta > -allowedDifference;
@@ -122,6 +122,7 @@ struct Lilies : Module {
 	double ratioBase;	// b
 	
 	//CV Input
+	double ratioParamIn;
 	double ratioParam;
 	
 	//Context Menu
@@ -131,6 +132,7 @@ struct Lilies : Module {
 	bool hardReset = false;		//implimented
 		//(+-0.5, +-2, +-10) (0, 1, 2)
 	int  range = 1;				//implimented
+	int  rangePicker = 1;
 	bool hasLoaded = false;
 	bool expoTFF = false;	//exponential optimizing tff
 	bool expoTFFforChange = false;
@@ -149,6 +151,7 @@ struct Lilies : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
+//		DEBUG("rangePicker inside3 %i", rangePicker);
 		//TODO when switching to expo mode and back reset something so that
 		//it actually changes, bc rn it won't change till an update!
 			//Range stuff
@@ -156,15 +159,19 @@ struct Lilies : Module {
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
 		}
-
-			//Input
+//		DEBUG("rangePicker inside4 %i", rangePicker);
+		//Input
+		ratioParamIn = params[RATIO_PARAM].getValue();
 		if(inputs[RATIO_CV_INPUT].isConnected()) {
 			ratioParam = inputs[RATIO_CV_INPUT].getVoltage();
+			ratioParam *= rescale(ratioParamIn, ratioParamPointer->getMinValue(), ratioParamPointer->getMaxValue(), -1.0, 1.0);
+//			rescaleRange = 0.0;
+//			DEBUG("rescaleRange %f", rescaleRange);
 
 			//use slider as atenuverter, make percent appear on slider?
 			//ADD CONTEXT MENU TO MAKE UNIPOLAR?
 		} else {
-			ratioParam = params[RATIO_PARAM].getValue();
+			ratioParam = ratioParamIn;
 		}
 
 		
@@ -208,7 +215,7 @@ struct Lilies : Module {
 			clockCycle = phaseClock;
 			phaseClock -= clockCyclePast;
 
-			if(freqReset  &&  !near(clockCycle, clockCyclePast, 3 * args.sampleTime))
+			if(freqReset  &&  !isNear(clockCycle, clockCyclePast, 3 * args.sampleTime))
 			{
 				resetTrig = true;
 			}
@@ -216,14 +223,6 @@ struct Lilies : Module {
 
 		}
 		phaseClock += args.sampleTime;
-
-/*
-		if (phaseMult[i] >= phaseTimeFM[i]) {
-		//	phaseMult[i] = 0.0;
-			phaseMult[i] -= phaseTimeFM[i];
-			triggerMult[i] = true;
-		}
-*/
 
 //		DEBUG("clockCycle: %f", clockCycle);
 
@@ -236,22 +235,9 @@ struct Lilies : Module {
 		for(i = 0; i < 5; i++) {
 			//int i = 1;
 
-		//make a selection between expo and lin
-		
-
-		
+		//Decides whether to use liniar or exponential graph!
 		if(!exponential) {
-
-			/*
-			ratioBase = std::abs(ratioBase);
-			if(0 <= ratioIn) {
-				ratioOut = ratioBase * ratioIn + 1;
-			} else if(0 > ratioIn) {
-				ratioOut = 1.0 / std::abs(ratioBase * ratioIn - 1);
-			}
-			*/
-
-				//Forcing expo switch
+				//Forcing expo switch I THINK, check later!
 			expoTFFforChange = true;
 			//ratioParamBuffer[1] =  ratioParam + 1.0;
 
@@ -261,8 +247,6 @@ struct Lilies : Module {
 			//Set multiplicaiton level
 //			levelMult[i] = ratioOut;
 		} else {
-
-
 			expoTFF = false;
 			if(ratioParam == ratioParamBuffer[1] && !expoTFFforChange) {
 				//ratioOut = pow(ratioBase, ratioIn);
@@ -368,7 +352,7 @@ struct Lilies : Module {
 */		
 		//Outputs
 		outputs[i].setVoltage(10.0 * triggerMult[i]);
-		outputs[5].setVoltage(10.0 * resetTrig);
+		outputs[5].setVoltage(ratioParam);
 
 		//Trigger Reset
 		triggerMult[i] = false;
@@ -521,13 +505,8 @@ struct LiliesWidget : ModuleWidget {
 				void onAction(const event::Action &e) override {
 					module->exponential = !module->exponential;
 					module->resetTrig = true;
-//					DEBUG("Expo Switch Clicked");
-					//TODO impliment expo reset trigger?
-					//also some sort of override
-
 				}
 			};
-//
 			struct RangeZeroItem : MenuItem {
 				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
@@ -544,6 +523,7 @@ struct LiliesWidget : ModuleWidget {
 				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
 					multiRangeParam->setRange(2);
+					
 				}
 			};
 
@@ -561,6 +541,7 @@ struct LiliesWidget : ModuleWidget {
 				rangeOneItem->multiRangeParam = multiRangeParam;
 				RangeTwoItem* rangeTwoItem = createMenuItem<RangeTwoItem>("Range: ±10", CHECKMARK(multiRangeParam->rangeSelection == 2));
 				rangeTwoItem->multiRangeParam = multiRangeParam;
+				
 
 				menu->addChild(new MenuSeparator);
 				menu->addChild(expoSwitchItem);
