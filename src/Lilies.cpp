@@ -133,6 +133,7 @@ struct Lilies : Module {
 	int  range = 1;				//implimented
 	bool hasLoaded = false;
 	bool expoTFF = false;	//exponential optimizing tff
+	bool expoTFFforChange = false;
 
 	int  lastRange = -1;
 //	double rangeImp = 2.0;
@@ -238,7 +239,7 @@ struct Lilies : Module {
 		//make a selection between expo and lin
 		
 
-		/*
+		
 		if(!exponential) {
 
 			/*
@@ -248,11 +249,11 @@ struct Lilies : Module {
 			} else if(0 > ratioIn) {
 				ratioOut = 1.0 / std::abs(ratioBase * ratioIn - 1);
 			}
-			//----end
+			*/
 
 				//Forcing expo switch
-			//expoTFF = true;
-			ratioParamBuffer[1] =  ratioParam + 1.0;
+			expoTFFforChange = true;
+			//ratioParamBuffer[1] =  ratioParam + 1.0;
 
 			levelMult[i] = divCurve(ratioIn, ratioOut, ratioBase);
 
@@ -262,15 +263,8 @@ struct Lilies : Module {
 		} else {
 
 
-
-
-
-
-
-
-
 			expoTFF = false;
-			if(false/* && ratioParam == ratioParamBuffer[1]) {
+			if(ratioParam == ratioParamBuffer[1] && !expoTFFforChange) {
 				//ratioOut = pow(ratioBase, ratioIn);
 				//ratioOut = (pow(pow(2, ratioBase), ratioIn));
 					//Holds exponenent when not in use for optimization	
@@ -279,13 +273,12 @@ struct Lilies : Module {
 					levelMult[0] = levelMult[1] = levelMult[2] = levelMult[3] = levelMult[4] = ratioOut;
 					expoTFF = false;
 				}
-
 /*
 				int i = 0;
 				i++;
 				expoTFF = (i > 32);
 				i = i * !(i > 32);
-
+*/
 /*
 				for(int i = 0; i < 5 && expoTFF; i++) {
 					ratioOut = pow(2, (ratioBase * ratioIn));
@@ -294,7 +287,7 @@ struct Lilies : Module {
 					if(i == 4) {
 						expoTFF = false;
 					}
-				} //---------End
+				} */
 			} else {
 				ratioOut = std::pow(2, (ratioBase * ratioIn));
 				//ratioOut = fastPow(2, (ratioBase * ratioIn));
@@ -302,28 +295,17 @@ struct Lilies : Module {
 				//Set multiplicaiton level
 				levelMult[i] = ratioOut;
 				expoTFF = true;
+				expoTFFforChange = false;
 			}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 		}
-		*/
+		
 
 //		DEBUG("------Loop-----");
-		ratioOut = std::pow(2.0, (ratioBase * ratioIn));
-		levelMult[i] = 4;
+//		ratioOut = std::pow(2.0, (ratioBase * ratioIn));
+//		levelMult[i] = ratioOut;
 
 //		DEBUG("phaseMult preIf: %f", levelMult[i]);
 
@@ -534,7 +516,7 @@ struct LiliesWidget : ModuleWidget {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
 					module->exponential = !module->exponential;
-
+					module->resetTFF = true;
 					//TODO impliment expo reset trigger?
 					//also some sort of override
 
