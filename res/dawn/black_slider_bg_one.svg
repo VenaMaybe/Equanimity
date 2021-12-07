@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="3.9600101mm"
+   height="18.480009mm"
+   viewBox="0 0 3.9600101 18.480009"
+   version="1.1"
+   id="svg6655"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="black_slider_bg_one.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview6657"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="15.70285"
+     inkscape:cx="-1.3691782"
+     inkscape:cy="28.816426"
+     inkscape:window-width="2560"
+     inkscape:window-height="1417"
+     inkscape:window-x="3832"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:object-paths="true"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-center="true"
+     inkscape:snap-text-baseline="true"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="1.9800046,8.6685708"
+       orientation="1,0"
+       id="guide8576" />
+  </sodipodi:namedview>
+  <defs
+     id="defs6652" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-114.80992,-81.11815)">
+    <path
+       d="m 116.67992,99.37816 c 0,-0.121 -0.0495,-0.22 -0.11,-0.22 -0.16026,0 -0.13501,-0.84999 0.0275,-0.92584 0.11,-0.0513 0.11,-0.077 0,-0.12833 -0.10201,-0.0476 -0.1375,-0.54205 -0.1375,-1.91583 0,-1.37378 0.0355,-1.86823 0.1375,-1.91584 0.11,-0.0513 0.11,-0.077 0,-0.12833 -0.087,-0.0406 -0.1375,-0.30006 -0.1375,-0.70583 0,-0.40578 0.0505,-0.66526 0.1375,-0.70584 0.11,-0.0513 0.11,-0.077 0,-0.12833 -0.10694,-0.0499 -0.1375,-1.13789 -0.1375,-4.895 v -4.83084 -0.88 -0.44 c 0,-0.32667 0.0445,-0.44 0.17285,-0.44 0.25967,0 0.48715,0.27885 0.48715,0.59714 0,0.60591 0,1.16286 0,1.16286 v 8.14001 c 0,5.35333 -0.0377,8.14 -0.11,8.14 -0.0605,0 -0.11001,0.099 -0.11001,0.22 0,0.121 -0.0495,0.22 -0.10999,0.22 -0.0605,0 -0.11,-0.099 -0.11,-0.22 z"
+       style="display:inline;fill:#000000;stroke-width:0.11"
+       id="path5927"
+       sodipodi:nodetypes="sssssssssssccssccsssss" />
+  </g>
+</svg>

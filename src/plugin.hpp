@@ -100,6 +100,21 @@ struct Orange_Slider : app::SvgSlider {
 	}
 };
 
+struct Dawn_Slider_One : app::SvgSlider {
+	Dawn_Slider_One() {
+	maxHandlePos = mm2px(math::Vec(-1.54 + 1.65, 0.6));
+	minHandlePos = mm2px(math::Vec(-1.54 + 1.65, 15.06));
+	setBackgroundSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_bg_one.svg")));
+	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_handle_one.svg")));
+	}
+};
+
+
+
+
+
+
+
 //  Utility
 
 

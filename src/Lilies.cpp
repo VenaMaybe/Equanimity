@@ -415,17 +415,17 @@ struct LiliesWidget : ModuleWidget {
 	MultiRangeParam* multiRangeParam;
 	LiliesWidget(Lilies* module) {
 		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/lilies_default.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_dawn.svg")));
 
 //		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 //		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 //		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 //		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		Orange_Slider* orange_Slider_Ratio = createParam<Orange_Slider>(mm2px(Vec(6.944, 47.731)), module, Lilies::RATIO_PARAM);
-		multiRangeParam = reinterpret_cast<MultiRangeParam*>(orange_Slider_Ratio->paramQuantity);
+		Dawn_Slider_One* dawn_slider_one = createParam<Dawn_Slider_One>(mm2px(Vec(6.944 - 1.65, 47.731)), module, Lilies::RATIO_PARAM);
+		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->paramQuantity);
 
-		addParam(orange_Slider_Ratio);
+		addParam(dawn_slider_one);
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 19.894)), module, Lilies::RESET_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 35.134)), module, Lilies::CLOCK_INPUT));
