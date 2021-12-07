@@ -45,6 +45,7 @@ bool near(double lhs, double rhs, double allowedDifference) {
 }
 
 double divCurve(double ratioIn, double ratioOut, double ratioBase) {
+	//Brancheless x+/1 and 1/x+ depending on input!
 	ratioIn = (ratioBase < 0) * (-2 * ratioIn) + ratioIn;
 
 	ratioOut = (ratioIn > 0) * (std::abs(ratioBase * ratioIn) + 1) +
@@ -150,6 +151,17 @@ struct Lilies : Module {
 	}
 
 	void process(const ProcessArgs& args) override {
+
+		//It doesn't do fm
+		//IT IS ALMOST LIKE GRANULAR
+		//I MAKE MAKE A VERSION OF IT THAT IS GRANULAR!!!
+		//Grains but each one playing a different sample
+		//Maybe a reset button
+		//raise and fall indipendent lowpass filter
+
+		//Canyon's name for module
+		//Gremlin module
+
 		//Range stuff
 		if(!hasLoaded) {
 			ratioParamPointer->setRange(range, false);
@@ -427,7 +439,7 @@ struct LiliesWidget : ModuleWidget {
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(22.86, 107.277)), module, Lilies::FIVE_OUTPUT));
 
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.62, 107.277)), module, Lilies::out_test));
+//		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.62, 107.277)), module, Lilies::out_test));
 
 		// mm2px(Vec(28.876, 7.342))
 		addChild(createWidget<Widget>(mm2px(Vec(0.802, 0.827))));
