@@ -152,6 +152,11 @@ struct Lilies : Module {
 
 	void process(const ProcessArgs& args) override {
 
+		//TODO!!! FIX THE BUG AT REALLY SLOW INCOMING BPMS
+		//FIX THE BUG AT HIGH EXPO VALUES, IS THERE A BIG WITH CONST OUTS?
+		//fIX WEIRD GLITCH BUG IDK but I think it has to do with initalizing doubles!
+
+
 		//It doesn't do fm
 		//IT IS ALMOST LIKE GRANULAR
 		//I MAKE MAKE A VERSION OF IT THAT IS GRANULAR!!!
