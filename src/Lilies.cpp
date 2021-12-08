@@ -432,19 +432,19 @@ struct LiliesWidget : ModuleWidget {
 
 		addParam(dawn_slider_one);
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 19.894)), module, Lilies::RESET_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 35.134)), module, Lilies::CLOCK_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 78.208)), module, Lilies::RATIO_CV_INPUT));
-//		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.62, 107.277)), module, Lilies::SECRET_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 19.894)), module, Lilies::RESET_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 35.134)), module, Lilies::CLOCK_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 78.208)), module, Lilies::RATIO_CV_INPUT));
+//		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::SECRET_INPUT));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(22.86, 19.894)), module, Lilies::ONE_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(22.86, 35.134)), module, Lilies::TWO_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(22.86, 53.386)), module, Lilies::THREE_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(22.86, 78.208)), module, Lilies::FOUR_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(22.86, 107.277)), module, Lilies::FIVE_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 19.894)), module, Lilies::ONE_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 35.134)), module, Lilies::TWO_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 53.386)), module, Lilies::THREE_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 78.208)), module, Lilies::FOUR_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 107.277)), module, Lilies::FIVE_OUTPUT));
 
 
-//		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.62, 107.277)), module, Lilies::out_test));
+//		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::out_test));
 
 		// mm2px(Vec(28.876, 7.342))
 		addChild(createWidget<Widget>(mm2px(Vec(0.802, 0.827))));

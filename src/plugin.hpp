@@ -61,7 +61,7 @@ struct MultiRangeParam : ParamQuantity {
 
 
 
-
+//IHAVENOIDEA
 
 struct Orange_In : app::SvgPort
 {
@@ -88,8 +88,6 @@ struct Orange_Switch : app::SvgSwitch
 	}
 };
 
-// Slider stuff :>
-
 //Orange Slider
 struct Orange_Slider : app::SvgSlider {
 	Orange_Slider() {
@@ -100,12 +98,22 @@ struct Orange_Slider : app::SvgSlider {
 	}
 };
 
+//DAWN
+
 struct Dawn_Slider_One : app::SvgSlider {
 	Dawn_Slider_One() {
 	maxHandlePos = mm2px(math::Vec(-1.54 + 1.65, 0.6));
 	minHandlePos = mm2px(math::Vec(-1.54 + 1.65, 15.06));
 	setBackgroundSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_bg_one.svg")));
 	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_handle_one.svg")));
+	}
+};
+
+struct Dawn_Port_One : app::SvgPort
+{
+	Dawn_Port_One()
+	{
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/drawn_port_dawn_one.svg")));
 	}
 };
 
