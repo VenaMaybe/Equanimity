@@ -1,4 +1,4 @@
-#include "plugin.hpp"
+#include "Equanimity.hpp"
 
 
 struct Vena_comparator2 : Module {

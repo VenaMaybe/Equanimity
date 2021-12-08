@@ -1,4 +1,4 @@
-#include "plugin.hpp"
+#include "Equanimity.hpp"
 
 struct Reflections : Module {
 	enum ParamIds {

@@ -1,6 +1,6 @@
 #include <string>
 #include <cmath>
-#include "plugin.hpp"
+#include "Equanimity.hpp"
 
 struct Osc
 {

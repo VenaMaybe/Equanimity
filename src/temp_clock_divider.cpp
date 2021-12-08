@@ -1,4 +1,4 @@
-#include "plugin.hpp"
+#include "Equanimity.hpp"
 
 
 struct Clock_divider_one : Module {

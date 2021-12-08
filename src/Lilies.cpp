@@ -1,4 +1,4 @@
-#include "plugin.hpp"
+#include "Equanimity.hpp"
 
 /* Manual
 
@@ -418,9 +418,17 @@ struct Lilies : Module {
 
 struct LiliesWidget : ModuleWidget {
 	MultiRangeParam* multiRangeParam;
+	std::shared_ptr<Svg> dawn_svg;
+	std::shared_ptr<Svg> sketch_svg;
+
 	LiliesWidget(Lilies* module) {
 		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_dawn.svg")));
+
+		dawn_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_dawn.svg"));
+		sketch_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_sketch.svg"));
+		int panelTheme = isDark(module ? (&(((Lilies*)module)->panelTheme)) : NULL) ? 1 : 0;// need this here since step() not called for module browser
+		setPanel(sketch_svg);
+
 
 //		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 //		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
