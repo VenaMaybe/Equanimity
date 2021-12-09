@@ -59,6 +59,13 @@ struct ModDisplay : TransparentWidget {
 //		addChild(svgTriangle);
 	}
 
+	~ModDisplay() {
+			//WILL HAVE TO CHANGE IN V2!!!
+		event::Remove eRemove;
+		svgTriangle->onRemove(eRemove);
+		delete svgTriangle;
+	}
+
 	
 
 	void drawBox(const DrawArgs& args) {

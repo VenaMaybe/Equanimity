@@ -2,31 +2,26 @@
 
 struct Reflections : Module {
 	enum ParamIds {
-		SWITCH_TOP_LATCH_PARAM,
-		SWITCH_TOP_GATE_PARAM,
-		SLIDER_TOP_LATCH_PARAM,
-		SWITCH_BOTTOM_LATCH_PARAM,
-		SWITCH_BOTTOM_GATE_PARAM,
-		SLIDER_BOTTOM_LATCH_PARAM,
+		SLEW_SLIDER_PARAM,
+		LATCH_SLIDER_PARAM,
+		SLEW_SWITCH_PARAM,
+		LATCH_SWITCH_PARAM,
+		GATE_SWITCH_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
-		INPUT_A_INPUT,
-		INPUT_B_INPUT,
-		INPUT_C_INPUT,
-		INPUT_D_INPUT,
+		A_INPUT,
+		B_INPUT,
+		SLEW_CV_INPUT,
+		LATCH_CV_INPUT,
 		NUM_INPUTS
 	};
 	enum OutputIds {
-		OUTPUT_A_OUTPUT,
-		OUTPUT_B_OUTPUT,
-		OUTPUT_C_OUTPUT,
-		OUTPUT_D_OUTPUT,
+		GREATER_OUTPUT,
+		LESSER_OUTPUT,
 		NUM_OUTPUTS
 	};
 	enum LightIds {
-		ENUMS(TOP_LIGHT, 2),
-		ENUMS(BOTTOM_LIGHT, 2),
 		NUM_LIGHTS
 	};
 
@@ -34,13 +29,11 @@ struct Reflections : Module {
 
 	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(SWITCH_TOP_LATCH_PARAM, 0.f, 1.f, 0.f, "Latch");
-		configParam(SWITCH_TOP_GATE_PARAM, 0.f, 1.f, 0.f, "Gate");
-		configParam(SLIDER_TOP_LATCH_PARAM, 0.f, 10.f, 5.f, "Latch Sensitivity");
-		configParam(SWITCH_BOTTOM_LATCH_PARAM, 0.f, 1.f, 0.f, "Latch");
-		configParam(SWITCH_BOTTOM_GATE_PARAM, 0.f, 1.f, 0.f, "Gate");
-		configParam(SLIDER_BOTTOM_LATCH_PARAM, 0.f, 10.f, 5.f, "Latch Sensitivity");
-		lightDivider.setDivision(16);
+		configParam(SLEW_SLIDER_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(LATCH_SLIDER_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(SLEW_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(LATCH_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(GATE_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
 	}
 
 	
@@ -53,7 +46,7 @@ struct Reflections : Module {
 
 
 
-
+/*
 
 		
 		//Lights Top
@@ -134,7 +127,7 @@ struct Reflections : Module {
 				};
 
 			}
-		};
+		};*/
 	}
 };
 
@@ -142,33 +135,31 @@ struct Reflections : Module {
 struct ReflectionsWidget : ModuleWidget {
 	ReflectionsWidget(Reflections* module) {
 		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/reflections_default.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/reflections_dawn.svg")));
 
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 8.278)), module, Reflections::SWITCH_TOP_LATCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 21.386)), module, Reflections::SWITCH_TOP_GATE_PARAM));
-		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 36.909).plus(Vec(0.225, 0.72/2))), module, Reflections::SLIDER_TOP_LATCH_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(10.752, 17.284)), module, Reflections::SLEW_SLIDER_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(14.712, 17.284)), module, Reflections::LATCH_SLIDER_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(7.897, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(3.372, 62.892)), module, Reflections::LATCH_SWITCH_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(12.449, 62.892)), module, Reflections::GATE_SWITCH_PARAM));
 
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 70.06)), module, Reflections::SWITCH_BOTTOM_LATCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.142, 83.168)), module, Reflections::SWITCH_BOTTOM_GATE_PARAM));
-		addParam(createParam<Orange_Slider>(mm2px(Vec(13.142, 98.691).plus(Vec(0.225, 0.72/2))), module, Reflections::SLIDER_BOTTOM_LATCH_PARAM));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 75.837)), module, Reflections::SLEW_CV_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 93.763)), module, Reflections::LATCH_CV_INPUT));
 
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 10.633)), module, Reflections::INPUT_A_INPUT));
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 23.747)), module, Reflections::INPUT_B_INPUT));
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 72.415)), module, Reflections::INPUT_C_INPUT));
-		addInput(createInputCentered<Orange_In>(mm2px(Vec(7.62, 85.529)), module, Reflections::INPUT_D_INPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 30.05)), module, Reflections::GREATER_OUTPUT));
+		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 41.264)), module, Reflections::LESSER_OUTPUT));
 
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 39.262)), module, Reflections::OUTPUT_A_OUTPUT));
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 47.182)), module, Reflections::OUTPUT_B_OUTPUT));
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 101.044)), module, Reflections::OUTPUT_C_OUTPUT));
-		addOutput(createOutputCentered<Orange_Out>(mm2px(Vec(7.62, 108.964)), module, Reflections::OUTPUT_D_OUTPUT));
-
-		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 32.586)), module, Reflections::TOP_LIGHT));
-		addChild(createLightCentered<TinyLight<GreenRedLight>>(mm2px(Vec(7.62, 94.368)), module, Reflections::BOTTOM_LIGHT));
+		// mm2px(Vec(0.655, 36.46))
+		addChild(createWidget<Widget>(mm2px(Vec(14.057, 17.284))));
+		// mm2px(Vec(0.655, 36.46))
+		addChild(createWidget<Widget>(mm2px(Vec(14.712, 17.284))));
 	}
 };
 

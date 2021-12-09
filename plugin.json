@@ -55,6 +55,12 @@
         "Clock modulator",
         "Granular"
       ]
+    },
+    {
+      "slug": "temp_mod",
+      "name": "temp mod",
+      "description": "delete later",
+      "tags": []
     }
   ]
 }
