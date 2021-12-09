@@ -48,6 +48,14 @@ struct Reflections : Module {
 	void process(const ProcessArgs& args) override 
 	{
 		
+
+
+
+
+
+
+
+		
 		//Lights Top
 		lights[0].setSmoothBrightness(inputs[0].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
 		lights[1].setSmoothBrightness(inputs[1].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());

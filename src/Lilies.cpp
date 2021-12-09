@@ -423,11 +423,11 @@ struct LiliesWidget : ModuleWidget {
 
 	LiliesWidget(Lilies* module) {
 		setModule(module);
-
+			//make header file full of skins
 		dawn_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_dawn.svg"));
 		sketch_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_sketch.svg"));
-		int panelTheme = isDark(module ? (&(((Lilies*)module)->panelTheme)) : NULL) ? 1 : 0;// need this here since step() not called for module browser
-		setPanel(sketch_svg);
+//		int panelTheme = isDark(module ? (&(((Lilies*)module)->panelTheme)) : NULL) ? 1 : 0;// need this here since step() not called for module browser
+		setPanel(dawn_svg);
 
 
 //		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));

@@ -1,5 +1,9 @@
-
 #pragma once
+
+#include <rack.hpp>
+
+using namespace rack;
+
 
 struct MultiRangeParam : ParamQuantity {
 	//selector to make checkmarks :>

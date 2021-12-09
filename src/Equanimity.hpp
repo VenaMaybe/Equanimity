@@ -11,13 +11,13 @@
 //					Allie   %Contrib%					-+=
 //					Avum	)Testing(					-+=
 //					Pierre  =Inspire=					-+=
-//					Cornus  =Inspire=					-+=
 //					Aria	=Inspire=					-+=
 //					Ivy	    =Inspire=					-+=
 //					Andrew ^Teaching^					-+=
 //					Vega   ^Teaching^					-+=
 //					Squinky^Teaching^					-+=
 //					Paul   ^Teaching^					-+=
+//					Cornus ^Teaching^					-+=
 //									 					-+=
 //				-',> MADE WITH LOVE! <,'-				-+=				
 //									 					-+=
@@ -43,6 +43,8 @@ using namespace rack;
 
 // Declare the Plugin, defined in plugin.cpp
 extern Plugin* pluginInstance;
+
+//Modules
 //		extern Model* modelVena_lfo;
 extern Model* modelReflect;
 extern Model* modelReflections;
@@ -91,7 +93,8 @@ struct Orange_Slider : app::SvgSlider {
 
 //DAWN
 
-struct Dawn_Slider_One : app::SvgSlider {
+struct Dawn_Slider_One : app::SvgSlider 
+{
 	Dawn_Slider_One() {
 	maxHandlePos = mm2px(math::Vec(-1.54 + 1.65, 0.6));
 	minHandlePos = mm2px(math::Vec(-1.54 + 1.65, 15.06));
@@ -104,6 +107,14 @@ struct Dawn_Port_One : app::SvgPort
 	Dawn_Port_One()
 	{
 		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/drawn_port_dawn_one.svg")));
+	}
+};
+
+struct TriangleThingi : SvgWidget
+{
+	TriangleThingi()
+	{
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/pink_in.svg")));
 	}
 };
 

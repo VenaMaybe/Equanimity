@@ -51,7 +51,10 @@
       "slug": "Lilies",
       "name": "Lilies",
       "description": "A ratioed clock multiplier",
-      "tags": []
+      "tags": [
+        "Clock modulator",
+        "Granular"
+      ]
     }
   ]
 }
