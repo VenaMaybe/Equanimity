@@ -4,9 +4,9 @@
 struct Temp_mod : Module {
 	enum ParamIds {
 		SLEW_SLIDER_PARAM,
-		SLEW_SWITCH_PARAM,
 		LATCH_SLIDER_PARAM,
 		LATCH_SWITCH_PARAM,
+		SLEW_SWITCH_PARAM,
 		GATE_SWITCH_PARAM,
 		NUM_PARAMS
 	};
@@ -58,7 +58,7 @@ struct Temp_modWidget : ModuleWidget {
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 18.835)), module, Temp_mod::A_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 52.478)), module, Temp_mod::B_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 75.837)), module, Temp_mod::SLEW_CV_INPUT));
+		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 78.208)), module, Temp_mod::SLEW_CV_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 93.763)), module, Temp_mod::LATCH_CV_INPUT));
 
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 30.05)), module, Temp_mod::GREATER_OUTPUT));

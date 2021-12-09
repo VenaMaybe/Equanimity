@@ -24,8 +24,17 @@ struct Reflections : Module {
 	enum LightIds {
 		NUM_LIGHTS
 	};
-
-	dsp::ClockDivider lightDivider;
+//--- Variables ----//
+		//Inputs
+	float inA 		= 0.f;
+	float inB 		= 0.f;
+		//Switches
+	bool slewOn 	= 0;
+	bool latchOn 	= 0;
+	bool gateOn 	= 0;
+		//Outputs
+	float outA		= 0.f;
+	float outB		= 0.f;
 
 	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -40,15 +49,31 @@ struct Reflections : Module {
 
 	void process(const ProcessArgs& args) override 
 	{
-		
+		//Inputs
+	inA 		= inputs[A_INPUT].getVoltage();
+	inB 		= inputs[B_INPUT].getVoltage();
+		//Switches
+	slewOn	= inputs[SLEW_SWITCH_PARAM].getVoltage();
+	latchOn	= inputs[LATCH_SWITCH_PARAM].getVoltage();
+	gateOn	= inputs[GATE_SWITCH_PARAM].getVoltage();
+
+
+	outA = inA * (inA > inB) + inB * (inB < inA);
+	outB = -outA;
 
 
 
 
 
-/*
+		//Outputs
+	outputs[GREATER_OUTPUT].setVoltage(outA);
+	outputs[LESSER_OUTPUT].setVoltage(outB);
 
-		
+//	outputs[OUTPUT_A + (i * 2)].setVoltage(high * (high > low) + low * (high < low));
+//	outputs[OUTPUT_B + (i * 2)].setVoltage(high * (low > high) + low * (low < high));
+
+
+/*		
 		//Lights Top
 		lights[0].setSmoothBrightness(inputs[0].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
 		lights[1].setSmoothBrightness(inputs[1].getVoltage() / 10, args.sampleTime * lightDivider.getDivision());
@@ -151,7 +176,7 @@ struct ReflectionsWidget : ModuleWidget {
 
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
-		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 75.837)), module, Reflections::SLEW_CV_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 78.208)), module, Reflections::SLEW_CV_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 93.763)), module, Reflections::LATCH_CV_INPUT));
 
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 30.05)), module, Reflections::GREATER_OUTPUT));
