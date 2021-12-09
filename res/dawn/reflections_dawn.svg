@@ -38,15 +38,15 @@
      inkscape:snap-center="true"
      inkscape:snap-page="true"
      inkscape:snap-text-baseline="true"
-     inkscape:zoom="5.6568543"
-     inkscape:cx="17.147339"
-     inkscape:cy="67.617086"
+     inkscape:zoom="11.313709"
+     inkscape:cx="9.5459415"
+     inkscape:cy="241.34438"
      inkscape:window-width="2560"
      inkscape:window-height="1417"
      inkscape:window-x="3832"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer10"
+     inkscape:current-layer="layer7"
      inkscape:lockguides="true"
      inkscape:snap-global="true"
      showguides="true"
@@ -873,8 +873,7 @@
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="Buttons"
-     style="display:inline"
-     sodipodi:insensitive="true">
+     style="display:inline">
     <rect
        style="fill:url(#linearGradient1440);fill-opacity:1;stroke:none;stroke-width:0.0231072;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
        id="rect2079"
@@ -936,7 +935,9 @@
     </g>
     <g
        id="g89616"
-       transform="translate(-7.179754,0.42118607)">
+       transform="matrix(-1,0,0,1,27.499753,0.42118607)"
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          id="rect1229"
          clip-path="none"
@@ -949,7 +950,9 @@
     </g>
     <g
        id="g89622"
-       transform="translate(-4.8836516,0.42118607)">
+       transform="matrix(-1,0,0,1,25.20365,0.42118607)"
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          id="path89618"
          clip-path="none"
@@ -962,7 +965,9 @@
     </g>
     <g
        id="g89630"
-       transform="translate(-2.5875491,0.42118607)">
+       transform="matrix(-1,0,0,1,22.907548,0.42118607)"
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          id="path89626"
          clip-path="none"
@@ -975,7 +980,9 @@
     </g>
     <g
        id="g89638"
-       transform="translate(-0.29144627,0.42118607)">
+       transform="matrix(-1,0,0,1,20.611445,0.42118607)"
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          id="path89634"
          clip-path="none"
@@ -988,7 +995,9 @@
     </g>
     <g
        id="g89646"
-       transform="translate(2.0046546,0.42118607)">
+       transform="matrix(-1,0,0,1,18.315344,0.42118607)"
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          id="path89642"
          clip-path="none"
@@ -1001,7 +1010,9 @@
     </g>
     <g
        id="g89654"
-       transform="translate(3.2292271,0.32764174)">
+       transform="matrix(-1,0,0,1,17.090772,0.32764174)"
+       style="display:none"
+       sodipodi:insensitive="true">
       <g
          id="g90140"
          transform="translate(0.72724863,-0.38899067)">
@@ -1238,7 +1249,9 @@
   <g
      inkscape:groupmode="layer"
      id="layer10"
-     inkscape:label="components">
+     inkscape:label="components"
+     sodipodi:insensitive="true"
+     style="display:none">
     <circle
        style="fill:#00ff00;fill-opacity:1;stroke:none;stroke-width:0.025;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
        id="A"
@@ -1276,14 +1289,14 @@
        cy="93.762856"
        r="2.062927" />
     <rect
-       style="fill:#ff0000;stroke:none;stroke-width:0.0351154;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000;fill-opacity:0.26970956"
+       style="fill:#ff0000;fill-opacity:0.26971;stroke:none;stroke-width:0.0351154;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
        id="LATCH_SLIDER"
        width="3.9600101"
        height="36.460007"
        x="14.711744"
        y="17.284388" />
     <rect
-       style="fill:#ff0000;stroke:none;stroke-width:0.0351154;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000;fill-opacity:0.26970956"
+       style="fill:#ff0000;fill-opacity:0.26971;stroke:none;stroke-width:0.0351154;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
        id="SLEW_SLIDER"
        width="3.9600101"
        height="36.460007"
@@ -1311,14 +1324,14 @@
        x="12.449164"
        y="62.891941" />
     <rect
-       style="fill:#ffff00;fill-opacity:0.53725493;stroke:none;stroke-width:0.0516805;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
+       style="fill:#ffff00;fill-opacity:0.537255;stroke:none;stroke-width:0.0516805;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
        id="LATCH_LIGHT"
        width="0.65476972"
        height="36.460007"
        x="14.711744"
        y="17.284388" />
     <rect
-       style="fill:#ffff00;fill-opacity:0.53725493;stroke:none;stroke-width:0.0516805;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
+       style="fill:#ffff00;fill-opacity:0.537255;stroke:none;stroke-width:0.0516805;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
        id="SLEW_LIGHT"
        width="0.65476972"
        height="36.460007"

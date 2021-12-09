@@ -142,19 +142,20 @@ struct ReflectionsWidget : ModuleWidget {
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(10.752, 17.284)), module, Reflections::SLEW_SLIDER_PARAM));
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(14.712, 17.284)), module, Reflections::LATCH_SLIDER_PARAM));
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(7.897, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(3.372, 62.892)), module, Reflections::LATCH_SWITCH_PARAM));
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(12.449, 62.892)), module, Reflections::GATE_SWITCH_PARAM));
+		addParam(createParam<Dawn_Slider_One>(mm2px(Vec(10.752, 17.284)), module, Reflections::SLEW_SLIDER_PARAM));
+		addParam(createParam<Dawn_Slider_One>(mm2px(Vec(14.712, 17.284)), module, Reflections::LATCH_SLIDER_PARAM));
 
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 75.837)), module, Reflections::SLEW_CV_INPUT));
-		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(10.16, 93.763)), module, Reflections::LATCH_CV_INPUT));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(7.897, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(3.372, 62.892)), module, Reflections::LATCH_SWITCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(12.449, 62.892)), module, Reflections::GATE_SWITCH_PARAM));
 
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 30.05)), module, Reflections::GREATER_OUTPUT));
-		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 41.264)), module, Reflections::LESSER_OUTPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 75.837)), module, Reflections::SLEW_CV_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 93.763)), module, Reflections::LATCH_CV_INPUT));
+
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 30.05)), module, Reflections::GREATER_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 41.264)), module, Reflections::LESSER_OUTPUT));
 
 		// mm2px(Vec(0.655, 36.46))
 		addChild(createWidget<Widget>(mm2px(Vec(14.057, 17.284))));

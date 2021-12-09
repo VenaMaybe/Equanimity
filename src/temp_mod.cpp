@@ -1,12 +1,12 @@
-#include "plugin.hpp"
+/*#include "plugin.hpp"
 
 
 struct Temp_mod : Module {
 	enum ParamIds {
 		SLEW_SLIDER_PARAM,
+		SLEW_SWITCH_PARAM,
 		LATCH_SLIDER_PARAM,
 		LATCH_SWITCH_PARAM,
-		SLEW_SWITCH_PARAM,
 		GATE_SWITCH_PARAM,
 		NUM_PARAMS
 	};
@@ -72,4 +72,4 @@ struct Temp_modWidget : ModuleWidget {
 };
 
 
-Model* modelTemp_mod = createModel<Temp_mod, Temp_modWidget>("temp_mod");
+Model* modelTemp_mod = createModel<Temp_mod, Temp_modWidget>("temp_mod");*/
