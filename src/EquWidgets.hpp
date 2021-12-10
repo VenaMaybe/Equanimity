@@ -1,6 +1,7 @@
 #pragma once
 
 #include <rack.hpp>
+#include "Equanimity.hpp"
 
 using namespace rack;
 
@@ -39,4 +40,12 @@ struct MultiRangeParam : ParamQuantity {
 			setValue(rescale(normalized, 0, 1, minValue, maxValue));
 		}
 	}
+};
+
+struct SlewLimiter {
+	float slewLimiter(float signalIn, float signalOut, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+
+
+	void foo();
+
 };

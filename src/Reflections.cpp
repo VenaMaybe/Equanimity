@@ -28,6 +28,9 @@ struct Reflections : Module {
 		//Inputs
 	float inA 		= 0.f;
 	float inB 		= 0.f;
+		//Sliders
+	float slewAmt	= 0.f;
+	float latchAmt	= 0.f;
 		//Switches
 	bool slewOn 	= 0;
 	bool latchOn 	= 0;
@@ -35,11 +38,17 @@ struct Reflections : Module {
 		//Outputs
 	float outA		= 0.f;
 	float outB		= 0.f;
+		//Comparison
+	bool aGreater	= 0;
+
+		//Slew Limiter
+	SlewLimiter sL;
+
 
 	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam(SLEW_SLIDER_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(LATCH_SLIDER_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(LATCH_SLIDER_PARAM, -10.f, 10.f, 0.f, "");
 		configParam(SLEW_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(LATCH_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
 		configParam(GATE_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
@@ -52,15 +61,29 @@ struct Reflections : Module {
 		//Inputs
 	inA 		= inputs[A_INPUT].getVoltage();
 	inB 		= inputs[B_INPUT].getVoltage();
+		//Sliders
+	slewAmt		= params[SLEW_SLIDER_PARAM].getValue();
+	latchAmt	= params[LATCH_SLIDER_PARAM].getValue();
 		//Switches
-	slewOn	= inputs[SLEW_SWITCH_PARAM].getVoltage();
-	latchOn	= inputs[LATCH_SWITCH_PARAM].getVoltage();
-	gateOn	= inputs[GATE_SWITCH_PARAM].getVoltage();
+	slewOn	= params[SLEW_SWITCH_PARAM].getValue();
+	latchOn	= params[LATCH_SWITCH_PARAM].getValue();
+	gateOn	= params[GATE_SWITCH_PARAM].getValue();
+		//Is a greater then b
+	aGreater = inA > inB + latchAmt;
 
 
-	outA = inA * (inA > inB) + inB * (inB < inA);
-	outB = -outA;
+	//outA = inA * (inA > inB) + inB * (inB < inA); cool idea
 
+//	ifelse();
+//	simd::sgn();
+//	simd::crossfade();
+//	args.sampleTime;
+
+//	outA = inA * (aGreater) + inB * (!aGreater);
+//	outB = inA * (!aGreater) + inB * (aGreater);
+
+
+	outA = sL.slewLimiter(inA, outA, args);
 
 
 
