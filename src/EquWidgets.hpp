@@ -43,9 +43,11 @@ struct MultiRangeParam : ParamQuantity {
 };
 
 struct SlewLimiter {
-	float slewLimiter(float signalIn, float signalOut, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+	float outBuffer = 0.f;
+    //float riseCV = 0.f;
+	//float fallCV = 0.f;
 
-
-	void foo();
-
+	float slewLimit(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+		//Returns the sign of the delta of signalIn and the past sample!
+	int slopeDetector(float signalIn);	
 };

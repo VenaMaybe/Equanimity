@@ -69,7 +69,7 @@ struct Reflections : Module {
 	latchOn	= params[LATCH_SWITCH_PARAM].getValue();
 	gateOn	= params[GATE_SWITCH_PARAM].getValue();
 		//Is a greater then b
-	aGreater = inA > inB + latchAmt;
+	//aGreater = inA > inB + latchAmt;
 
 
 	//outA = inA * (inA > inB) + inB * (inB < inA); cool idea
@@ -82,9 +82,17 @@ struct Reflections : Module {
 //	outA = inA * (aGreater) + inB * (!aGreater);
 //	outB = inA * (!aGreater) + inB * (aGreater);
 
+	
+	//ifelse();
 
-	outA = sL.slewLimiter(inA, outA, args);
+	//DEBUG("Start  ===================");
+	//DEBUG("inA		%f", inA);
+	outA = sL.slewLimit(inA, args, slewAmt, latchAmt);
+	//DEBUG("outA		%f", outA);
+//	DEBUG("signalIn2    %f", outA);
 
+//				This should return the slew limited version of inA?
+//	outA = sL.slewLimiter(inA, riseCV, fallCV, args);
 
 
 
