@@ -34,7 +34,7 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
     float slew = 10000.f * pow(0.1f / 10000.f, rateCV);
 
-    outBuffer += slew * (sgn(delta) * fallIn) * args.sampleTime;
+    outBuffer += slew * sgn(delta) * args.sampleTime;
 
     //DEBUG("outBuffer += %f", outBuffer);
     
@@ -56,6 +56,58 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
     //SlewLimiter::outBuffer = simd::ifelse(outBuffer > signalIn, signalIn, outBuffer);
     
 };
+
+
+
+float SlewLimiter::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+   
+    std::memmove(outBufferA + 1, outBufferA, outBufferASize * sizeof(double));
+	outBufferA[0] = signalIn;
+
+    outBufferAdded += signalIn;
+    outBufferAdded -= outBufferA[outBufferASize - 1];
+
+    float out = outBufferAdded / (outBufferASize / 10);
+
+    //float delta = signalIn - outBufferL;
+
+    return out;
+
+
+}
+
+
+/*
+     //AN ACTUAL FILTER???
+    float target = signalIn;
+    float delta = target - outBufferL; //The ideal slope;
+
+    float flatDelta = (-sgn(delta))/(abs(delta) + 1);
+
+    acceleration += (riseIn * flatDelta);
+    acceleration -= (0.01 * acceleration);
+
+    velocity +=     (acceleration);
+    //                                      //Dampening ADSR?
+    velocity -=     (0.01 * velocity);      //This is called dampening!!! Velocity slowly decays;
+
+    outBufferL +=   (velocity * (fallIn * 0.0001));
+
+    outBufferL = clamp(outBufferL, -10.f, 10.f);
+
+    return outBufferL;
+*/
+
+
+
+
+
+
+
+
+
+
+
 
 int slopeDetector(float signalIn) {
     return sgn(signalIn);

@@ -87,7 +87,10 @@ struct Reflections : Module {
 
 	//DEBUG("Start  ===================");
 	//DEBUG("inA		%f", inA);
-	outA = sL.slewLimit(inA, args, slewAmt, latchAmt);
+	outA = sL.slopeSmooth(inA, args, slewAmt, latchAmt);
+
+
+
 	//DEBUG("outA		%f", outA);
 //	DEBUG("signalIn2    %f", outA);
 

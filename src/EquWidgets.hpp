@@ -44,10 +44,29 @@ struct MultiRangeParam : ParamQuantity {
 
 struct SlewLimiter {
 	float outBuffer = 0.f;
+
+	//slopeSmooth
+	const int outBufferASize = 100;
+	float outBufferA[100];
+	float outBufferAdded = 0.f;
+
+	float outBufferL = 0.f;
+	float velocity = 0.f;
+	float acceleration = 0.f;
+
+	int time = 0;
+
+
+
+
     //float riseCV = 0.f;
 	//float fallCV = 0.f;
 
 	float slewLimit(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+	float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+
+
+
 		//Returns the sign of the delta of signalIn and the past sample!
 	int slopeDetector(float signalIn);	
 };
