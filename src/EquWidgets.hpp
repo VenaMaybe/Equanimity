@@ -46,9 +46,11 @@ struct SlewLimiter {
 	float outBuffer = 0.f;
 
 	//slopeSmooth
-	const int outBufferASize = 100;
-	float outBufferA[100];
+	const int outBufferASize = 500;
+	float outBufferA[500] = {};
+
 	float outBufferAdded = 0.f;
+	
 
 	float outBufferL = 0.f;
 	float velocity = 0.f;

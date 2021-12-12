@@ -60,14 +60,25 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
 
 float SlewLimiter::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
-   
-    std::memmove(outBufferA + 1, outBufferA, outBufferASize * sizeof(double));
-	outBufferA[0] = signalIn;
 
-    outBufferAdded += signalIn;
     outBufferAdded -= outBufferA[outBufferASize - 1];
 
-    float out = outBufferAdded / (outBufferASize / 10);
+    std::memmove(outBufferA + 1, outBufferA, (outBufferASize - 1) * sizeof(float));
+	outBufferA[0] = signalIn;
+
+    outBufferAdded += outBufferA[0];
+    
+//    float outBufferAdded = 0.f;
+//    for(int i = 0; i < outBufferASize; i++) {
+//        outBufferAdded += outBufferA[i];
+//    }
+
+
+    float out = 0.f;
+    out = outBufferAdded / outBufferASize;
+
+    
+
 
     //float delta = signalIn - outBufferL;
 
