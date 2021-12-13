@@ -64,7 +64,10 @@ float SlewLimiter::slopeSmooth(float signalIn, const Module::ProcessArgs& args, 
     outBufferAdded -= outBufferA[outBufferASize - 1];
 
     std::memmove(outBufferA + 1, outBufferA, (outBufferASize - 1) * sizeof(float));
-	outBufferA[0] = signalIn;
+
+
+        //Input to fitler
+	outBufferA[0] = (signalIn + outBufferB) / 2;
 
     outBufferAdded += outBufferA[0];
     
@@ -73,16 +76,18 @@ float SlewLimiter::slopeSmooth(float signalIn, const Module::ProcessArgs& args, 
 //        outBufferAdded += outBufferA[i];
 //    }
 
+//    dsp::convolveNaive
 
-    float out = 0.f;
-    out = outBufferAdded / outBufferASize;
-
+        //outA is the output of the filter!!
+    float outA = 0.f;
+    outA = outBufferAdded / outBufferASize;
     
 
 
-    //float delta = signalIn - outBufferL;
 
-    return out;
+
+    outBufferB = outA;
+    return outA;
 
 
 }
