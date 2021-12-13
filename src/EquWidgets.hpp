@@ -43,13 +43,49 @@ struct MultiRangeParam : ParamQuantity {
 };
 
 struct SlewLimiter {
+	struct SlopeSmoothDelay {
+			//Function
+		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+			//Data
+		float out = 0.f;					//Output!
+		float previousIn = 0.f;
+		float previousOut = 0.f;
+
+		static const int stateSize = 30;	//Slew Ammount, also delay!
+		float rate = 0.01;					//Slice of input!
+		float state[stateSize] = {0};
+	};
+	struct SlopeSmoothStack {
+			//Function
+		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+			//Data
+		float out = 0.f;
+		static const int bufferSize = 500;
+		float bufferA[bufferSize] = {0};	float bufferASum = 0.f;
+		float bufferC[bufferSize] = {0};	float bufferCSum = 0.f;
+		float bufferB[bufferSize] = {0};	float bufferBSum = 0.f;
+		float bufferD[bufferSize] = {0};	float bufferDSum = 0.f;
+	};
+
+	//slopeSmoothData sS[5];
+
+
+
+
+
+
+
+
 	float outBuffer = 0.f;
 
-	//slopeSmooth
+	
+
+	//old
 	const int outBufferASize = 500;
 	float outBufferA[500] = {};
-
 	float outBufferAdded = 0.f;
+
+	float outBufferB = 0.f;
 	
 
 	float outBufferL = 0.f;
@@ -65,7 +101,7 @@ struct SlewLimiter {
 	//float fallCV = 0.f;
 
 	float slewLimit(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
-	float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+	
 
 
 

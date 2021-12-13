@@ -42,7 +42,7 @@ struct Reflections : Module {
 	bool aGreater	= 0;
 
 		//Slew Limiter
-	SlewLimiter sL;
+	SlewLimiter::SlopeSmoothStack sS;
 
 
 	Reflections() {
@@ -87,7 +87,7 @@ struct Reflections : Module {
 
 	//DEBUG("Start  ===================");
 	//DEBUG("inA		%f", inA);
-	outA = sL.slopeSmooth(inA, args, slewAmt, latchAmt);
+	outA = sS.slopeSmooth(inA, args, slewAmt, latchAmt);
 
 
 

@@ -59,9 +59,87 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
 
 
-float SlewLimiter::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+float SlewLimiter::SlopeSmoothDelay::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+    //can maybe use crossfade later?
+        //new signal in doesn't change state as much, which the input has less effect
+        //This means it'd take like 10 signal ins to equal the current value of signal in?
+    state[0] = (rate * signalIn + (1 - rate) * state[0]);
+    for(int i = 1; i < stateSize; i++) {
+        state[i] = (rate * state[i - 1] + (1 - rate) * state[i]);
+    }
 
-    outBufferAdded -= outBufferA[outBufferASize - 1];
+    float newOut    = (signalIn + previousIn) / 2;
+    float newOutTwo = (newOut + previousOut) / 2;
+
+    previousIn = signalIn;
+    previousOut = newOutTwo;
+
+    out = newOutTwo;
+    
+    return state[stateSize - 1];
+}
+float SlewLimiter::SlopeSmoothStack::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+
+        //Keeping the moving Sum stable!
+    bufferASum -= bufferA[bufferSize - 1];
+        //Shifting buffer back by one "float"
+    std::memmove(bufferA + 1, bufferA, (bufferSize - 1) * sizeof(float));
+        //Insertion into first "waterfall"
+    bufferA[0] = signalIn;
+        //Creating what the filter kernal will effect, the moving Sum
+    bufferASum += bufferA[0];
+        //This is our convolution? Our filter kernal I believe!
+float outA = bufferASum / bufferSize;
+
+/*
+        //Keeping the moving Sum stable!
+    bufferBSum -= bufferB[bufferSize - 1];
+        //Shifting buffer back by one "float"
+    std::memmove(bufferB + 1, bufferB, (bufferSize - 1) * sizeof(float));
+        //Insertion into first "waterfall"
+    bufferB[0] = outA;
+        //Creating what the filter kernal will effect, the moving Sum
+    bufferBSum += bufferB[0];
+        //This is our convolution? Our filter kernal I believe!
+float outB = bufferBSum / bufferSize;
+
+    //Keeping the moving Sum stable!
+    bufferCSum -= bufferC[bufferSize - 1];
+        //Shifting buffer back by one "float"
+    std::memmove(bufferC + 1, bufferC, (bufferSize - 1) * sizeof(float));
+        //Insertion into first "waterfall"
+    bufferC[0] = outB;
+        //Creating what the filter kernal will effect, the moving Sum
+    bufferCSum += bufferC[0];
+        //This is our convolution? Our filter kernal I believe!
+float outC = bufferCSum / bufferSize;
+
+    //Keeping the moving Sum stable!
+    bufferDSum -= bufferD[bufferSize - 1];
+        //Shifting buffer back by one "float"
+    std::memmove(bufferD + 1, bufferD, (bufferSize - 1) * sizeof(float));
+        //Insertion into first "waterfall"
+    bufferD[0] = outC;
+        //Creating what the filter kernal will effect, the moving Sum
+    bufferDSum += bufferD[0];
+        //This is our convolution? Our filter kernal I believe!
+float outD = bufferDSum / bufferSize;
+  */  
+
+
+
+
+    
+    out = outA;
+    return out;
+
+}
+
+
+
+
+/*
+outBufferAdded -= outBufferA[outBufferASize - 1];
 
     std::memmove(outBufferA + 1, outBufferA, (outBufferASize - 1) * sizeof(float));
 
@@ -87,12 +165,7 @@ float SlewLimiter::slopeSmooth(float signalIn, const Module::ProcessArgs& args, 
 
 
     outBufferB = outA;
-    return outA;
-
-
-}
-
-
+*/
 /*
      //AN ACTUAL FILTER???
     float target = signalIn;
