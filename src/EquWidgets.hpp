@@ -44,8 +44,80 @@ struct MultiRangeParam : ParamQuantity {
 
 struct Buffer
 {
-	float data[500];
-	unsigned int buffersize = 500;
+	static const unsigned int bufferSize = 500;
+	float buffer[bufferSize] = {0};
+
+	/*			So baiscally we want a circular access array which when we get to the end
+			whether we write to or read from it at any point it can loop back on itself?
+
+				So first we just need to have an access point in the array which corrisponds 
+			to it's offset possition. From that point we can both read and write.
+
+				Then we can have a "shift" function which will shift the array which we
+			will probably call ever sample?
+
+				I just have to understand how to correctly impliment the wrapping, perhaps
+			without the modulus
+
+
+
+	*/
+
+
+
+
+/*
+	
+
+	unsigned int location = 0; //kinda
+	unsigned int currentLocation = 0;
+
+		//I would be accessing these with negative values?
+	float read(int where) {
+		return buffer[location + where];
+	}
+
+	void write(int where) {
+		buffer[location + where];
+	}
+
+	void clock() {
+		location++;
+		if(location > (bufferSize - 1)) {
+			location = 0;
+		}
+	}
+*/
+
+
+/*
+	float operator[](unsigned int inLoc) {
+		return buffer[inLoc];
+
+
+		//phase = 0 * (phase > (bufferSize - 1));
+	}
+
+	void clock() {
+		if(location > bufferSize - 1)  {
+
+		}
+	}
+*/
+	
+
+
+
+	//an access function!
+	//give it an int and - that from the offset?
+	//if it's below zero add the size of the array
+
+
+
+
+	/*
+	float data[50];
+	unsigned int buffersize = 50;
 	unsigned int offset = 0;
 
 	float& operator[](unsigned int index)
@@ -55,8 +127,9 @@ struct Buffer
 	void shift()
 	{
 	offset++;
-	//offset%=buffersize;
+	offset%=buffersize;
 	}
+	*/
 };
 
 struct SlewLimiter {
@@ -77,7 +150,7 @@ struct SlewLimiter {
 		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 			//Data
 		float out = 0.f;
-		static const int bufferSize = 500;
+		static const unsigned int bufferSize = 500;
 		float bufferA[bufferSize] = {0};	float bufferASum = 0.f;
 		float bufferC[bufferSize] = {0};	float bufferCSum = 0.f;
 		float bufferB[bufferSize] = {0};	float bufferBSum = 0.f;

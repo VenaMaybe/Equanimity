@@ -102,14 +102,21 @@ float q = p + 1;
 
 float outA = bufferA[1] +  - ;
 previousOutA = outA;
-*/
 
-    bufferASum -= bT.data[499];
+
+    bufferASum -= bT.data[49];
     bT.shift();
     bT.data[0] = signalIn;
     bufferASum += bT.data[0];
+*/
 
-float outA = bufferASum / 500;
+
+
+
+
+
+
+float outA = bufferASum / 50;
 
 
         //Keeping the moving Sum stable!
