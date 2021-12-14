@@ -42,6 +42,23 @@ struct MultiRangeParam : ParamQuantity {
 	}
 };
 
+struct Buffer
+{
+	float data[500];
+	unsigned int buffersize = 500;
+	unsigned int offset = 0;
+
+	float& operator[](unsigned int index)
+	{
+		return data[(offset+index)%buffersize];
+	}
+	void shift()
+	{
+	offset++;
+	//offset%=buffersize;
+	}
+};
+
 struct SlewLimiter {
 	struct SlopeSmoothDelay {
 			//Function
@@ -65,6 +82,8 @@ struct SlewLimiter {
 		float bufferC[bufferSize] = {0};	float bufferCSum = 0.f;
 		float bufferB[bufferSize] = {0};	float bufferBSum = 0.f;
 		float bufferD[bufferSize] = {0};	float bufferDSum = 0.f;
+			//Data for second try
+		Buffer bT; //Buffer Test
 	};
 
 	//slopeSmoothData sS[5];
