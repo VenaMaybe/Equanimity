@@ -42,10 +42,12 @@ struct MultiRangeParam : ParamQuantity {
 	}
 };
 
-struct Buffer
+struct RingBuffer
 {
 	static const unsigned int bufferSize = 500;
 	float buffer[bufferSize] = {0};
+
+	unsigned int clockHand = 0;
 
 	/*			So baiscally we want a circular access array which when we get to the end
 			whether we write to or read from it at any point it can loop back on itself?
@@ -59,11 +61,31 @@ struct Buffer
 				I just have to understand how to correctly impliment the wrapping, perhaps
 			without the modulus
 
-
-
+			NEGATIVE ONE IF OVER ZERO OF THE DIFFERENCE
 	*/
 
+	float& operator[](int loc) {
+		//Remember our array will start at 0 first, so wherever clockHand points
+		//	will be the start of the circular array!
+		loc = clockHand - loc;
+		int outLoc;
+		
+		outLoc = loc;
+		if(loc < 0) {
+			outLoc = bufferSize + loc;
+		};
 
+		float& out = buffer[outLoc];
+		return out;
+	}
+
+	void rotate(int amt = 0) {
+		clockHand += amt;
+		if(clockHand > bufferSize - 1) {
+			clockHand = 0;
+		}
+	}
+};
 
 
 /*
@@ -130,7 +152,7 @@ struct Buffer
 	offset%=buffersize;
 	}
 	*/
-};
+
 
 struct SlewLimiter {
 	struct SlopeSmoothDelay {
@@ -156,7 +178,7 @@ struct SlewLimiter {
 		float bufferB[bufferSize] = {0};	float bufferBSum = 0.f;
 		float bufferD[bufferSize] = {0};	float bufferDSum = 0.f;
 			//Data for second try
-		Buffer bT; //Buffer Test
+		RingBuffer bA; //Buffer Test
 	};
 
 	//slopeSmoothData sS[5];

@@ -57,8 +57,6 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
     
 };
 
-
-
 float SlewLimiter::SlopeSmoothDelay::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
     //can maybe use crossfade later?
         //new signal in doesn't change state as much, which the input has less effect
@@ -78,8 +76,8 @@ float SlewLimiter::SlopeSmoothDelay::slopeSmooth(float signalIn, const Module::P
     
     return state[stateSize - 1];
 }
-float SlewLimiter::SlopeSmoothStack::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
 
+float SlewLimiter::SlopeSmoothStack::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
 /*        //Keeping the moving Sum stable!
     bufferASum -= bufferA[bufferSize - 1];
         //Shifting buffer back by one "float"
@@ -90,7 +88,6 @@ float SlewLimiter::SlopeSmoothStack::slopeSmooth(float signalIn, const Module::P
     bufferASum += bufferA[0];
         //This is our convolution? Our filter kernal I believe!
 float outA = bufferASum / bufferSize;*/
-
 /*
 std::memmove(bufferA + 1, bufferA, (bufferSize - 1) * sizeof(float));
 bufferA[0] = signalIn;
@@ -112,11 +109,18 @@ previousOutA = outA;
 
 
 
+bufferASum -= bA[499];
+bA[0] = signalIn;
+bufferASum += bA[0];
 
 
 
 
-float outA = bufferASum / 50;
+
+
+//float outA = bufferASum / 500;
+float outA = bA[100];
+
 
 
         //Keeping the moving Sum stable!
@@ -175,6 +179,7 @@ float outD = bufferDSum / bufferSize;
 
     
     out = outA;
+    bA.rotate();
     return out;
 
 }
