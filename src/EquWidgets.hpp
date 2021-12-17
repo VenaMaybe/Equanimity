@@ -44,7 +44,7 @@ struct MultiRangeParam : ParamQuantity {
 
 struct RingBuffer
 {
-	static const unsigned int bufferSize = 500;
+	static const unsigned int bufferSize = 50000;
 	float buffer[bufferSize] = {0};
 
 	unsigned int clockHand = 0;
@@ -79,10 +79,10 @@ struct RingBuffer
 		return out;
 	}
 
-	void rotate(int amt = 0) {
+	void rotate(int amt = 1) {
 		clockHand += amt;
 		if(clockHand > bufferSize - 1) {
-			clockHand = 0;
+			clockHand = clockHand - bufferSize;
 		}
 	}
 };

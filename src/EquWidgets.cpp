@@ -107,21 +107,17 @@ previousOutA = outA;
     bufferASum += bT.data[0];
 */
 
-
+float passThroughA = bufferASum / 500;
 
 bufferASum -= bA[499];
-bA[0] = signalIn;
+bA[0] = (signalIn * 0.5) - (passThroughA * 0.5);
 bufferASum += bA[0];
 
 
 
+float outA = passThroughA;
 
-
-
-//float outA = bufferASum / 500;
-float outA = bA[100];
-
-
+bA.rotate(1);
 
         //Keeping the moving Sum stable!
 //    bufferASum -= bufferA[bufferSize - 1];
@@ -132,11 +128,6 @@ float outA = bA[100];
         //Creating what the filter kernal will effect, the moving Sum
 //    bufferASum += bufferA[0];
         //This is our convolution? Our filter kernal I believe!
-
-
-
-
-
 
 
 
@@ -179,7 +170,6 @@ float outD = bufferDSum / bufferSize;
 
     
     out = outA;
-    bA.rotate();
     return out;
 
 }
