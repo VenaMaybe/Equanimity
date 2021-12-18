@@ -118,13 +118,24 @@ bufferASum -= bA[499];
 bA[0] = signalIn;
 bufferASum += bA[0];
 
-float outA;
+float outA = 0.f;
+float filter = bufferASum / 500;
 
-outA = 5 * exp(-((pow(bufferASum / 500, 2))/(2 * pow(2, 2))));
+//outA = 5 * exp(-((pow(bufferASum / 500, 2))/(2 * pow(2, 2))));
+
+//outA = 0.f;
+if(filter > 0) {
+    outA = -5 * (sqrt(-1 *(log1pf((filter/2)    )     )    )    );
+} else if(filter < 0) {
+    outA = 5 * (sqrt(-1 *(log1pf((filter/2)   )     )    )    );
+} else if(filter == 0) {
+    outA = filter;
+}
 
 
 
 
+//outA = log1pf(bufferASum/500);
 //float outA = bufferASum / 500;
 
 bA.rotate(1);
