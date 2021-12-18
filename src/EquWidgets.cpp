@@ -110,17 +110,22 @@ previousOutA = outA;
 
 
 //exp();
+//float passThroughB
 
-float passThroughA = (bufferASum / 500) - (signalIn);
-float passThroughB
+//float passThroughA = (bufferASum / 500) - (signalIn);
 
 bufferASum -= bA[499];
-bA[0] = passThroughA;
+bA[0] = signalIn;
 bufferASum += bA[0];
 
+float outA;
+
+outA = 5 * exp(-((pow(bufferASum / 500, 2))/(2 * pow(2, 2))));
 
 
-float outA = bufferASum / 500;
+
+
+//float outA = bufferASum / 500;
 
 bA.rotate(1);
 
