@@ -1,6 +1,7 @@
 #pragma once
 
 #include <rack.hpp>
+#include <cmath>
 #include "Equanimity.hpp"
 
 using namespace rack;

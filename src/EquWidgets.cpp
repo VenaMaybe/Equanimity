@@ -107,15 +107,20 @@ previousOutA = outA;
     bufferASum += bT.data[0];
 */
 
-float passThroughA = bufferASum / 500;
+
+
+//exp();
+
+float passThroughA = (bufferASum / 500) - (signalIn);
+float passThroughB
 
 bufferASum -= bA[499];
-bA[0] = (signalIn * 0.5) - (passThroughA * 0.5);
+bA[0] = passThroughA;
 bufferASum += bA[0];
 
 
 
-float outA = passThroughA;
+float outA = bufferASum / 500;
 
 bA.rotate(1);
 
