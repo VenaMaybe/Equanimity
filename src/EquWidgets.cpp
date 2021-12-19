@@ -135,13 +135,15 @@ bufferASum -= bA[bufferSize - 1];
 bA[0] = signalIn;
 bufferASum += bA[0];
 
-float outA = 0.f;
-float filter = bufferASum / bufferSize;
 
-float weight = sin(filter * fallIn);
+float filter = 0.f; 
+filter = bufferASum / (bufferSize);
+
+float weight = 0.f; //use M_PI later
+weight += sin(filter * (3.141562 * 0.1) /*fallIn*/);
 
 //~'~'~'~'~'~'~//
-
+float outA = 0.f;
 outA = weight * riseIn;
 
 bA.rotate(1);

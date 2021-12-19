@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
 #include <rack.hpp>
 #include <cmath>
 #include "Equanimity.hpp"
@@ -45,10 +49,24 @@ struct MultiRangeParam : ParamQuantity {
 
 struct RingBuffer
 {
-	static const unsigned int bufferSize = 50000;
-	float buffer[bufferSize] = {0};
+	
+	std::unique_ptr<float[]> buffer;
+	const unsigned int bufferSize;
+	
+
+	RingBuffer(unsigned int dataSize) 
+	:	buffer(std::unique_ptr<float[]>(new float[dataSize])),
+		bufferSize(dataSize)
+	{
+		std::fill(buffer.get(), buffer.get() + bufferSize, 0.0f);
+	}
+	
 
 	unsigned int clockHand = 0;
+
+	//static const unsigned int bufferSize = 50000;
+	//float buffer[bufferSize] = {0};
+
 
 	/*			So baiscally we want a circular access array which when we get to the end
 			whether we write to or read from it at any point it can loop back on itself?
@@ -173,13 +191,13 @@ struct SlewLimiter {
 		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 			//Data
 		float out = 0.f;
-		static const unsigned int bufferSize = 500;
+		static const unsigned int bufferSize = 2000;
 		float bufferA[bufferSize] = {0};	float bufferASum = 0.f;
 		float bufferC[bufferSize] = {0};	float bufferCSum = 0.f;
 		float bufferB[bufferSize] = {0};	float bufferBSum = 0.f;
 		float bufferD[bufferSize] = {0};	float bufferDSum = 0.f;
 			//Data for second try
-		RingBuffer bA; //Buffer Test
+		RingBuffer bA{bufferSize}; //Buffer Test
 	};
 
 	//slopeSmoothData sS[5];
