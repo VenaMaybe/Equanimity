@@ -146,6 +146,9 @@ float weight = 0.f; //create tracking statement that changes the denominator
 //                       amplitude and then base the denominator off that!
 //                       I can't think of an easier way to do this sadly!!
 //                          https://www.desmos.com/calculator/7by26dxibp
+//
+//                       Pretty much the period of the sinewave has to be equal to 
+//                       the amplitude of the incoming signal * 2!!!
 weight = sin(filter * M_PI * 1/24 /*fallIn*/);
 
 //~'~'~'~'~'~'~//
