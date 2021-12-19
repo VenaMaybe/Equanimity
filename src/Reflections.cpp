@@ -42,7 +42,7 @@ struct Reflections : Module {
 	bool aGreater	= 0;
 
 		//Slew Limiter
-	SlewLimiter::SlopeSmoothStack sS;
+	SlewLimiter::SlopeSmoothStack sS{4096}; //4096, 2048
 
 
 	Reflections() {

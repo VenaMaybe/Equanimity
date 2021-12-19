@@ -131,16 +131,17 @@ previousOutA = outA;
 //float passThroughA = (bufferASum / 500) - (signalIn);
 
 
-bufferASum -= bA[bufferSize - 1];
+bufferSum -= bA[bufferSize - 1];
 bA[0] = signalIn;
-bufferASum += bA[0];
+bufferSum += bA[0];
 
 
 float filter = 0.f; 
-filter = bufferASum / (bufferSize);
+filter = bufferSum / (bufferSize);
+DEBUG("filter: %f", filter);
 
 float weight = 0.f; //use M_PI later
-weight += sin(filter * (3.141562 * 0.1) /*fallIn*/);
+weight = sin(filter * (M_PI * 0.1) /*fallIn*/);
 
 //~'~'~'~'~'~'~//
 float outA = 0.f;

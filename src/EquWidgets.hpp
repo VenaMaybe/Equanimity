@@ -186,18 +186,35 @@ struct SlewLimiter {
 		float rate = 0.01;					//Slice of input!
 		float state[stateSize] = {0};
 	};
+	//The constructor determins the max size of the potential Slew! 
 	struct SlopeSmoothStack {
-			//Function
-		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 			//Data
 		float out = 0.f;
-		static const unsigned int bufferSize = 2000;
-		float bufferA[bufferSize] = {0};	float bufferASum = 0.f;
-		float bufferC[bufferSize] = {0};	float bufferCSum = 0.f;
-		float bufferB[bufferSize] = {0};	float bufferBSum = 0.f;
-		float bufferD[bufferSize] = {0};	float bufferDSum = 0.f;
+		const unsigned int bufferSize;
+		float bufferSum = 0.f;
+			//Function
+		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+			//Constructor
+		SlopeSmoothStack(unsigned int dataSize)
+		:	bufferSize(dataSize)
+		{
+		}
+
 			//Data for second try
 		RingBuffer bA{bufferSize}; //Buffer Test
+
+
+		/*
+		float bufferA[bufferSize] = {0};
+		float bufferC[bufferSize] = {0};
+		float bufferB[bufferSize] = {0};
+		float bufferD[bufferSize] = {0};
+
+		
+		float bufferCSum = 0.f;
+		float bufferBSum = 0.f;
+		float bufferDSum = 0.f;
+		*/
 	};
 
 	//slopeSmoothData sS[5];
