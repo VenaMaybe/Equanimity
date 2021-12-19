@@ -138,14 +138,19 @@ bufferSum += bA[0];
 
 float filter = 0.f; 
 filter = bufferSum / (bufferSize);
-DEBUG("filter: %f", filter);
+//DEBUG("filter: %f", filter);
 
-float weight = 0.f; //use M_PI later
-weight = sin(filter * (M_PI * 0.1) /*fallIn*/);
+float weight = 0.f; //create tracking statement that changes the denominator
+//                       So basically the 24 has to change to 2 * current max amplitude!
+//                       So I have to calculate (using the buffer for sure) the max
+//                       amplitude and then base the denominator off that!
+//                       I can't think of an easier way to do this sadly!!
+//                          https://www.desmos.com/calculator/7by26dxibp
+weight = sin(filter * M_PI * 1/24 /*fallIn*/);
 
 //~'~'~'~'~'~'~//
 float outA = 0.f;
-outA = weight * riseIn;
+outA = weight * 5;
 
 bA.rotate(1);
 
