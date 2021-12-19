@@ -106,7 +106,7 @@ previousOutA = outA;
     bT.data[0] = signalIn;
     bufferASum += bT.data[0];
 */
-
+/*
     float outA = 0.f;
 
     bufferASum -= bA[bufferSize-1];
@@ -119,44 +119,33 @@ previousOutA = outA;
 
     outA += riseIn * weight * (signalIn - outA) - 0.0001*outA;
     bA.rotate(1);
+*/
 
 
 
 
 
 
-/*
 //exp();
 //float passThroughB
-
 //float passThroughA = (bufferASum / 500) - (signalIn);
 
-bufferASum -= bA[499];
+
+bufferASum -= bA[bufferSize - 1];
 bA[0] = signalIn;
 bufferASum += bA[0];
 
 float outA = 0.f;
-float filter = bufferASum / 500;
+float filter = bufferASum / bufferSize;
 
-//outA = 5 * exp(-((pow(bufferASum / 500, 2))/(2 * pow(2, 2))));
+float weight = sin(filter * fallIn);
 
-//outA = 0.f;
-if(filter > 0) {
-    outA = -5 * (sqrt(-1 *(log1pf((filter/2)    )     )    )    );
-} else if(filter < 0) {
-    outA = 5 * (sqrt(-1 *(log1pf((filter/2)   )     )    )    );
-} else if(filter == 0) {
-    outA = filter;
-}
+//~'~'~'~'~'~'~//
 
-
-
-
-//outA = log1pf(bufferASum/500);
-//float outA = bufferASum / 500;
+outA = weight * riseIn;
 
 bA.rotate(1);
-*/
+
 
 
         //Keeping the moving Sum stable!
