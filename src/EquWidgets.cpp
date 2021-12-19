@@ -107,8 +107,25 @@ previousOutA = outA;
     bufferASum += bT.data[0];
 */
 
+    float outA = 0.f;
+
+    bufferASum -= bA[bufferSize-1];
+    bA[0] = signalIn;
+    bufferASum += bA[0];
+
+    float filterFast = bufferASum / bufferSize;
+
+    float weight = exp(-fallIn*pow(signalIn - outA, 2)) * exp(-fallIn*pow(outA - filterFast, 2));
+
+    outA += riseIn * weight * (signalIn - outA) - 0.0001*outA;
+    bA.rotate(1);
 
 
+
+
+
+
+/*
 //exp();
 //float passThroughB
 
@@ -139,6 +156,8 @@ if(filter > 0) {
 //float outA = bufferASum / 500;
 
 bA.rotate(1);
+*/
+
 
         //Keeping the moving Sum stable!
 //    bufferASum -= bufferA[bufferSize - 1];
