@@ -191,9 +191,11 @@ struct SlewLimiter {
 			//Data
 		float out = 0.f;
 		const unsigned int bufferSize;
+		const unsigned int bufferRMSSize = bufferSize;
 		float bufferSum = 0.f;
+		float rMSSum = 0.f;
 			//Function
-		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+		float slopeSmooth(float& TESTOUT, float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 			//Constructor
 		SlopeSmoothStack(unsigned int dataSize)
 		:	bufferSize(dataSize)
@@ -202,6 +204,7 @@ struct SlewLimiter {
 
 			//Data for second try
 		RingBuffer bA{bufferSize}; //Buffer Test
+		RingBuffer bRMS{bufferRMSSize}; //Root Mean Square Average
 
 
 		/*

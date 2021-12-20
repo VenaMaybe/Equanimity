@@ -44,6 +44,8 @@ struct Reflections : Module {
 		//Slew Limiter
 	SlewLimiter::SlopeSmoothStack sS{4096}; //4096, 2048
 
+	
+
 
 	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -87,8 +89,9 @@ struct Reflections : Module {
 
 	//DEBUG("Start  ===================");
 	//DEBUG("inA		%f", inA);
-	outA = sS.slopeSmooth(inA, args, slewAmt, latchAmt);
-
+	float rms;
+	outA = sS.slopeSmooth(rms,inA, args, slewAmt, latchAmt);
+	outB = rms;
 
 
 	//DEBUG("outA		%f", outA);

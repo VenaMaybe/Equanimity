@@ -77,7 +77,8 @@ float SlewLimiter::SlopeSmoothDelay::slopeSmooth(float signalIn, const Module::P
     return state[stateSize - 1];
 }
 
-float SlewLimiter::SlopeSmoothStack::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+float SlewLimiter::SlopeSmoothStack::slopeSmooth(float& TESTOUT, float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+//pre shift it up and then shift it back down to get the pointy stuff
 /*        //Keeping the moving Sum stable!
     bufferASum -= bufferA[bufferSize - 1];
         //Shifting buffer back by one "float"
@@ -122,10 +123,6 @@ previousOutA = outA;
 */
 
 
-
-
-
-
 //exp();
 //float passThroughB
 //float passThroughA = (bufferASum / 500) - (signalIn);
@@ -134,11 +131,39 @@ previousOutA = outA;
 bufferSum -= bA[bufferSize - 1];
 bA[0] = signalIn;
 bufferSum += bA[0];
+                                                    //DEBUG("signalIn: %f", signalIn);
+
+float mAFilter = 0.f;
+float rMS = 0.f;
+
+//TESTING FOR NAN
+/*
+if(0.0001f > signalIn && signalIn > -0.0001f) {
+    mAFilter = 0.0001f;
+    rMS = 1.f;
+}*/
+//------
+
+mAFilter = bufferSum / bufferSize;
+                                                    //DEBUG("mAFilter: %f", mAFilter);
 
 
-float filter = 0.f; 
-filter = bufferSum / (bufferSize);
-//DEBUG("filter: %f", filter);
+rMSSum -= bRMS[bufferRMSSize - 1];
+bRMS[0] = signalIn * signalIn;
+rMSSum += bRMS[0];
+                                                    //DEBUG("rMSSum: %f", rMSSum);
+
+if(rMSSum > 0.0f) {
+                                                        //DEBUG("rMSSum / bufferRMSSize: %f", rMSSum / bufferRMSSize);
+    rMS = sqrt(rMSSum / bufferRMSSize);
+                                                        //DEBUG("rMS 0: %f", rMS);
+} else {
+    rMS = 0.0001f;
+                                                        //DEBUG("nanCatch1");
+}
+                                                    //DEBUG("rMS 1: %f", rMS);
+
+//rMS += 0.000001;
 
 float weight = 0.f; //create tracking statement that changes the denominator
 //                       So basically the 24 has to change to 2 * current max amplitude!
@@ -149,13 +174,22 @@ float weight = 0.f; //create tracking statement that changes the denominator
 //
 //                       Pretty much the period of the sinewave has to be equal to 
 //                       the amplitude of the incoming signal * 2!!!
-weight = sin(filter * M_PI * 1/24 /*fallIn*/);
+weight = sin(mAFilter * M_PI * (1.f/(rMS * 2.f)) /*fallIn*/);
+//weight += 0.000001;
+                                                    //DEBUG("weight: %f", weight);
+                                                    //DEBUG("rMS 2: %f", rMS);
 
 //~'~'~'~'~'~'~//
 float outA = 0.f;
-outA = weight * 5;
+outA = weight * rMS;
+
+
+
+TESTOUT = rMS;
 
 bA.rotate(1);
+bRMS.rotate(1);
+
 
 
 
