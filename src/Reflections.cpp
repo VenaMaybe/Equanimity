@@ -42,7 +42,7 @@ struct Reflections : Module {
 	bool aGreater	= 0;
 
 		//Slew Limiter
-	SlewLimiter::SlopeSmoothStack sS{4096}; //4096, 2048
+	MovingAverage sS{4096}; //4096, 2048
 
 	
 
@@ -89,9 +89,14 @@ struct Reflections : Module {
 
 	//DEBUG("Start  ===================");
 	//DEBUG("inA		%f", inA);
-	float rms;
-	outA = sS.slopeSmooth(rms,inA, args, slewAmt, latchAmt);
-	outB = rms;
+	
+	//float rms;
+	//outA = sS.slopeSmooth(rms,inA, args, slewAmt, latchAmt);
+	//outB = rms;
+
+	
+	outA = sS.filter(inA);
+	sS.setCurrentSize(slewAmt * 4096);
 
 
 	//DEBUG("outA		%f", outA);

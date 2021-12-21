@@ -10,101 +10,161 @@
 
 using namespace rack;
 
+//VCV OVERRIDING:
+		//TODO: Rename and make it easier to set switch cases
+	struct MultiRangeParam : ParamQuantity {
+		//selector to make checkmarks :>
+		int rangeSelection;
 
-struct MultiRangeParam : ParamQuantity {
-	//selector to make checkmarks :>
-	int rangeSelection;
-
-	void setRange(int rangeChoice, bool normalize = true) {
-		rangeSelection = rangeChoice;
-		float normalized;
-		if(normalize) {
-			normalized = rescale(getValue(), minValue, maxValue, 0, 1);
+		void setRange(int rangeChoice, bool normalize = true) {
+			rangeSelection = rangeChoice;
+			float normalized;
+			if(normalize) {
+				normalized = rescale(getValue(), minValue, maxValue, 0, 1);
+			}
+			switch(rangeChoice) {
+					case 0 :
+						
+						minValue = -0.5f;
+						maxValue = 0.5f;
+						
+					break;
+					case 1 :
+						
+						minValue = -2.f;
+						maxValue = 2.f;
+						
+					break;
+					case 2 :
+						
+						minValue = -10.f;
+						maxValue = 10.f;
+						
+					break;
+			}
+			if(normalize) {
+				setValue(rescale(normalized, 0, 1, minValue, maxValue));
+			}
 		}
-		switch(rangeChoice) {
-				case 0 :
-					
-					minValue = -0.5f;
-					maxValue = 0.5f;
-					
-				break;
-				case 1 :
-					
-					minValue = -2.f;
-					maxValue = 2.f;
-					
-				break;
-				case 2 :
-					
-					minValue = -10.f;
-					maxValue = 10.f;
-					
-				break;
+	};
+
+//DATA STRCTURES:
+		//Ring buffer
+	struct RingBuffer {
+			//Data
+		std::unique_ptr<float[]> buffer;
+		const unsigned int bufferSize;
+		unsigned int clockHand = 0;
+			//Constructor
+		RingBuffer(unsigned int dataSize) 
+		:	buffer(std::unique_ptr<float[]>(new float[dataSize])),
+			bufferSize(dataSize)
+		{
+			std::fill(buffer.get(), buffer.get() + bufferSize, 0.0f);
 		}
-		if(normalize) {
-			setValue(rescale(normalized, 0, 1, minValue, maxValue));
+			//Functions
+		float& operator[](int loc) {
+			loc = clockHand - loc;
+			int outLoc;
+			
+			outLoc = loc;
+			if(loc < 0) {
+				outLoc = bufferSize + loc;
+			};
+
+			float& out = buffer[outLoc];
+			return out;
 		}
-	}
-};
+			//Returns pointer to beginning of host array
+		float* begin() {
+			/*int outLoc;
+			if(clockHand > bufferSize) {
 
-struct RingBuffer
-{
-	
-	std::unique_ptr<float[]> buffer;
-	const unsigned int bufferSize;
-	
+			}*/
 
-	RingBuffer(unsigned int dataSize) 
-	:	buffer(std::unique_ptr<float[]>(new float[dataSize])),
-		bufferSize(dataSize)
-	{
-		std::fill(buffer.get(), buffer.get() + bufferSize, 0.0f);
-	}
-	
+			//float* beginning = ;
 
-	unsigned int clockHand = 0;
+			return buffer.get() + clockHand;
+		}
+			//Returns pointer to ending of host array
+		float* end() {
+			
+			int outLoc;
+			/*
+			outLoc = bufferSize + clockHand;
+					//idk if this should be -1!!!
+			if(outLoc > bufferSize - 1) {
+				outLoc = outLoc - bufferSize;
+			}
 
-	//static const unsigned int bufferSize = 50000;
-	//float buffer[bufferSize] = {0};
+			outLoc -= 1;
+			*/
+			return buffer.get() + outLoc;
+		}
+			//Rotates the "imaginary" overlayed array
+		void rotate(int amt = 1) {
+			clockHand += amt;
+			if(clockHand > bufferSize - 1) {
+				clockHand = clockHand - bufferSize;
+			}
+		}
 
-
-	/*			So baiscally we want a circular access array which when we get to the end
-			whether we write to or read from it at any point it can loop back on itself?
-
-				So first we just need to have an access point in the array which corrisponds 
-			to it's offset possition. From that point we can both read and write.
-
-				Then we can have a "shift" function which will shift the array which we
-			will probably call ever sample?
-
-				I just have to understand how to correctly impliment the wrapping, perhaps
-			without the modulus
-
-			NEGATIVE ONE IF OVER ZERO OF THE DIFFERENCE
-	*/
-
-	float& operator[](int loc) {
+			//Notes
 		//Remember our array will start at 0 first, so wherever clockHand points
-		//	will be the start of the circular array!
-		loc = clockHand - loc;
-		int outLoc;
-		
-		outLoc = loc;
-		if(loc < 0) {
-			outLoc = bufferSize + loc;
-		};
+		//will be the start of the circular array!
+		/*			So baiscally we want a circular access array which when we get to the end
+		whether we write to or read from it at any point it can loop back on itself?
 
-		float& out = buffer[outLoc];
-		return out;
-	}
+			So first we just need to have an access point in the array which corrisponds 
+		to it's offset possition. From that point we can both read and write.
 
-	void rotate(int amt = 1) {
-		clockHand += amt;
-		if(clockHand > bufferSize - 1) {
-			clockHand = clockHand - bufferSize;
-		}
-	}
-};
+			Then we can have a "shift" function which will shift the array which we
+		will probably call ever sample?
+
+			I just have to understand how to correctly impliment the wrapping, perhaps
+		without the modulus
+
+		NEGATIVE ONE IF OVER ZERO OF THE DIFFERENCE
+		*/
+	};
+
+//FILTERS:
+		//A single pass moving average filter
+	struct MovingAverage {
+			//Data
+		const unsigned int bufferSizeMax;
+		unsigned int bufferSizeCurrent = bufferSizeMax;
+		float bufferSum = 0.f;
+
+		unsigned int i = 2;
+			//Data buffers
+		RingBuffer buffer{bufferSizeMax};
+			//Constructor
+		MovingAverage(unsigned int dataSize)
+		:	bufferSizeMax(dataSize) {}
+			//Function
+		float filter(float signalIn);
+		void setCurrentSize(unsigned int sizeIn);
+	};
+		//A four pass moving average filter
+	struct MovingAverageFourPass {
+			//Data
+			//Data buffers
+			//Constructor
+			//Function
+		float filter();
+	};
+
+		//A single pass moving average filter weighed via a sin()
+	struct SmoothSin {
+			//Data
+			//Data buffers
+			//Constructor
+			//Function
+		float filter();
+	};
+
+//TESTING - ACCESS:
 
 
 /*
@@ -130,7 +190,6 @@ struct RingBuffer
 	}
 */
 
-
 /*
 	float operator[](unsigned int inLoc) {
 		return buffer[inLoc];
@@ -145,16 +204,10 @@ struct RingBuffer
 		}
 	}
 */
-	
-
-
 
 	//an access function!
 	//give it an int and - that from the offset?
 	//if it's below zero add the size of the array
-
-
-
 
 	/*
 	float data[50];
@@ -172,7 +225,7 @@ struct RingBuffer
 	}
 	*/
 
-
+/*
 struct SlewLimiter {
 	struct SlopeSmoothDelay {
 			//Function
@@ -194,70 +247,19 @@ struct SlewLimiter {
 		const unsigned int bufferRMSSize = bufferSize;
 		float bufferSum = 0.f;
 		float rMSSum = 0.f;
-			//Function
-		float slopeSmooth(float& TESTOUT, float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
-			//Constructor
-		SlopeSmoothStack(unsigned int dataSize)
-		:	bufferSize(dataSize)
-		{
-		}
-
-			//Data for second try
+			//Data buffers
 		RingBuffer bA{bufferSize}; //Buffer Test
 		RingBuffer bRMS{bufferRMSSize}; //Root Mean Square Average
-
-
-		/*
-		float bufferA[bufferSize] = {0};
-		float bufferC[bufferSize] = {0};
-		float bufferB[bufferSize] = {0};
-		float bufferD[bufferSize] = {0};
-
-		
-		float bufferCSum = 0.f;
-		float bufferBSum = 0.f;
-		float bufferDSum = 0.f;
-		*/
+			//Constructor
+		SlopeSmoothStack(unsigned int dataSize)
+		:	bufferSize(dataSize) {}
+			//Function
+		float slopeSmooth(float& TESTOUT, float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 	};
 
-	//slopeSmoothData sS[5];
+	struct SlopeSmoothStack {
 
-
-
-
-
-
-
-
-	float outBuffer = 0.f;
-
-	
-
-	//old
-	const int outBufferASize = 500;
-	float outBufferA[500] = {};
-	float outBufferAdded = 0.f;
-
-	float outBufferB = 0.f;
-	
-
-	float outBufferL = 0.f;
-	float velocity = 0.f;
-	float acceleration = 0.f;
-
-	int time = 0;
-
-
-
-
-    //float riseCV = 0.f;
-	//float fallCV = 0.f;
-
-	float slewLimit(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
-	
-
-
-
-		//Returns the sign of the delta of signalIn and the past sample!
-	int slopeDetector(float signalIn);	
+	};
 };
+
+*/
