@@ -254,7 +254,7 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
 //MovingAverage
 float MovingAverage::filter(float signalIn) {
-    DEBUG("--=-=-=-=-=-=-=-=-=-=--");
+    //DEBUG("--=-=-=-=-=-=-=-=-=-=--");
     //bufferSizeCurrent = i;
     //DEBUG("i: %f", i);
     /*
@@ -280,8 +280,8 @@ float MovingAverage::filter(float signalIn) {
         buffer[bufferSizeMax] = 0;
         */
     };
-    std::fill(buffer.begin() + bufferSizeCurrent, buffer.end(), 0.0f);
-    DEBUG("Buffer 2200: %f", buffer[2200]);
+    //std::fill(buffer.begin() + bufferSizeCurrent, buffer.end(), 0.0f);
+    //DEBUG("Buffer 2200: %f", buffer[2200]);
     
 
     buffer[0] = signalIn;

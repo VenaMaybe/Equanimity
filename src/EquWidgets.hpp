@@ -84,7 +84,7 @@ using namespace rack;
 
 			//float* beginning = ;
 
-			return buffer.get() + clockHand;
+			return buffer.get();// + clockHand;
 		}
 			//Returns pointer to ending of host array
 		float* end() {
@@ -99,7 +99,7 @@ using namespace rack;
 
 			outLoc -= 1;
 			*/
-			return buffer.get() + outLoc;
+			return buffer.get();// + outLoc;
 		}
 			//Rotates the "imaginary" overlayed array
 		void rotate(int amt = 1) {
