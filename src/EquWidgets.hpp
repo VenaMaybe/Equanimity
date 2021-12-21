@@ -75,32 +75,66 @@ using namespace rack;
 			float& out = buffer[outLoc];
 			return out;
 		}
+			//just make a funciton that returns the locaiton of a 
+			//pointer to there in the data structure
+
+		//Returns a pointer to location in "imaginary" array 
+		float* getSafePtr(int loc) { //TODO YOU STILL HAVE TO MAKE IT SAFE!!
+			loc = clockHand - loc;
+			int outLoc;
+
+			outLoc = loc;
+			if(loc < 0) {
+				outLoc = bufferSize + loc;
+			};
+
+			float* outPtr = buffer.get() + outLoc;
+			return outPtr;
+		}
+
+		void setUnused(int length) {
+			float fillWith = 0.f;
+			//from true beginning to imaginary beginning
+				std::fill(buffer.get(), getSafePtr(clockHand - 1), fillWith);
+			//from imaginary ending to true ending
+				std::fill(getSafePtr(clockHand + length), buffer.get() + bufferSize, fillWith);
+
+			//Notes
+				//Rememeber that the imaginary beginning or ending can 
+				// be equal to it's true counterpart!!!
+
+		}
+
+		/*
 			//Returns pointer to beginning of host array
 		float* begin() {
-			/*int outLoc;
-			if(clockHand > bufferSize) {
+			float* outLoc;
 
-			}*/
+			outLoc = buffer.get();
+			DEBUG("buffer.get() 			%p", buffer.get());
+			DEBUG("outLoc 					%p", outLoc);
+			DEBUG("bufferSize 				%i", bufferSize);
+			DEBUG("sizeof(float) 			%i", sizeof(float));
+			DEBUG("sizeof(bufferSize) 		%i", sizeof(bufferSize));
+			DEBUG("sizeof(buffer) 			%i", sizeof(buffer));
+			DEBUG("outLoc + bufferSize		%p", outLoc + bufferSize);
+			DEBUG("outLoc + bufferSize		%p", outLoc + bufferSize);
 
-			//float* beginning = ;
-
-			return buffer.get();// + clockHand;
+			return outLoc - (sizeof(float) * 4 );
 		}
 			//Returns pointer to ending of host array
 		float* end() {
-			
-			int outLoc;
-			/*
-			outLoc = bufferSize + clockHand;
-					//idk if this should be -1!!!
-			if(outLoc > bufferSize - 1) {
-				outLoc = outLoc - bufferSize;
-			}
+		//	int outLoc;
+		//	outLoc = bufferSize + clockHand;
+		//	if(outLoc > bufferSize) {
+		//		outLoc = outLoc - bufferSize;
+		//	}
+		//	outLoc -= 1;
 
-			outLoc -= 1;
-			*/
-			return buffer.get();// + outLoc;
+			return buffer.get() + bufferSize;
 		}
+		*/
+
 			//Rotates the "imaginary" overlayed array
 		void rotate(int amt = 1) {
 			clockHand += amt;

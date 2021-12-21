@@ -255,50 +255,35 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 //MovingAverage
 float MovingAverage::filter(float signalIn) {
     //DEBUG("--=-=-=-=-=-=-=-=-=-=--");
-    //bufferSizeCurrent = i;
-    //DEBUG("i: %f", i);
-    /*
-    if(i > 400000) {
-        i = 2;
-    } else {
-        i++;
-    }
-    if(i == 2) {
-        bufferSizeCurrent = 1000;
-    } else if(i == 200000) {
-        bufferSizeCurrent = 4000;
-    }
-    */
 
-    bufferSum -= buffer[bufferSizeCurrent - 1];
-    if(bufferSizeCurrent != bufferSizeMax) {
-        
+    bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
+
+    //if(bufferSizeCurrent != bufferSizeMax) {       
         /*
         bufferSum -= buffer[bufferSizeCurrent];
         bufferSum -= buffer[bufferSizeMax];
         buffer[bufferSizeCurrent] = 0;
         buffer[bufferSizeMax] = 0;
         */
-    };
-    //std::fill(buffer.begin() + bufferSizeCurrent, buffer.end(), 0.0f);
-    //DEBUG("Buffer 2200: %f", buffer[2200]);
-    
+    //};
 
+    buffer.setUnused(bufferSizeCurrent);                
+    
     buffer[0] = signalIn;
     
-    
     bufferSum += buffer[0];
-
     
-    bufferSum = bufferSum;
-
+    //bufferSum = bufferSum;
     
     float out = bufferSum / bufferSizeCurrent;
 
+    //float out = *buffer.getSafePtr(0);
+//    DEBUG("buffer.getSafePtr(0)     %p", buffer.getSafePtr(0));
+//    DEBUG("buffer.getSafePtr(0)     %f", *buffer.getSafePtr(0));
+//    DEBUG("out                      %f", out);
         //I think we need someway to clear our garbage in the buffer?
     
-    
-    buffer.rotate(1);
+    buffer.rotate(1, bufferSizeCurrent);
     
     
     return out;
@@ -306,13 +291,6 @@ float MovingAverage::filter(float signalIn) {
 void MovingAverage::setCurrentSize(unsigned int sizeIn) {
     //DEBUG("sizeIn uint: %d", sizeIn);
     bufferSizeCurrent = sizeIn;
-    
-    /*
-    if(bufferSizeCurrent != bufferSizeMax) {
-        buffer[bufferSizeCurrent] = 0;
-        buffer[bufferSizeMax] = 0;
-    };
-    */
 
     /*
     if(sizeIn < bufferSizeMax + 1) {
