@@ -177,8 +177,9 @@ using namespace rack;
 		MovingAverage(unsigned int dataSize)
 		:	bufferSizeMax(dataSize) {}
 			//Function
-		float filter(float signalIn);
-		void setCurrentSize(unsigned int sizeIn);
+		float filter(float signalIn, unsigned int desiredBufferSizeCurrentIn);
+			//maybe make unsigned later
+		//void setCurrentSize(int desiredBufferSizeCurrentIn);
 	};
 		//A four pass moving average filter
 	struct MovingAverageFourPass {

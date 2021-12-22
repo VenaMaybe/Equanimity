@@ -43,6 +43,7 @@ struct Reflections : Module {
 
 		//Slew Limiter
 	MovingAverage sS{4096}; //4096, 2048
+	unsigned int desiredBufferSizeCurrent = 0;
 
 	
 
@@ -94,9 +95,13 @@ struct Reflections : Module {
 	//outA = sS.slopeSmooth(rms,inA, args, slewAmt, latchAmt);
 	//outB = rms;
 
+		//The size I want to be at
+	desiredBufferSizeCurrent = slewAmt * 4096;
+
+	//sS.setCurrentSize(desiredBufferSizeCurrent);
+
+	outA = sS.filter(inA, desiredBufferSizeCurrent);
 	
-	outA = sS.filter(inA);
-	sS.setCurrentSize(slewAmt * 4096);
 
 
 	//DEBUG("outA		%f", outA);

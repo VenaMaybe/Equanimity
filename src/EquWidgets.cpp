@@ -253,29 +253,42 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 //RingBuffer
 
 //MovingAverage
-float MovingAverage::filter(float signalIn) {
+float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurrentIn) {
     //DEBUG("--=-=-=-=-=-=-=-=-=-=--");
 
-    bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
+    if(desiredBufferSizeCurrentIn == 0) {
+        desiredBufferSizeCurrentIn = 1;
+    }
 
-    //if(bufferSizeCurrent != bufferSizeMax) {       
-        /*
-        bufferSum -= buffer[bufferSizeCurrent];
-        bufferSum -= buffer[bufferSizeMax];
-        buffer[bufferSizeCurrent] = 0;
-        buffer[bufferSizeMax] = 0;
-        */
-    //};
+        //if it needs to grow we make it grow, if it doesn't we clean the sum
+    if(desiredBufferSizeCurrentIn > bufferSizeCurrent) {
+        bufferSizeCurrent++;
+    } else {
+        bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
+    }
 
-    buffer.setUnused(bufferSizeCurrent);                
+    if(desiredBufferSizeCurrentIn < bufferSizeCurrent) {
+        bufferSizeCurrent--;
+        bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
+    }
+
+    //bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
     
     buffer[0] = signalIn;
     
     bufferSum += buffer[0];
+
+    
+
+    float out = bufferSum / (bufferSizeCurrent);
+
+
+
+
     
     //bufferSum = bufferSum;
+        //Divide by the actual current buffer size
     
-    float out = bufferSum / bufferSizeCurrent;
 
     //float out = *buffer.getSafePtr(0);
 //    DEBUG("buffer.getSafePtr(0)     %p", buffer.getSafePtr(0));
@@ -283,23 +296,21 @@ float MovingAverage::filter(float signalIn) {
 //    DEBUG("out                      %f", out);
         //I think we need someway to clear our garbage in the buffer?
     
-    buffer.rotate(1, bufferSizeCurrent);
+    buffer.rotate(1);
     
     
     return out;
 }
-void MovingAverage::setCurrentSize(unsigned int sizeIn) {
-    //DEBUG("sizeIn uint: %d", sizeIn);
-    bufferSizeCurrent = sizeIn;
+/*
+void MovingAverage::setCurrentSize(int desiredBufferSizeCurrentIn) {
+    
+    if(desiredBufferSizeCurrentIn > bufferSizeCurrent) {
+        bufferSizeCurrent++
+    }
 
-    /*
-    if(sizeIn < bufferSizeMax + 1) {
-        bufferSizeCurrent = sizeIn;
-    } else {
-        sizeIn = bufferSizeMax;
-    }*/
+
 }
-
+*/
 //MovingAverageFourPass
 
 //SmoothSin

@@ -19,6 +19,15 @@
 //					Paul   ^Teaching^					-+=
 //					Cornus ^Teaching^					-+=
 //									 					-+=
+//			  >`~ { THE CHERNO SERVER } ~`<				-+=
+//					Stonks   :Advice:					-+=
+//					Spirit   :Advice:					-+=
+//					Tdb      :Advice:					-+=
+//					DarkBlue :Advice:					-+=
+//					Lima     :Advice:					-+=
+//					Bazooka  :Advice:					-+=
+//					Homelike :Advice:					-+=
+//									 					-+=
 //				-',> MADE WITH LOVE! <,'-				-+=				
 //									 					-+=
 //									 					-+=
