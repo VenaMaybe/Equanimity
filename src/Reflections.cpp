@@ -42,7 +42,7 @@ struct Reflections : Module {
 	bool aGreater	= 0;
 
 		//Slew Limiter
-	MovingAverage sS{4096}; //4096, 2048
+	MovingAverageFourPass sS; //{4096}; //4096, 2048
 	unsigned int desiredBufferSizeCurrent = 0;
 
 	
@@ -100,7 +100,7 @@ struct Reflections : Module {
 
 	//sS.setCurrentSize(desiredBufferSizeCurrent);
 
-	outA = sS.filter(inA, desiredBufferSizeCurrent);
+	outA = sS.filter(inA);//, desiredBufferSizeCurrent);
 	
 
 

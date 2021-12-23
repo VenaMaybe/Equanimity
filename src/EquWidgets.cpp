@@ -271,48 +271,43 @@ float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurren
         bufferSizeCurrent--;
         bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
     }
-
-    //bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
     
     buffer[0] = signalIn;
     
     bufferSum += buffer[0];
 
-    
-
     float out = bufferSum / (bufferSizeCurrent);
-
-
-
-
-    
-    //bufferSum = bufferSum;
-        //Divide by the actual current buffer size
-    
-
-    //float out = *buffer.getSafePtr(0);
-//    DEBUG("buffer.getSafePtr(0)     %p", buffer.getSafePtr(0));
-//    DEBUG("buffer.getSafePtr(0)     %f", *buffer.getSafePtr(0));
-//    DEBUG("out                      %f", out);
-        //I think we need someway to clear our garbage in the buffer?
     
     buffer.rotate(1);
     
-    
     return out;
 }
-/*
-void MovingAverage::setCurrentSize(int desiredBufferSizeCurrentIn) {
+//MovingAverageFourPass
+float MovingAverageFourPass::filter(float signalIn) {//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn) {
+    float out = 0.f;
     
-    if(desiredBufferSizeCurrentIn > bufferSizeCurrent) {
-        bufferSizeCurrent++
+    /*
+    MovingAverage filter[4] = {4096, 4096, 4096, 4096};
+    
+    
+
+    filterOut[0] = filter[0].filter(signalIn);
+*/
+
+    filterOut[0] = filterA[0].filter(signalIn);
+
+    for(
+        int i = 1; i < 4; i++) {
+        filterOut[i] = filterA[i].filter(filterOut[i - 1]);
     }
 
+    out = filterOut[3];
 
+
+
+
+    return out;
 }
-*/
-//MovingAverageFourPass
-
 //SmoothSin
 
 

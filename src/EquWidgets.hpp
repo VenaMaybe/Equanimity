@@ -75,8 +75,6 @@ using namespace rack;
 			float& out = buffer[outLoc];
 			return out;
 		}
-			//just make a funciton that returns the locaiton of a 
-			//pointer to there in the data structure
 
 		//Returns a pointer to location in "imaginary" array 
 		float* getSafePtr(int loc) { //TODO YOU STILL HAVE TO MAKE IT SAFE!!
@@ -92,12 +90,13 @@ using namespace rack;
 			return outPtr;
 		}
 
-		void setUnused(int length) {
+		//Sets the from left over buffer to zero (Check why -1)
+		void setUnused(int bufferSizeCurrent) {
 			float fillWith = 0.f;
 			//from true beginning to imaginary beginning
 				std::fill(buffer.get(), getSafePtr(clockHand - 1), fillWith);
 			//from imaginary ending to true ending
-				std::fill(getSafePtr(clockHand + length), buffer.get() + bufferSize, fillWith);
+				std::fill(getSafePtr(clockHand + bufferSizeCurrent), buffer.get() + bufferSize, fillWith);
 
 			//Notes
 				//Rememeber that the imaginary beginning or ending can 
@@ -105,37 +104,7 @@ using namespace rack;
 
 		}
 
-		/*
-			//Returns pointer to beginning of host array
-		float* begin() {
-			float* outLoc;
-
-			outLoc = buffer.get();
-			DEBUG("buffer.get() 			%p", buffer.get());
-			DEBUG("outLoc 					%p", outLoc);
-			DEBUG("bufferSize 				%i", bufferSize);
-			DEBUG("sizeof(float) 			%i", sizeof(float));
-			DEBUG("sizeof(bufferSize) 		%i", sizeof(bufferSize));
-			DEBUG("sizeof(buffer) 			%i", sizeof(buffer));
-			DEBUG("outLoc + bufferSize		%p", outLoc + bufferSize);
-			DEBUG("outLoc + bufferSize		%p", outLoc + bufferSize);
-
-			return outLoc - (sizeof(float) * 4 );
-		}
-			//Returns pointer to ending of host array
-		float* end() {
-		//	int outLoc;
-		//	outLoc = bufferSize + clockHand;
-		//	if(outLoc > bufferSize) {
-		//		outLoc = outLoc - bufferSize;
-		//	}
-		//	outLoc -= 1;
-
-			return buffer.get() + bufferSize;
-		}
-		*/
-
-			//Rotates the "imaginary" overlayed array
+		//Rotates the "imaginary" overlayed array
 		void rotate(int amt = 1) {
 			clockHand += amt;
 			if(clockHand > bufferSize - 1) {
@@ -178,16 +147,21 @@ using namespace rack;
 		:	bufferSizeMax(dataSize) {}
 			//Function
 		float filter(float signalIn, unsigned int desiredBufferSizeCurrentIn);
+		float filter(float signalIn) {
+			return filter(signalIn, bufferSizeMax);
+		};
 			//maybe make unsigned later
 		//void setCurrentSize(int desiredBufferSizeCurrentIn);
-	};
+	};	
 		//A four pass moving average filter
 	struct MovingAverageFourPass {
 			//Data
+		MovingAverage filterA[4]{4098,4098,4098,4098};
+		float filterOut[4];
 			//Data buffers
 			//Constructor
 			//Function
-		float filter();
+		float filter(float signalIn);//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn);
 	};
 
 		//A single pass moving average filter weighed via a sin()
