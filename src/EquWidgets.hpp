@@ -156,12 +156,15 @@ using namespace rack;
 		//A four pass moving average filter
 	struct MovingAverageFourPass {
 			//Data
-		MovingAverage filterA[4]{4098,4098,4098,4098};
-		float filterOut[4];
+		const unsigned int bufferSizeMax;
 			//Data buffers
+		MovingAverage filterA[4]{bufferSizeMax,bufferSizeMax,bufferSizeMax,bufferSizeMax};
+		float filterOut[4];
 			//Constructor
+		MovingAverageFourPass(unsigned int dataSize)
+		:	bufferSizeMax(dataSize) {}
 			//Function
-		float filter(float signalIn);//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn);
+		float filter(float signalIn, unsigned int desiredBufferSizeCurrentIn);//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn);
 	};
 
 		//A single pass moving average filter weighed via a sin()

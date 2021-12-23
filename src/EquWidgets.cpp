@@ -283,7 +283,7 @@ float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurren
     return out;
 }
 //MovingAverageFourPass
-float MovingAverageFourPass::filter(float signalIn) {//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn) {
+float MovingAverageFourPass::filter(float signalIn, unsigned int desiredBufferSizeCurrentIn) {//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn) {
     float out = 0.f;
     
     /*
@@ -294,11 +294,11 @@ float MovingAverageFourPass::filter(float signalIn) {//, unsigned int passCount,
     filterOut[0] = filter[0].filter(signalIn);
 */
 
-    filterOut[0] = filterA[0].filter(signalIn);
+    filterOut[0] = filterA[0].filter(signalIn, desiredBufferSizeCurrentIn);
 
     for(
         int i = 1; i < 4; i++) {
-        filterOut[i] = filterA[i].filter(filterOut[i - 1]);
+        filterOut[i] = filterA[i].filter(filterOut[i - 1], desiredBufferSizeCurrentIn);
     }
 
     out = filterOut[3];
