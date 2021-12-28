@@ -254,7 +254,8 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
 //MovingAverage
 float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurrentIn) {
-    //DEBUG("--=-=-=-=-=-=-=-=-=-=--");
+    DEBUG("--=-=-=-=-=-=-=-=-=-=--");
+    
 
     if(desiredBufferSizeCurrentIn == 0) {
         desiredBufferSizeCurrentIn = 1;
@@ -262,21 +263,37 @@ float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurren
 
         //if it needs to grow we make it grow, if it doesn't we clean the sum
     if(desiredBufferSizeCurrentIn > bufferSizeCurrent) {
+        //bufferSizeCurrent = desiredBufferSizeCurrentIn;
         bufferSizeCurrent++;
     } else {
-        bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
+        bufferSum -= buffer[bufferSizeCurrent];
     }
-
+    DEBUG("bufferSum if1            ==  %f", bufferSum );
     if(desiredBufferSizeCurrentIn < bufferSizeCurrent) {
         bufferSizeCurrent--;
-        bufferSum -= buffer[bufferSizeCurrent/* - 1*/];
+        bufferSum -= buffer[bufferSizeCurrent];
+        float difference = (signalIn - buffer[bufferSizeCurrent]);
+        DEBUG("difference %f", difference);
     }
+    DEBUG("bufferSum if2            ==  %f", bufferSum );
+
+    
+    DEBUG("signalIn %f", signalIn);
+    
+    //bufferSum -= buffer[desiredBufferSizeCurrentIn];
     
     buffer[0] = signalIn;
     
     bufferSum += buffer[0];
+    DEBUG("bufferSizeCurrent %u", bufferSizeCurrent);
+    DEBUG("bufferSum + last buffer  ==  %f", bufferSum );
+    DEBUG("buffer[0] %f", buffer[0] );
+    DEBUG("buffer[1] %f", buffer[1] );
+    DEBUG("buffer[2] %f", buffer[2] );
 
     float out = bufferSum / (bufferSizeCurrent);
+
+    DEBUG("out %f", out );
     
     buffer.rotate(1);
     

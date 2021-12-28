@@ -43,6 +43,9 @@ struct Reflections : Module {
 
 		//Slew Limiter
 	MovingAverageFourPass sS{4096}; //4096, 2048
+	MovingAverageFourPass sS2{4096};
+	MovingAverage test{4096};
+	MovingAverage test2{4096};
 	unsigned int desiredBufferSizeCurrent = 0;
 
 	
@@ -88,7 +91,7 @@ struct Reflections : Module {
 	
 	//ifelse();
 
-	//DEBUG("Start  ===================");
+	DEBUG("Start  ===================");
 	//DEBUG("inA		%f", inA);
 	
 	//float rms;
@@ -99,9 +102,13 @@ struct Reflections : Module {
 	desiredBufferSizeCurrent = slewAmt * 4096;
 
 	//sS.setCurrentSize(desiredBufferSizeCurrent);
-
+	DEBUG("inA %f", inA);
+	//outA = test.filter(inA, desiredBufferSizeCurrent);
+	//outA = test2.filter(outA, desiredBufferSizeCurrent);
 	outA = sS.filter(inA, desiredBufferSizeCurrent);
-	
+	//outA = sS2.filter(outA, desiredBufferSizeCurrent);
+
+
 
 
 	//DEBUG("outA		%f", outA);
