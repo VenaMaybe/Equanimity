@@ -253,7 +253,7 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 //RingBuffer
 
 //MovingAverage
-float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurrentIn) {
+double MovingAverage::filter(double signalIn, unsigned int desiredBufferSizeCurrentIn) {
     //DEBUG("--=-=-=-=-=-=-=-=-=-=--");
     
 
@@ -272,7 +272,7 @@ float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurren
     if(desiredBufferSizeCurrentIn < bufferSizeCurrent) {
         bufferSizeCurrent--;
         bufferSum -= buffer[bufferSizeCurrent];
-        float difference = (signalIn - buffer[bufferSizeCurrent]);
+        double difference = (signalIn - buffer[bufferSizeCurrent]);
             //DEBUG("difference %f", difference);
     }
             //DEBUG("bufferSum if2            ==  %f", bufferSum );
@@ -291,7 +291,7 @@ float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurren
             //DEBUG("buffer[1] %f", buffer[1] );
             //DEBUG("buffer[2] %f", buffer[2] );
 
-    float out = bufferSum / (bufferSizeCurrent);
+    double out = bufferSum / (bufferSizeCurrent);
 
             //DEBUG("out %f", out );
     
@@ -300,8 +300,8 @@ float MovingAverage::filter(float signalIn, unsigned int desiredBufferSizeCurren
     return out;
 }
 //MovingAverageFourPass
-float MovingAverageFourPass::filter(float signalIn, unsigned int desiredBufferSizeCurrentIn) {//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn) {
-    float out = 0.f;
+double MovingAverageFourPass::filter(double signalIn, unsigned int desiredBufferSizeCurrentIn) {//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn) {
+    double out = 0.f;
     
     /*
     MovingAverage filter[4] = {4096, 4096, 4096, 4096};

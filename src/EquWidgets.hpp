@@ -137,7 +137,7 @@ using namespace rack;
 			//Data
 		const unsigned int bufferSizeMax;
 		unsigned int bufferSizeCurrent = bufferSizeMax;
-		float bufferSum = 0.f;
+		double bufferSum = 0.f;
 
 		unsigned int i = 2;
 			//Data buffers
@@ -146,8 +146,8 @@ using namespace rack;
 		MovingAverage(unsigned int dataSize)
 		:	bufferSizeMax(dataSize) {}
 			//Function
-		float filter(float signalIn, unsigned int desiredBufferSizeCurrentIn);
-		float filter(float signalIn) {
+		double filter(double signalIn, unsigned int desiredBufferSizeCurrentIn);
+		double filter(double signalIn) {
 			return filter(signalIn, bufferSizeMax);
 		};
 			//maybe make unsigned later
@@ -159,12 +159,12 @@ using namespace rack;
 		const unsigned int bufferSizeMax;
 			//Data buffers
 		MovingAverage filterA[4]{bufferSizeMax,bufferSizeMax,bufferSizeMax,bufferSizeMax};
-		float filterOut[4];
+		double filterOut[4];
 			//Constructor
 		MovingAverageFourPass(unsigned int dataSize)
 		:	bufferSizeMax(dataSize) {}
 			//Function
-		float filter(float signalIn, unsigned int desiredBufferSizeCurrentIn);//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn);
+		double filter(double signalIn, unsigned int desiredBufferSizeCurrentIn);//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn);
 	};
 
 		//A single pass moving average filter weighed via a sin()
