@@ -59,70 +59,72 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 };
 */
 
-// float SlewLimiter::SlopeSmoothDelay::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
-//     //can maybe use crossfade later?
-//         //new signal in doesn't change state as much, which the input has less effect
-//         //This means it'd take like 10 signal ins to equal the current value of signal in?
-//     state[0] = (rate * signalIn + (1 - rate) * state[0]);
-//     for(int i = 1; i < stateSize; i++) {
-//         state[i] = (rate * state[i - 1] + (1 - rate) * state[i]);
-//     }
+/*
+float SlopeSmoothDelay::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+    //can maybe use crossfade later?
+        //new signal in doesn't change state as much, which the input has less effect
+        //This means it'd take like 10 signal ins to equal the current value of signal in?
+    state[0] = (rate * signalIn + (1 - rate) * state[0]);
+    for(int i = 1; i < stateSize; i++) {
+        state[i] = (rate * state[i - 1] + (1 - rate) * state[i]);
+    }
 
-//     float newOut    = (signalIn + previousIn) / 2;
-//     float newOutTwo = (newOut + previousOut) / 2;
+    float newOut    = (signalIn + previousIn) / 2;
+    float newOutTwo = (newOut + previousOut) / 2;
 
-//     previousIn = signalIn;
-//     previousOut = newOutTwo;
+    previousIn = signalIn;
+    previousOut = newOutTwo;
 
-//     out = newOutTwo;
+    out = newOutTwo;
     
-//     return state[stateSize - 1];
-// }
+    return state[stateSize - 1];
+}
+*/
 
-// float SlewLimiter::SlopeSmoothStack::slopeSmooth(float& TESTOUT, float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
-// //pre shift it up and then shift it back down to get the pointy stuff
-// /*        //Keeping the moving Sum stable!
-//     bufferASum -= bufferA[bufferSize - 1];
-//         //Shifting buffer back by one "float"
-//     std::memmove(bufferA + 1, bufferA, (bufferSize - 1) * sizeof(float));
-//         //Insertion into first "waterfall"
-//     bufferA[0] = signalIn;
-//         //Creating what the filter kernal will effect, the moving Sum
-//     bufferASum += bufferA[0];
-//         //This is our convolution? Our filter kernal I believe!
-// float outA = bufferASum / bufferSize;*/
-// /*
-// std::memmove(bufferA + 1, bufferA, (bufferSize - 1) * sizeof(float));
-// bufferA[0] = signalIn;
+//float SlopeSmoothStack::slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
+//pre shift it up and then shift it back down to get the pointy stuff
+/*        //Keeping the moving Sum stable!
+    bufferASum -= bufferA[bufferSize - 1];
+        //Shifting buffer back by one "float"
+    std::memmove(bufferA + 1, bufferA, (bufferSize - 1) * sizeof(float));
+        //Insertion into first "waterfall"
+    bufferA[0] = signalIn;
+        //Creating what the filter kernal will effect, the moving Sum
+    bufferASum += bufferA[0];
+        //This is our convolution? Our filter kernal I believe!
+float outA = bufferASum / bufferSize;*/
+/*
+std::memmove(bufferA + 1, bufferA, (bufferSize - 1) * sizeof(float));
+bufferA[0] = signalIn;
 
-// float p = (bufferSize - 1)/2;
-// float q = p + 1;
-
-
-
-// float outA = bufferA[1] +  - ;
-// previousOutA = outA;
+float p = (bufferSize - 1)/2;
+float q = p + 1;
 
 
-//     bufferASum -= bT.data[49];
-//     bT.shift();
-//     bT.data[0] = signalIn;
-//     bufferASum += bT.data[0];
-// */
-// /*
-//     float outA = 0.f;
 
-//     bufferASum -= bA[bufferSize-1];
-//     bA[0] = signalIn;
-//     bufferASum += bA[0];
+float outA = bufferA[1] +  - ;
+previousOutA = outA;
 
-//     float filterFast = bufferASum / bufferSize;
 
-//     float weight = exp(-fallIn*pow(signalIn - outA, 2)) * exp(-fallIn*pow(outA - filterFast, 2));
+    bufferASum -= bT.data[49];
+    bT.shift();
+    bT.data[0] = signalIn;
+    bufferASum += bT.data[0];
+*/
+/*
+    float outA = 0.f;
 
-//     outA += riseIn * weight * (signalIn - outA) - 0.0001*outA;
-//     bA.rotate(1);
-// */
+    bufferASum -= bA[bufferSize-1];
+    bA[0] = signalIn;
+    bufferASum += bA[0];
+
+    float filterFast = bufferASum / bufferSize;
+
+    float weight = exp(-fallIn*pow(signalIn - outA, 2)) * exp(-fallIn*pow(outA - filterFast, 2));
+
+    outA += riseIn * weight * (signalIn - outA) - 0.0001*outA;
+    bA.rotate(1);
+*/
 
 
 // //exp();
@@ -136,7 +138,7 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 //                                                     //DEBUG("signalIn: %f", signalIn);
 
 // float mAFilter = 0.f;
-// float rMS = 0.f;
+
 
 // //TESTING FOR NAN
 // /*
@@ -148,7 +150,7 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
 // mAFilter = bufferSum / bufferSize;
 //                                                     //DEBUG("mAFilter: %f", mAFilter);
-
+// float rMS = 0.f;
 
 // rMSSum -= bRMS[bufferRMSSize - 1];
 // bRMS[0] = signalIn * signalIn;
@@ -187,7 +189,7 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 
 
 
-// TESTOUT = rMS;
+// //TESTOUT = rMS;
 
 // bA.rotate(1);
 // bRMS.rotate(1);
@@ -204,8 +206,6 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 //         //Creating what the filter kernal will effect, the moving Sum
 // //    bufferASum += bufferA[0];
 //         //This is our convolution? Our filter kernal I believe!
-
-
 
 // /*
 //         //Keeping the moving Sum stable!
@@ -242,8 +242,6 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 // float outD = bufferDSum / bufferSize;
 // */  
 
-
-
     
 //     out = outA;
 //     return out;
@@ -255,7 +253,6 @@ float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, fl
 //MovingAverage
 double MovingAverage::filter(double signalIn, unsigned int desiredBufferSizeCurrentIn) {
     //DEBUG("--=-=-=-=-=-=-=-=-=-=--");
-    
 
     if(desiredBufferSizeCurrentIn == 0) {
         desiredBufferSizeCurrentIn = 1;
@@ -273,27 +270,15 @@ double MovingAverage::filter(double signalIn, unsigned int desiredBufferSizeCurr
         bufferSizeCurrent--;
         bufferSum -= buffer[bufferSizeCurrent];
         double difference = (signalIn - buffer[bufferSizeCurrent]);
-            //DEBUG("difference %f", difference);
     }
-            //DEBUG("bufferSum if2            ==  %f", bufferSum );
-
-    
-            //DEBUG("signalIn %f", signalIn);
     
     //bufferSum -= buffer[desiredBufferSizeCurrentIn];
     
     buffer[0] = signalIn;
     
     bufferSum += buffer[0];
-            //DEBUG("bufferSizeCurrent %u", bufferSizeCurrent);
-            //DEBUG("bufferSum + last buffer  ==  %f", bufferSum );
-            //DEBUG("buffer[0] %f", buffer[0] );
-            //DEBUG("buffer[1] %f", buffer[1] );
-            //DEBUG("buffer[2] %f", buffer[2] );
 
     double out = bufferSum / (bufferSizeCurrent);
-
-            //DEBUG("out %f", out );
     
     buffer.rotate(1);
     
@@ -320,11 +305,33 @@ double MovingAverageFourPass::filter(double signalIn, unsigned int desiredBuffer
 
     out = filterOut[3];
 
-
-
-
     return out;
 }
 //SmoothSin
+double SmoothSin::filter(double signalIn, unsigned int desiredBufferSizeCurrentIn) {
+    double out = 0.f;
 
+    out = MAfilter.filter(signalIn, desiredBufferSizeCurrentIn);
+
+    //Sin weight implimentation!
+
+    double rMS = 0.f;
+    rMSSum -= bufferRMS[bufferSizeMax - 1];
+    bufferRMS[0] = signalIn * signalIn;
+    rMSSum += bufferRMS[0];
+
+    if(rMSSum > 0.0f) {
+    rMS = sqrt(rMSSum / bufferSizeMax);
+    } else {
+    rMS = 0.0001f;
+    }
+
+    double weight = 0.f;
+    weight = sin(out * M_PI * (1.f/(rMS * 2.f)));
+
+    out = weight * rMS;
+    bufferRMS.rotate(1);
+
+    return out;
+}
 

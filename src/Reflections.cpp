@@ -40,12 +40,20 @@ struct Reflections : Module {
 	float outB		= 0.f;
 		//Comparison
 	bool aGreater	= 0;
+	bool bGreater	= 0;
 
-		//Slew Limiter
-	MovingAverageFourPass sS{4096}; //4096, 2048
-	MovingAverageFourPass sS2{4096};
-	MovingAverage test{4096};
-	MovingAverage test2{4096};
+		//Filter (slew limiter)
+	MovingAverageFourPass MAFP{4096};
+	
+
+	// MovingAverageFourPass sS{4096}; //4096, 2048
+	// MovingAverageFourPass sS2{4096};
+	// MovingAverage test{4096};
+	// MovingAverage test2{4096};
+	// SmoothSin smoothSineTest{16392};
+
+	// SlopeSmoothStack oldSinTest{16392};
+
 	unsigned int desiredBufferSizeCurrent = 0;
 
 	
@@ -75,8 +83,8 @@ struct Reflections : Module {
 	latchOn	= params[LATCH_SWITCH_PARAM].getValue();
 	gateOn	= params[GATE_SWITCH_PARAM].getValue();
 		//Is a greater then b
-	//aGreater = inA > inB + latchAmt;
-
+	//aGreater = (inA > inB + latchAmt || inA < inB - latchAmt);
+	//bGreater = (inB > inA + latchAmt || inB < inA - latchAmt);
 
 	//outA = inA * (inA > inB) + inB * (inB < inA); cool idea
 
@@ -85,37 +93,37 @@ struct Reflections : Module {
 //	simd::crossfade();
 //	args.sampleTime;
 
-//	outA = inA * (aGreater) + inB * (!aGreater);
-//	outB = inA * (!aGreater) + inB * (aGreater);
+	//outA = inA * (aGreater) + inB * (!aGreater);
+	//outB = inA * (!bGreater) + inB * (bGreater);
 
-	
-	//ifelse();
+	outA = ((inA > inB + latchAmt/* || inA < inB - latchAmt*/) ? inA : inB);
+	outB = ((inB < inA - latchAmt/* || inB < inA - latchAmt*/) ? inB : inA);
 
-	//DEBUG("Start  ===================");
-	//DEBUG("inA		%f", inA);
-	
-	//float rms;
-	//outA = sS.slopeSmooth(rms,inA, args, slewAmt, latchAmt);
-	//outB = rms;
+	/*
+	if(inA > inB + latchAmt){
+		outA = inA;
+		outB = inB;
+	} else {
+		outA = inB;
+		outB = inA;
+	}
+	*/
+
+
+
+					//outputs[i].setVoltage((outA > outB + latchSize || outA < outB - latchSize) ? outA : outB);
+					//outputs[i+1].setVoltage((outB > outA + latchSize || outB < outA - latchSize) ? outB : outA);
+
+
 
 		//The size I want to be at
-	desiredBufferSizeCurrent = slewAmt * 4096;
+	//desiredBufferSizeCurrent = slewAmt * 4096;
+	//outA = MAFP.filter(inA, desiredBufferSizeCurrent);
 
-	//sS.setCurrentSize(desiredBufferSizeCurrent);
-	//DEBUG("inA %f", inA);
-	//outA = test.filter(inA, desiredBufferSizeCurrent);
-	//outA = test2.filter(outA, desiredBufferSizeCurrent);
-	outA = sS.filter(inA, desiredBufferSizeCurrent);
-	//outA = sS2.filter(outA, desiredBufferSizeCurrent);
+	
 
-
-
-
-	//DEBUG("outA		%f", outA);
-//	DEBUG("signalIn2    %f", outA);
-
-//				This should return the slew limited version of inA?
-	outB = desiredBufferSizeCurrent; //sL.slewLimiter(inA, riseCV, fallCV, args);
+		//This should return the slew limited version of inA?
+	//outB = desiredBufferSizeCurrent; //sL.slewLimiter(inA, riseCV, fallCV, args);
 
 
 

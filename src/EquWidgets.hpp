@@ -164,16 +164,22 @@ using namespace rack;
 		MovingAverageFourPass(unsigned int dataSize)
 		:	bufferSizeMax(dataSize) {}
 			//Function
-		double filter(double signalIn, unsigned int desiredBufferSizeCurrentIn);//, unsigned int passCount, unsigned int desiredBufferSizeCurrentIn);
+		double filter(double signalIn, unsigned int desiredBufferSizeCurrentIn);// add passCount
 	};
 
 		//A single pass moving average filter weighed via a sin()
 	struct SmoothSin {
 			//Data
+		const unsigned int bufferSizeMax;
+		double rMSSum = 0.f;
 			//Data buffers
+		MovingAverage MAfilter{bufferSizeMax};
+		RingBuffer bufferRMS{bufferSizeMax};
 			//Constructor
+		SmoothSin(unsigned int dataSize)
+		:	bufferSizeMax(dataSize) {}
 			//Function
-		float filter();
+		double filter(double signalIn, unsigned int desiredBufferSizeCurrentIn);
 	};
 
 //TESTING - ACCESS:
@@ -237,11 +243,11 @@ using namespace rack;
 	}
 	*/
 
-/*
-struct SlewLimiter {
+
+	/*
 	struct SlopeSmoothDelay {
 			//Function
-		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+		//float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 			//Data
 		float out = 0.f;					//Output!
 		float previousIn = 0.f;
@@ -251,7 +257,9 @@ struct SlewLimiter {
 		float rate = 0.01;					//Slice of input!
 		float state[stateSize] = {0};
 	};
+	*/
 	//The constructor determins the max size of the potential Slew! 
+	/*
 	struct SlopeSmoothStack {
 			//Data
 		float out = 0.f;
@@ -266,12 +274,6 @@ struct SlewLimiter {
 		SlopeSmoothStack(unsigned int dataSize)
 		:	bufferSize(dataSize) {}
 			//Function
-		float slopeSmooth(float& TESTOUT, float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
+		float slopeSmooth(float signalIn, const Module::ProcessArgs& args, float riseIn = 0.f, float fallIn = 0.f);
 	};
-
-	struct SlopeSmoothStack {
-
-	};
-};
-
-*/
+	*/
