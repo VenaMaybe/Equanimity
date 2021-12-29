@@ -91,7 +91,7 @@ struct Reflections : Module {
 	
 	//ifelse();
 
-	DEBUG("Start  ===================");
+	//DEBUG("Start  ===================");
 	//DEBUG("inA		%f", inA);
 	
 	//float rms;
@@ -102,7 +102,7 @@ struct Reflections : Module {
 	desiredBufferSizeCurrent = slewAmt * 4096;
 
 	//sS.setCurrentSize(desiredBufferSizeCurrent);
-	DEBUG("inA %f", inA);
+	//DEBUG("inA %f", inA);
 	//outA = test.filter(inA, desiredBufferSizeCurrent);
 	//outA = test2.filter(outA, desiredBufferSizeCurrent);
 	outA = sS.filter(inA, desiredBufferSizeCurrent);
