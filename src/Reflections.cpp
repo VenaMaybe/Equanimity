@@ -93,11 +93,39 @@ struct Reflections : Module {
 //	simd::crossfade();
 //	args.sampleTime;
 
+
+	/*
+	if(inA < inB) {
+		std::swap(inA, inB);
+	}
+
+	if(isNear(inA, inB, latchAmt)) {
+		std::swap(inA, inB);
+	}
+	*/
+
+	
+	
+	
+
+	outA = inA;
+	outB = inB;
+
+	outA = ((outA > outB + latchAmt || outA < outB - latchAmt) ? outA : outB);
+	outB = ((outB > outA + latchAmt || outB < outA - latchAmt) ? outB : outA);
+
+
+	//isNear()
+
+
+
+
+
 	//outA = inA * (aGreater) + inB * (!aGreater);
 	//outB = inA * (!bGreater) + inB * (bGreater);
 
-	outA = ((inA > inB + latchAmt/* || inA < inB - latchAmt*/) ? inA : inB);
-	outB = ((inB < inA - latchAmt/* || inB < inA - latchAmt*/) ? inB : inA);
+	//outA = ((inA > inB + latchAmt/* || inA < inB - latchAmt*/) ? inA : inB);
+	//outB = ((inB < inA - latchAmt/* || inB < inA - latchAmt*/) ? inB : inA);
 
 	/*
 	if(inA > inB + latchAmt){
@@ -108,8 +136,6 @@ struct Reflections : Module {
 		outB = inA;
 	}
 	*/
-
-
 
 					//outputs[i].setVoltage((outA > outB + latchSize || outA < outB - latchSize) ? outA : outB);
 					//outputs[i+1].setVoltage((outB > outA + latchSize || outB < outA - latchSize) ? outB : outA);
