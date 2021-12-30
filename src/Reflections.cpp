@@ -31,6 +31,8 @@ struct Reflections : Module {
 		//Sliders
 	float slewAmt	= 0.f;
 	float latchAmt	= 0.f;
+	float slewAmtIn	= 0.f;
+	float latchAmtIn= 0.f;
 		//Switches
 	bool slewOn 	= 0;
 	bool latchOn 	= 0;
@@ -71,7 +73,7 @@ struct Reflections : Module {
 		configParam(GATE_SWITCH_PARAM, 0.f, 1.f, 0.f, "Gate");
 	}
 
-	//TODO cv input and panel
+	//TODO cv input and panel and switch to v2 for lights
 
 	void process(const ProcessArgs& args) override 
 	{
@@ -79,12 +81,29 @@ struct Reflections : Module {
 	inA 		= inputs[A_INPUT].getVoltage();
 	inB 		= inputs[B_INPUT].getVoltage();
 		//Sliders
-	slewAmt		= params[SLEW_SLIDER_PARAM].getValue();
-	latchAmt	= params[LATCH_SLIDER_PARAM].getValue();
+	slewAmtIn	= params[SLEW_SLIDER_PARAM].getValue();
+	latchAmtIn	= params[LATCH_SLIDER_PARAM].getValue();
 		//Switches
 	slewOn	= params[SLEW_SWITCH_PARAM].getValue();
 	latchOn	= params[LATCH_SWITCH_PARAM].getValue();
 	gateOn	= params[GATE_SWITCH_PARAM].getValue();
+		//CV and Atenuverters
+	slewAmt = slewAmtIn;
+	if(inputs[SLEW_CV_INPUT].isConnected()) {
+		slewAmt = inputs[SLEW_CV_INPUT].getVoltage();
+		//slewAmt *= slewAmtIn / 10.0;
+	}
+	
+	latchAmt = latchAmtIn;
+	if(inputs[LATCH_SLIDER_PARAM].isConnected()) {
+		latchAmt = inputs[LATCH_SLIDER_PARAM].getVoltage();
+		//latchAmt *= latchAmtIn / 10.0;
+	}
+
+
+
+
+
 
 //	ifelse();
 //	simd::sgn();
@@ -121,42 +140,6 @@ struct Reflections : Module {
 	//OUTPUT
 	outA = inA;
 	outB = inB;
-
-
-
-	//outA = inA * (aGreater) + inB * (!aGreater);
-	//outB = inA * (!bGreater) + inB * (bGreater);
-
-	//outA = ((inA > inB + latchAmt/* || inA < inB - latchAmt*/) ? inA : inB);
-	//outB = ((inB < inA - latchAmt/* || inB < inA - latchAmt*/) ? inB : inA);
-
-	/*
-	if(inA > inB + latchAmt){
-		outA = inA;
-		outB = inB;
-	} else {
-		outA = inB;
-		outB = inA;
-	}
-	*/
-
-					//outputs[i].setVoltage((outA > outB + latchSize || outA < outB - latchSize) ? outA : outB);
-					//outputs[i+1].setVoltage((outB > outA + latchSize || outB < outA - latchSize) ? outB : outA);
-
-
-
-		//The size I want to be at
-	
-	//outA = MAFP.filter(inA, desiredBufferSizeCurrent);
-
-	
-
-		//This should return the slew limited version of inA?
-	//outB = desiredBufferSizeCurrent; //sL.slewLimiter(inA, riseCV, fallCV, args);
-
-
-
-		//Outputs
 	outputs[GREATER_OUTPUT].setVoltage(outA);
 	outputs[LESSER_OUTPUT].setVoltage(outB);
 
