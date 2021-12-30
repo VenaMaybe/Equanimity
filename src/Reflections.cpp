@@ -43,8 +43,11 @@ struct Reflections : Module {
 	bool bGreater	= 0;
 
 		//Filter (slew limiter)
-	MovingAverageFourPass MAFP{4096};
+	MovingAverageFourPass inA_MAFP{4096};
+	MovingAverageFourPass inB_MAFP{4096};
+	unsigned int desiredBufferSizeCurrent = 0;
 	
+
 
 	// MovingAverageFourPass sS{4096}; //4096, 2048
 	// MovingAverageFourPass sS2{4096};
@@ -54,21 +57,21 @@ struct Reflections : Module {
 
 	// SlopeSmoothStack oldSinTest{16392};
 
-	unsigned int desiredBufferSizeCurrent = 0;
+	
 
 	
 
 
 	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-		configParam(SLEW_SLIDER_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(LATCH_SLIDER_PARAM, -10.f, 10.f, 0.f, "");
-		configParam(SLEW_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(LATCH_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
-		configParam(GATE_SWITCH_PARAM, 0.f, 1.f, 0.f, "");
+		configParam(SLEW_SLIDER_PARAM, 0.f, 1.f, 0.f, "Slew Ammount");
+		configParam(LATCH_SLIDER_PARAM, -10.f, 10.f, 0.f, "Latch Ammount");
+		configParam(SLEW_SWITCH_PARAM, 0.f, 1.f, 0.f, "Slew");
+		configParam(LATCH_SWITCH_PARAM, 0.f, 1.f, 0.f, "Latch");
+		configParam(GATE_SWITCH_PARAM, 0.f, 1.f, 0.f, "Gate");
 	}
 
-	
+	//TODO cv input and panel
 
 	void process(const ProcessArgs& args) override 
 	{
@@ -82,42 +85,42 @@ struct Reflections : Module {
 	slewOn	= params[SLEW_SWITCH_PARAM].getValue();
 	latchOn	= params[LATCH_SWITCH_PARAM].getValue();
 	gateOn	= params[GATE_SWITCH_PARAM].getValue();
-		//Is a greater then b
-	//aGreater = (inA > inB + latchAmt || inA < inB - latchAmt);
-	//bGreater = (inB > inA + latchAmt || inB < inA - latchAmt);
-
-	//outA = inA * (inA > inB) + inB * (inB < inA); cool idea
 
 //	ifelse();
 //	simd::sgn();
 //	simd::crossfade();
 //	args.sampleTime;
 
-
-	/*
-	if(inA < inB) {
+	bool gate = false;
+	//LATCH OFF
+	if(inA < inB + latchAmt && !latchOn) {
 		std::swap(inA, inB);
+		gate = true;
+	}
+	
+
+	//LATCH ON take abs of
+	if(isNear(inA, inB, abs(latchAmt)) && latchOn) {
+		std::swap(inA, inB);
+		gate = true;
 	}
 
-	if(isNear(inA, inB, latchAmt)) {
-		std::swap(inA, inB);
+	//GATE ON
+	if(gateOn) {
+		inA = gate * 10.f;
+		inB = !gate * 10.f;
 	}
-	*/
+	
+	//SLEW ON
+	if(slewOn) {
+		desiredBufferSizeCurrent = slewAmt * 4096;
+		inA = inA_MAFP.filter(inA, desiredBufferSizeCurrent);
+		inB = inB_MAFP.filter(inB, desiredBufferSizeCurrent);
+	}
 
-	
-	
-	
-
+	//OUTPUT
 	outA = inA;
 	outB = inB;
-
-	outA = ((outA > outB + latchAmt || outA < outB - latchAmt) ? outA : outB);
-	outB = ((outB > outA + latchAmt || outB < outA - latchAmt) ? outB : outA);
-
-
-	//isNear()
-
-
 
 
 
@@ -143,7 +146,7 @@ struct Reflections : Module {
 
 
 		//The size I want to be at
-	//desiredBufferSizeCurrent = slewAmt * 4096;
+	
 	//outA = MAFP.filter(inA, desiredBufferSizeCurrent);
 
 	
@@ -258,9 +261,9 @@ struct ReflectionsWidget : ModuleWidget {
 		addParam(createParam<Dawn_Slider_One>(mm2px(Vec(10.752, 17.284)), module, Reflections::SLEW_SLIDER_PARAM));
 		addParam(createParam<Dawn_Slider_One>(mm2px(Vec(14.712, 17.284)), module, Reflections::LATCH_SLIDER_PARAM));
 
-		addParam(createParam<Orange_Switch>(mm2px(Vec(7.897, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(7.897, 62.892)), module, Reflections::GATE_SWITCH_PARAM));
 		addParam(createParam<Orange_Switch>(mm2px(Vec(3.372, 62.892)), module, Reflections::LATCH_SWITCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(12.449, 62.892)), module, Reflections::GATE_SWITCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(12.449, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
 
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
