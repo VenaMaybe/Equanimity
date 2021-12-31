@@ -88,43 +88,36 @@ struct Reflections : Module {
 	latchOn	= params[LATCH_SWITCH_PARAM].getValue();
 	gateOn	= params[GATE_SWITCH_PARAM].getValue();
 		//CV and Atenuverters
-	slewAmt = slewAmtIn;
+	slewAmt =  slewAmtIn;
 	if(inputs[SLEW_CV_INPUT].isConnected()) {
-		slewAmt = inputs[SLEW_CV_INPUT].getVoltage();
-		//slewAmt *= slewAmtIn / 10.0;
+		slewAmt = abs(inputs[SLEW_CV_INPUT].getVoltage());
+		slewAmt *= slewAmtIn;
+		slewAmt = rescale(slewAmt, 0, 10, 0, 1);
 	}
-	
 	latchAmt = latchAmtIn;
-	if(inputs[LATCH_SLIDER_PARAM].isConnected()) {
-		latchAmt = inputs[LATCH_SLIDER_PARAM].getVoltage();
-		//latchAmt *= latchAmtIn / 10.0;
+	if(inputs[LATCH_CV_INPUT].isConnected()) {
+		latchAmt = inputs[LATCH_CV_INPUT].getVoltage();
+		latchAmt *= latchAmtIn / 10;
 	}
-
-
-
-
-
-
-//	ifelse();
-//	simd::sgn();
-//	simd::crossfade();
-//	args.sampleTime;
-
+	//Gate functionality!
 	bool gate = false;
 	//LATCH OFF
 	if(inA < inB + latchAmt && !latchOn) {
 		std::swap(inA, inB);
-		gate = true;
+		//gate = true;
 	}
-	
 
 	//LATCH ON take abs of
 	if(isNear(inA, inB, abs(latchAmt)) && latchOn) {
 		std::swap(inA, inB);
-		gate = true;
+		//gate = true;
 	}
 
 	//GATE ON
+	if(inA > inB) {
+		gate = true;
+	}
+
 	if(gateOn) {
 		inA = gate * 10.f;
 		inB = !gate * 10.f;
@@ -142,6 +135,14 @@ struct Reflections : Module {
 	outB = inB;
 	outputs[GREATER_OUTPUT].setVoltage(outA);
 	outputs[LESSER_OUTPUT].setVoltage(outB);
+
+
+
+//	ifelse();
+//	simd::sgn();
+//	simd::crossfade();
+//	args.sampleTime;
+
 
 //	outputs[OUTPUT_A + (i * 2)].setVoltage(high * (high > low) + low * (high < low));
 //	outputs[OUTPUT_B + (i * 2)].setVoltage(high * (low > high) + low * (low < high));
