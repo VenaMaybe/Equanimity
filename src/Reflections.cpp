@@ -28,6 +28,10 @@ struct Reflections : Module {
 		//Inputs
 	float inA 		= 0.f;
 	float inB 		= 0.f;
+
+	float* inAp = &inA;
+	float* inBp = &inB;
+
 		//Sliders
 	float slewAmt	= 0.f;
 	float latchAmt	= 0.f;
@@ -100,25 +104,30 @@ struct Reflections : Module {
 		latchAmt *= latchAmtIn / 10;
 	}
 	//Gate functionality!
-	bool gate = false;
+	bool gate = true;
+
 	//LATCH OFF
 	if(inA < inB + latchAmt && !latchOn) {
 		std::swap(inA, inB);
-		//gate = true;
+		gate = false;
 	}
 
 	//LATCH ON take abs of
-	if(isNear(inA, inB, abs(latchAmt)) && latchOn) {
-		std::swap(inA, inB);
-		//gate = true;
+	if(latchOn) {
+		if(isNear(inA, inB, abs(latchAmt)) && latchOn) {
+			std::swap(inA, inB);
+		}
+		gate = false;
+		if(inA >= inB) {
+			gate = true;
+		}
 	}
 
 	//GATE ON
-	if(inA > inB) {
-		gate = true;
-	}
-
 	if(gateOn) {
+		//if(inA >= inB) {
+		//gate = true;
+		//}
 		inA = gate * 10.f;
 		inB = !gate * 10.f;
 	}
