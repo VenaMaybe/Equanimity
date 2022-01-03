@@ -94,18 +94,18 @@ struct ModuleWidgetEqu2 : ModuleWidget {
 	box.size.x = std::round(panel->box.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
 	}
 };
-/*
+
 struct ModuleWidgetEqu : ModuleWidget {
-	void SvgPanel::setBackground(std::shared_ptr<window::Svg> svg) {
+	void setBackground(std::shared_ptr<window::Svg> svg) {
 		this->svg = svg;
 
-		sw->setSvg(svg);
+		ModuleWidgetEqu::SvgPanel::sw->setSvg(svg);
 		fb->box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
 		panelBorder->box.size = fb->box.size;
 		box.size = fb->box.size;
 	}
 };
-*/
+
 
 
 
