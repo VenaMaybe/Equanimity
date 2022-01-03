@@ -79,6 +79,8 @@ struct Reflections : Module {
 
 	//TODO cv input and panel and switch to v2 for lights
 
+	float temp = 0.f;
+
 	void process(const ProcessArgs& args) override 
 	{
 		//Inputs
@@ -139,13 +141,15 @@ struct Reflections : Module {
 		inB = inB_MAFP.filter(inB, desiredBufferSizeCurrent);
 	}
 
+	
+
 	//OUTPUT
 	outA = inA;
 	outB = inB;
 	outputs[GREATER_OUTPUT].setVoltage(outA);
 	outputs[LESSER_OUTPUT].setVoltage(outB);
 
-
+	
 
 //	ifelse();
 //	simd::sgn();
@@ -241,10 +245,22 @@ struct Reflections : Module {
 };
 
 
-struct ReflectionsWidget : ModuleWidget {
+
+//Dawn_Slider_One* dawn_slider_one = createParam<Dawn_Slider_One>(mm2px(Vec(6.944 - 1.65, 47.731)), module, Lilies::RATIO_PARAM);
+//		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->getParamQuantity());
+
+struct ReflectionsWidget : ModuleWidgetEqu {
+	//PanelBorderNoOutline* noBorder;
+
 	ReflectionsWidget(Reflections* module) {
-		setModule(module);
-		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/reflections_dawn.svg")));
+		//module = reinterpret_cast<PanelBorderNoOutline*>(module->set());
+
+		ModuleWidgetEqu::setModule(module);
+		ModuleWidgetEqu::setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/reflections_dawn.svg")));
+		
+		//PanelBorderNoOutline* pb = new PanelBorderNoOutline;
+		//pb->box.size = mm2px(Vec(0, 55.06));
+		//addChild(pb);
 
 	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
 	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
@@ -260,8 +276,8 @@ struct ReflectionsWidget : ModuleWidget {
 
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
-		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 78.208)), module, Reflections::SLEW_CV_INPUT));
-		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 93.763)), module, Reflections::LATCH_CV_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 78.208)), module, Reflections::LATCH_CV_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 93.763)), module, Reflections::SLEW_CV_INPUT));
 
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 30.05)), module, Reflections::GREATER_OUTPUT));
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 41.264)), module, Reflections::LESSER_OUTPUT));

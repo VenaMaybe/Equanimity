@@ -48,6 +48,92 @@ using namespace rack;
 		}
 	};
 
+	//=-=-=-=-=-=-=-=-=-=-=-=-----
+
+	/*struct ModuleWidgetEqu : ModuleWidget {
+	void setBackground(std::shared_ptr<Svg> svg);
+	void setPanel(widget::Widget* panel);
+	void setPanel(std::shared_ptr<Svg> svg);
+	//widget::Widget* panel = NULL;
+};*/
+
+struct ModuleWidgetEqu2 : ModuleWidget {
+	void setBackground(std::shared_ptr<Svg> svg) {
+	widget::SvgWidget* sw = new widget::SvgWidget;
+	sw->setSvg(svg);
+	addChild(sw);
+
+	// Set size
+	box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
+
+	DEBUG("mine was used");
+
+	//PanelBorder* pb = new PanelBorder;
+	//pb->box.size = box.size;
+	//addChild(pb);
+	}
+
+	//void setPanel(widget::Widget* panel);
+	widget::Widget* panel = NULL;
+	void setPanel(std::shared_ptr<Svg> svg) {
+		DEBUG("mine was used");
+	// Remove existing panel
+	if (panel) {
+		removeChild(panel);
+		delete panel;
+		panel = NULL;
+	}
+
+	// Create SvgPanel
+	ModuleWidgetEqu2* svgPanel = new ModuleWidgetEqu2;
+	svgPanel->setBackground(svg);
+	panel = svgPanel;
+	addChildBottom(panel);
+
+	// Set ModuleWidget size based on panel
+	box.size.x = std::round(panel->box.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
+	}
+};
+/*
+struct ModuleWidgetEqu : ModuleWidget {
+	void SvgPanel::setBackground(std::shared_ptr<window::Svg> svg) {
+		this->svg = svg;
+
+		sw->setSvg(svg);
+		fb->box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
+		panelBorder->box.size = fb->box.size;
+		box.size = fb->box.size;
+	}
+};
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //DATA STRCTURES:
 		//Ring buffer
 	struct RingBuffer {

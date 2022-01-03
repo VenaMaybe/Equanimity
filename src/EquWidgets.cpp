@@ -248,6 +248,63 @@ previousOutA = outA;
 
 // }
 
+
+
+/*
+
+//ModuleWidgetEqu overriding rack ModuleWidget
+
+	void ModuleWidgetEqu::setBackground(std::shared_ptr<Svg> svg) {
+	widget::SvgWidget* sw = new widget::SvgWidget;
+	sw->setSvg(svg);
+	addChild(sw);
+
+	// Set size
+	box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
+
+	DEBUG("mine was used");
+
+	//PanelBorder* pb = new PanelBorder;
+	//pb->box.size = box.size;
+	//addChild(pb);
+	}
+
+	//void setPanel(widget::Widget* panel);
+	void ModuleWidgetEqu::setPanel(widget::Widget* panel) {
+	// Remove existing panel
+	if (internal->panel) {
+		removeChild(internal->panel);
+		delete internal->panel;
+		internal->panel = NULL;
+	}
+
+	if (panel) {
+		addChildBottom(panel);
+		internal->panel = panel;
+		box.size.x = std::round(panel->box.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
+		// If width is zero, set it to 12HP for sanity
+		if (box.size.x == 0.0)
+			box.size.x = 12 * RACK_GRID_WIDTH;
+	}
+}
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //RingBuffer
 
 //MovingAverage

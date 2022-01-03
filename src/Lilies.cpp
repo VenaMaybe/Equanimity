@@ -182,8 +182,7 @@ struct Lilies : Module {
 			ratioParam = ratioParamIn;
 		}
 
-		
-
+	
 
 
 		//processing input with proper schmitt trigger
@@ -436,7 +435,7 @@ struct LiliesWidget : ModuleWidget {
 //		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		Dawn_Slider_One* dawn_slider_one = createParam<Dawn_Slider_One>(mm2px(Vec(6.944 - 1.65, 47.731)), module, Lilies::RATIO_PARAM);
-		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->paramQuantity);
+		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->getParamQuantity());
 
 		addParam(dawn_slider_one);
 
