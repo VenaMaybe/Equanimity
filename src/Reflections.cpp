@@ -256,7 +256,7 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		//module = reinterpret_cast<PanelBorderNoOutline*>(module->set());
 
 		ModuleWidgetEqu::setModule(module);
-		ModuleWidgetEqu::setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/reflections_dawn.svg")));
+		ModuleWidgetEqu::setPanelNoBg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/reflections_dawn.svg")));
 		
 		//PanelBorderNoOutline* pb = new PanelBorderNoOutline;
 		//pb->box.size = mm2px(Vec(0, 55.06));

@@ -43,8 +43,6 @@ struct Reflect : Module
 			outputs[OUTPUT_A + (i * 2)].setVoltage(high * (high > low) + low * (high < low));
 			outputs[OUTPUT_B + (i * 2)].setVoltage(high * (low > high) + low * (low < high));
 		}
-
-
 	}
 };
 

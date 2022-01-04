@@ -1,6 +1,8 @@
 #include "Equanimity.hpp"
 
 /* Manual
+	//TODO FIX BUG BY RESETTING ON CONSTRUCTION
+
 
 	Lilies is a module that takese a clock input and outputs
 	multiplications and devisions of that clock. Those multiplications
@@ -148,6 +150,9 @@ struct Lilies : Module {
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		//DEBUG("module Constructed");
+
+		//Trying to debug by resetting on construction
+
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -167,10 +172,11 @@ struct Lilies : Module {
 		//Canyon's name for module
 		//Gremlin module
 
-		//Range stuff
+		//Range stuff COULD PROBABLY OPTIMIZE BY ONLY CHECKING ONCE
 		if(!hasLoaded) {
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
+			resetTFF = true; //LATEST TEST!!!
 		}
 		//Input
 		ratioParamIn = params[RATIO_PARAM].getValue();
@@ -415,7 +421,7 @@ struct Lilies : Module {
 
 };
 
-struct LiliesWidget : ModuleWidget {
+struct LiliesWidget : ModuleWidgetEqu {
 	MultiRangeParam* multiRangeParam;
 	std::shared_ptr<Svg> dawn_svg;
 	std::shared_ptr<Svg> sketch_svg;
@@ -426,7 +432,7 @@ struct LiliesWidget : ModuleWidget {
 		dawn_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_dawn.svg"));
 		sketch_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_sketch.svg"));
 //		int panelTheme = isDark(module ? (&(((Lilies*)module)->panelTheme)) : NULL) ? 1 : 0;// need this here since step() not called for module browser
-		setPanel(dawn_svg);
+		setPanelNoBg(dawn_svg);
 
 
 //		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
