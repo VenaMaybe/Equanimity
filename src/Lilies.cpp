@@ -176,7 +176,8 @@ struct Lilies : Module {
 		if(!hasLoaded) {
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
-			resetTFF = true; //LATEST TEST!!!
+			//resetTFF = true; //LATEST TEST!!!
+			DEBUG("has loaded");
 		}
 		//Input
 		ratioParamIn = params[RATIO_PARAM].getValue();
