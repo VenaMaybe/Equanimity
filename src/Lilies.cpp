@@ -1,8 +1,6 @@
 #include "Equanimity.hpp"
 
 /* Manual
-	//TODO FIX BUG BY RESETTING ON CONSTRUCTION
-
 
 	Lilies is a module that takese a clock input and outputs
 	multiplications and devisions of that clock. Those multiplications
@@ -150,9 +148,6 @@ struct Lilies : Module {
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		//DEBUG("module Constructed");
-
-		//Trying to debug by resetting on construction
-
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -172,12 +167,10 @@ struct Lilies : Module {
 		//Canyon's name for module
 		//Gremlin module
 
-		//Range stuff COULD PROBABLY OPTIMIZE BY ONLY CHECKING ONCE
+		//Range stuff
 		if(!hasLoaded) {
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
-			//resetTFF = true; //LATEST TEST!!!
-			DEBUG("has loaded");
 		}
 		//Input
 		ratioParamIn = params[RATIO_PARAM].getValue();
