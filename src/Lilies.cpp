@@ -241,16 +241,7 @@ struct Lilies : Module {
 		}
 		//#endregion
 
-		if(DEBUG){
-			DEBUG("ratioStill     : %s", ratioStill ? "ratioStill TRUE" : "ratioStill FALSE");
-			//DEBUG("risingEdge     : %s", risingEdge ? "reseteTRUE" : "resetFALSE");
-		}
-
-		outputs[DEBUG_OUT].setChannels(2);
-
-		outputs[DEBUG_OUT].setVoltage(ratioStill, 0);
-		outputs[DEBUG_OUT].setVoltage(resetTrigger, 1);
-
+		
 	
 		
 
@@ -262,35 +253,54 @@ struct Lilies : Module {
 
 
 		if(risingEdge) {
-			clockCycle = phaseClock;
-			phaseClock -= clockCyclePast;
-
-			if(freqReset  &&  !isNear(clockCycle, clockCyclePast, 3 * args.sampleTime))
-			{
-				resetTrigger = true;
-			}
 			clockCyclePast = clockCycle;
+			clockCycle = phaseClock;
+			phaseClock = 0;//-= clockCyclePast;
+
+			//if(freqReset  &&  !isNear(clockCycle, clockCyclePast, 3 * args.sampleTime))
+			//{
+			//	resetTrigger = true;
+			//}
+
+			
 
 		}
 		phaseClock += args.sampleTime;
 
-		//Ratio stuff
+		
 
-		ratioBase = ratioParam;
+
+
+		if(DEBUG){
+			//DEBUG("ratioStill     : %s", ratioStill ? "ratioStill TRUE" : "ratioStill FALSE");
+			//DEBUG("risingEdge     : %s", risingEdge ? "reseteTRUE" : "resetFALSE");
+			DEBUG("clockCycle %f", clockCycle);
+		}
+
+		outputs[DEBUG_OUT].setChannels(3);
+
+		outputs[DEBUG_OUT].setVoltage(clockCycle, 0);
+		outputs[DEBUG_OUT].setVoltage(phaseClock, 1);
+		outputs[DEBUG_OUT].setVoltage(risingEdge, 2);
+
+
+
+
+
+
+		//Ratio stuff
+		//ratioBase = ratioParam;
 		//ratioBase = 1.0;
 
 
 
 
-
-
-
-
-
+		
 
 		//--------------------------------
 		// FOR - EACH OUTPUT (FIVE)
 		//--------------------------------
+		
 		for(int i = 0, ratioIn = 2.0; i < 5; i++, ratioIn--)
 		{
 			//#region [rgba(0,255,200,0.05)]
@@ -303,13 +313,13 @@ struct Lilies : Module {
 				expoTFFforChange = true;
 				//ratioParamBuffer[1] =  ratioParam + 1.0;
 
-				levelMult[i] = divCurve(ratioIn, ratioOut, ratioBase);
+				levelMult[i] = divCurve(ratioIn, ratioOut, ratioParam);
 				//Set multiplicaiton level
 				//levelMult[i] = ratioOut;
 			}
 			else
 			{
-				ratioOut = std::pow(2, (ratioBase * ratioIn));
+				ratioOut = std::pow(2, (ratioParam * ratioIn));
 
 				//Set multiplicaiton level
 				levelMult[i] = ratioOut;
