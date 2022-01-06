@@ -32,17 +32,7 @@
 
 	Tips
 		Remember if resetting too soon you do not allow for the divisions to occure! :)
-
-
-
-
 */
-
-	//DELETE LATER!!!
-bool near(double lhs, double rhs, double allowedDifference) {
-	double delta = lhs - rhs;
-	return delta < allowedDifference && delta > -allowedDifference;
-}
 
 double divCurve(double ratioIn, double ratioOut, double ratioBase) {
 	//Brancheless x+/1 and 1/x+ depending on input!
@@ -54,19 +44,13 @@ double divCurve(double ratioIn, double ratioOut, double ratioBase) {
 	return ratioOut;
 };
 
-inline double fastPow(double a, double b) {
-  union {
-    double d;
-    int x[2];
-  } u = { a };
-  u.x[1] = (int)(b * (u.x[1] - 1072632447) + 1072632447);
-  u.x[0] = 0;
-  return u.d;
-}
-
+//--------------------------------
+//            MODULE
+//--------------------------------
 struct Lilies : Module {
 	enum ParamIds {
 		RATIO_PARAM,
+		DEBUG_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
@@ -82,98 +66,126 @@ struct Lilies : Module {
 		THREE_OUTPUT,
 		FOUR_OUTPUT,
 		FIVE_OUTPUT,
-		out_test,
+		DEBUG_OUT,
 		NUM_OUTPUTS
 	};
 	enum LightIds {
 		NUM_LIGHTS
 	};
-//--- Variables ----//
-	dsp::SchmittTrigger clockInput;
-	//Measuring incoming clock length
-	double phaseClock = 0.0;
-	double clockCycle = 0.0; //Usecase for this should be measured by cnt of rising edges
-	//Pulse end calculations
-		//pulseE is the falling edge
-	bool  pulseE;
-	bool  fallE;
-	bool  previousClockState;
-	//Calculating the multiplications
-	double levelMult[5];
-		//phase time for mult, clock cycle / level mult;
-	double phaseTimeFM[5];
-	double phaseMult[5] =  {0.0, 0.0, 0.0, 0.0, 0.0};
-	bool  triggerMult[5];
-	dsp::PulseGenerator generatorMult[5];
-	//Reset
-	bool resetTrig = false;
-	dsp::SchmittTrigger resetInput;
-	dsp::BooleanTrigger resetTrigger;
-	bool resetTFF = false;
-	double clockCyclePast = 0.0;
-		//ratio reset
-	//std::array<double, 10> ratioParamBuffer;
-	double ratioParamBuffer[10];
-	bool ratioStill = false;
 
-	//Ratio
-	//Ratio y = b^x (for expo)
-	double ratioIn = 2.0;		// x
-	double ratioOut;	// y
-	double ratioBase;	// b
-	
-	//CV Input
-	double ratioParamIn;
-	double ratioParam;
-	
-	//Context Menu
-		//Water
-	bool freqReset = true;		//implimented
-	bool ratioReset = false;	//implimented
-	bool hardReset = false;		//implimented
-		//Waves
-	bool exponential = true;	//implimented
-	bool trigger = true;
-	int  range = 1;				//implimented (+-0.5, +-2, +-10) (0, 1, 2)
-	bool hasLoaded = false;
-	bool expoTFF = false;	//exponential optimizing tff
-	bool expoTFFforChange = false;
-//	int  lastRange = -1;
+	//--------------------------------
+	//            VARIABLES
+	//--------------------------------
+		//INPUTS
+			double clockInput 	= 0;
+			double resetInput 	= 0;
+			double ratioParamIn = 0;
 
-	ParamQuantity ratioRange;
-	MultiRangeParam* ratioParamPointer;
+		//SCHMITT TRIGGERS
+			dsp::SchmittTrigger clockSchmitt;
+			dsp::SchmittTrigger resetSchmitt;
 
+		//RISING AND FALLING EDGE
+			bool fallingEdge	= false;				//A one sample trigger
+			bool risingEdge		= false;				//A one sample trigger
+
+		//RESET TRIGGERS
+			dsp::BooleanTrigger resetBooleanTrigger;	//Detects change
+			bool resetTrigger 	= false;				//A one sample trigger
+
+			bool resetTFF 		= false;	
+
+		//HISTORY BUFFERS (start all buffers with b_)
+			bool b_clockSchmitt	= false;
+			RingBuffer b_ratioParam{16};
+
+		//CONTEXT MENU RESET OPTIONS (Water)
+				//Reset on frequency change
+			bool freqReset 		= true;
+				//Reset on ratio change
+			bool ratioReset 	= false;
+			bool ratioStill 	= false;
+				//Hard reset (all channels)
+			bool hardReset 		= false;
+
+
+			
+
+
+
+
+		
+		//Measuring incoming clock length
+		double phaseClock = 0.0;
+		double clockCycle = 0.0; //Usecase for this should be measured by cnt of rising edges
+
+		//Calculating the multiplications
+		double levelMult[5];
+			//phase time for mult, clock cycle / level mult;
+		double phaseTimeFM[5];
+		double phaseMult[5] =  {0.0, 0.0, 0.0, 0.0, 0.0};
+		bool  triggerMult[5];
+		dsp::PulseGenerator generatorMult[5];
+		//Reset
+		
+		
+		
+		double clockCyclePast = 0.0;
+		
+		
+
+		//Ratio
+		//Ratio y = b^x (for expo)
+		int ratioIn = 2.0;	// x										CHANGE: FROM DOUBLE TO INT
+		double ratioOut;	// y
+		double ratioBase;	// b
+		
+		//CV Input
+		
+		double ratioParam;
+		
+		//Context Menu
+		
+			//Waves
+		bool exponential = true;	//implimented
+		bool trigger = true;
+		int  range = 1;				//implimented (+-0.5, +-2, +-10) (0, 1, 2)
+		bool hasLoaded = false;
+		bool expoTFF = false;	//exponential optimizing tff
+		bool expoTFFforChange = false;
+	//	int  lastRange = -1;
+
+		ParamQuantity ratioRange;
+		MultiRangeParam* ratioParamPointer;
+
+	//--------------------------------
+	//       MODULE CONSTRUCTOR
+	//--------------------------------
 	Lilies() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
-		//DEBUG("module Constructed");
 	}
-
+	//--------------------------------
+	//        MODULE PROCESS
+	//--------------------------------
 	void process(const ProcessArgs& args) override {
 
-		//TODO!!! FIX THE BUG AT REALLY SLOW INCOMING BPMS
-		//FIX THE BUG AT HIGH EXPO VALUES, IS THERE A BIG WITH CONST OUTS?
-		//fIX WEIRD GLITCH BUG IDK but I think it has to do with initalizing doubles!
-
-
-		//It doesn't do fm
-		//IT IS ALMOST LIKE GRANULAR
-		//I MAKE MAKE A VERSION OF IT THAT IS GRANULAR!!!
-		//Grains but each one playing a different sample
-		//Maybe a reset button
-		//raise and fall indipendent lowpass filter
-
-		//Canyon's name for module
-		//Gremlin module
-
-		//Range stuff
+		//Checks if module has loaded to set the range
 		if(!hasLoaded) {
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
 		}
-		//Input
+
+		//#region [rgba(100,25,20,0.2)] WORKING Inputs and Atenuator (test atenuator)
+
+			//Inputs
 		ratioParamIn = params[RATIO_PARAM].getValue();
+		clockInput = inputs[CLOCK_INPUT].getVoltage();
+		resetInput = inputs[RESET_INPUT].getVoltage();
+			//Temporary debug switch
+		bool DEBUG = params[DEBUG_PARAM].getValue();
+
 		if(inputs[RATIO_CV_INPUT].isConnected()) {
 			ratioParam = inputs[RATIO_CV_INPUT].getVoltage();
 			ratioParam *= ratioParamIn / 10.0;
@@ -181,197 +193,206 @@ struct Lilies : Module {
 		} else {
 			ratioParam = ratioParamIn;
 		}
+		//#endregion
+		
+		
+
+		//#region [rgba(10,25,50,0.5)] WORKING (Processing Clock and Reset Input into Bools)
+
+			//Schmitt Trigger for clock and reset (turns voltage into bool)
+		clockSchmitt.process(rescale(clockInput, 0.1, 2.0, 0.0, 1.0));
+		resetSchmitt.process(rescale(resetInput, 0.1, 2.0, 0.0, 1.0));
+		//#endregion
+
+		
+
+		//#region [rgba(150,105,5,0.1)] WORKING (Processing Clock and Reset bools into one sample triggers)
+
+			//One sample trigger for rising and falling edge
+		fallingEdge = (!clockSchmitt.isHigh() && b_clockSchmitt);
+		risingEdge = (clockSchmitt.isHigh() && !b_clockSchmitt);
+
+			//Sets clockSchmitt Buffer
+		b_clockSchmitt = clockSchmitt.isHigh();
+
+			//One sample trigger for reset input
+		resetTrigger = resetBooleanTrigger.process(resetSchmitt.isHigh());
+		//#endregion
+
+		//--------------------------------
+		//  CONTEXT MENU RESET SETTINGS
+		//--------------------------------
+
+		//#region [rgba(150,05,5,0.1)]
+		
+			//Reset on ratio change (when it hasn't been moved for 16 samples)
+		if(ratioReset) {
+			ratioStill = true;
+			for(int i = 0; i < 14; i++) {
+				if(b_ratioParam[i] != b_ratioParam[14] || b_ratioParam[i] == b_ratioParam[15]) {
+					ratioStill = false;
+				}
+			}
+			
+			resetTrigger = ratioStill;
+
+			b_ratioParam.rotate(1);
+			b_ratioParam[0] = ratioParam;
+		}
+		//#endregion
+
+		if(DEBUG){
+			DEBUG("ratioStill     : %s", ratioStill ? "ratioStill TRUE" : "ratioStill FALSE");
+			//DEBUG("risingEdge     : %s", risingEdge ? "reseteTRUE" : "resetFALSE");
+		}
+
+		outputs[DEBUG_OUT].setChannels(2);
+
+		outputs[DEBUG_OUT].setVoltage(ratioStill, 0);
+		outputs[DEBUG_OUT].setVoltage(resetTrigger, 1);
 
 	
-
-
-		//processing input with proper schmitt trigger
-		clockInput.process(rescale(inputs[CLOCK_INPUT].getVoltage(), 0.1, 2.0, 0.0, 1.0));
-		resetInput.process(rescale(inputs[RESET_INPUT].getVoltage(), 0.1, 2.0, 0.0, 1.0));
-
-		//If the current clock is low and the previous state was set pulseE to true
-		//If that is not true set pulseE to false
-		pulseE = (!clockInput.isHigh() && previousClockState);
-		fallE = (clockInput.isHigh() && !previousClockState);
-
-		previousClockState = clockInput.isHigh();
-
-		//Calculates the clock phase and cycle
-		//		NOTE calculate the phase more efficiently to reduce phase shift
-
-		if(!resetTrig)
-		resetTrig = resetTrigger.process(resetInput.isHigh());
-
-		//
-		//Trying to get rid of start messup ----- if(fallE && phaseClock > (2 * args.sampleTime)) {
 		
-		//Detecting ratio change SHOULD BE FIXED!!!
 
-		ratioStill = true;
-		for(int i = 0; i < 8 /*&& ratioStill*/; i++) {
-			if(ratioParamBuffer[i] != ratioParamBuffer[8] || ratioParamBuffer[i] == ratioParamBuffer[9]) {
-				ratioStill = false;
-			}
-		}
+		
 
-		if(ratioReset && ratioStill) {
-			resetTrig = true;
-		}
 
-		if(fallE) {
+
+
+
+
+		if(risingEdge) {
 			clockCycle = phaseClock;
 			phaseClock -= clockCyclePast;
 
 			if(freqReset  &&  !isNear(clockCycle, clockCyclePast, 3 * args.sampleTime))
 			{
-				resetTrig = true;
+				resetTrigger = true;
 			}
 			clockCyclePast = clockCycle;
 
 		}
 		phaseClock += args.sampleTime;
 
-//		DEBUG("clockCycle: %f", clockCycle);
-
 		//Ratio stuff
 
-//		DEBUG("-------------BEGINNING-------------");
 		ratioBase = ratioParam;
 		//ratioBase = 1.0;
-		int i = 0;
-		for(i = 0; i < 5; i++) {
-			//int i = 1;
 
-		//Decides whether to use liniar or exponential graph!
-		if(!exponential) {
-				//Forcing expo switch I THINK, check later!
-			expoTFFforChange = true;
-			//ratioParamBuffer[1] =  ratioParam + 1.0;
 
-			levelMult[i] = divCurve(ratioIn, ratioOut, ratioBase);
 
-			
-			//Set multiplicaiton level
-//			levelMult[i] = ratioOut;
-		} else {
-			expoTFF = false;
-			if(ratioParam == ratioParamBuffer[1] && !expoTFFforChange) {
-				//ratioOut = pow(ratioBase, ratioIn);
-				//ratioOut = (pow(pow(2, ratioBase), ratioIn));
-					//Holds exponenent when not in use for optimization	
-				if(expoTFF) {
-					ratioOut = pow(2, (ratioBase * ratioIn));
-					levelMult[0] = levelMult[1] = levelMult[2] = levelMult[3] = levelMult[4] = ratioOut;
-					expoTFF = false;
-				}
-/*
-				int i = 0;
-				i++;
-				expoTFF = (i > 32);
-				i = i * !(i > 32);
-*/
-/*
-				for(int i = 0; i < 5 && expoTFF; i++) {
-					ratioOut = pow(2, (ratioBase * ratioIn));
-					//Set multiplicaiton level
-					levelMult[i] = ratioOut;
-					if(i == 4) {
-						expoTFF = false;
-					}
-				} */
-			} else {
+
+
+
+
+
+
+
+		//--------------------------------
+		// FOR - EACH OUTPUT (FIVE)
+		//--------------------------------
+		for(int i = 0, ratioIn = 2.0; i < 5; i++, ratioIn--)
+		{
+			//#region [rgba(0,255,200,0.05)]
+			//--------------------------------
+			// DECIDES - LINIAR V EXPOENENTIAL
+			//--------------------------------
+			if(!exponential)
+			{
+					//Forcing expo switch I THINK, check later!
+				expoTFFforChange = true;
+				//ratioParamBuffer[1] =  ratioParam + 1.0;
+
+				levelMult[i] = divCurve(ratioIn, ratioOut, ratioBase);
+				//Set multiplicaiton level
+				//levelMult[i] = ratioOut;
+			}
+			else
+			{
 				ratioOut = std::pow(2, (ratioBase * ratioIn));
-				//ratioOut = fastPow(2, (ratioBase * ratioIn));
 
 				//Set multiplicaiton level
 				levelMult[i] = ratioOut;
 				expoTFF = true;
 				expoTFFforChange = false;
+
+				/*
+				expoTFF = false;
+				if(ratioParam == ratioParamBuffer[1] && !expoTFFforChange) {
+						//Holds exponenent when not in use for optimization	
+					if(expoTFF) {
+						ratioOut = pow(2, (ratioBase * ratioIn));
+						levelMult[0] = levelMult[1] = levelMult[2] = levelMult[3] = levelMult[4] = ratioOut;
+						expoTFF = false;
+					}
+				} else {
+					ratioOut = std::pow(2, (ratioBase * ratioIn));
+
+					//Set multiplicaiton level
+					levelMult[i] = ratioOut;
+					expoTFF = true;
+					expoTFFforChange = false;
+				}
+				*/
+			}
+			//#endregion
+
+
+			
+
+			//Set the goal for the rising phase
+			phaseTimeFM[i] = clockCycle / levelMult[i];
+			
+			//Reset stuff buffer;
+			if(resetTrigger) {
+				resetTFF = true;
+			}
+			if(risingEdge && resetTFF) {
+				if(hardReset) {
+					triggerMult[i] = true;
+				}
+				phaseMult[0] = phaseMult[1] = phaseMult[2] = phaseMult[3] = phaseMult[4] = 0.0;
+				expoTFFforChange = true;
+				phaseClock = 0.0;
+				if(i == 4) {
+					resetTFF = false;
+				}
 			}
 
-
-
-		}
-		
-
-//		DEBUG("------Loop-----");
-//		ratioOut = std::pow(2.0, (ratioBase * ratioIn));
-//		levelMult[i] = ratioOut;
-
-//		DEBUG("phaseMult preIf: %f", levelMult[i]);
-
-		ratioIn--;
-		
-		//TODO:: Later add in a low cpu useage mode
-		//which updates it ever 32-124 samples or smt
-	
-	//	DEBUG("ratioOut %f", ratioOut);
-		//Set the goal for the rising phase
-		phaseTimeFM[i] = clockCycle / levelMult[i];
-//		DEBUG("clockCycle %f", clockCycle);
-//		DEBUG("levelMult  %f", levelMult[i]);
-		
-
-//		DEBUG("resetTFF     : %s", resetTFF ? "trueTFF" : "false");
-		//Reset stuff buffer;
-		if(resetTrig) {
-			resetTFF = true;
-		}
-//		DEBUG("resetTFF2    : %s", resetTFF ? "trueTFF" : "false");
-		if(fallE && resetTFF) {
-			if(hardReset) {
+			//Calculates the multiplication phase level?
+			phaseMult[i] += args.sampleTime;
+			
+			if (phaseMult[i] >= phaseTimeFM[i]) {
+			//	phaseMult[i] = 0.0;
+				phaseMult[i] -= phaseTimeFM[i];
 				triggerMult[i] = true;
 			}
-			phaseMult[0] = phaseMult[1] = phaseMult[2] = phaseMult[3] = phaseMult[4] = 0.0;
-			expoTFFforChange = true;
-			phaseClock = 0.0;
-			if(i == 4) {
-				resetTFF = false;
+
+			//Pulse generator section
+			if (triggerMult[i]) {
+				generatorMult[i].reset(); //Stinky branchless stuff to learn
+				generatorMult[i].trigger( ((1e-3f) * trigger) + (((clockCycle / levelMult[i]) / 2) * !trigger) );
 			}
-		}
-//		DEBUG("resetTF3     : %s", resetTFF ? "trueTFF" : "false");
-/*		if(fallE && resetTFF)  {
-			triggerMult[i] = true;
+			bool outHigh = generatorMult[i].process(args.sampleTime);
+			
+			//Outputs
+				//outputs[i].setVoltage(10.0 * triggerMult[i]);
+			outputs[i].setVoltage(10.0 * outHigh);
 
-
+			//Trigger Reset
+			triggerMult[i] = false;
 		}
-*/
-		//Calculates the multiplication phase level?
-		phaseMult[i] += args.sampleTime;
+
 		
-		if (phaseMult[i] >= phaseTimeFM[i]) {
-		//	phaseMult[i] = 0.0;
-			phaseMult[i] -= phaseTimeFM[i];
-			triggerMult[i] = true;
-		}
-
-		//Pulse generator section
-		//TODO, take into account pulse width;
-
-		if (triggerMult[i]) {
-			generatorMult[i].reset(); //Stinky branchless stuff to learn
-			generatorMult[i].trigger( ((1e-3f) * trigger) + (((clockCycle / levelMult[i]) / 2) * !trigger) );
-		}
-		bool outHigh = generatorMult[i].process(args.sampleTime);
-		
-		//Outputs
-//		outputs[i].setVoltage(10.0 * triggerMult[i]);
-		outputs[i].setVoltage(10.0 * outHigh);
-		outputs[5].setVoltage(ratioParam);
-
-		//Trigger Reset
-		triggerMult[i] = false;
-		}
-
-		//Shifting the buffer		
-		std::memmove(ratioParamBuffer + 1, ratioParamBuffer, 9 * sizeof(double));
-	    ratioParamBuffer[0] = ratioParam;
 
 		//That stuff I forgot about
-		ratioIn = 2.0;
-		resetTrig = false;
+		
+		resetTrigger = false;
 	}
 
+	//--------------------------------
+	//           JSON DATA 
+	//--------------------------------
 	void dataFromJson(json_t* data) override {
 		json_t* jsonObjectRange = json_object_get(data, "RangeSave");
     	//if json file is corrupted
@@ -379,8 +400,7 @@ struct Lilies : Module {
 			int range = json_integer_value(jsonObjectRange);
 			ratioParamPointer->setRange(range, false);
 			hasLoaded = true;
-		}
-		
+		}	
 
 		json_t* jsonObjectFreqReset = json_object_get(data, "freqReset");
     	freqReset = json_integer_value(jsonObjectFreqReset);
@@ -392,10 +412,7 @@ struct Lilies : Module {
     	exponential = json_integer_value(jsonObjectExponential);
 		json_t* jsonObjectTrigger = json_object_get(data, "trigger");
     	trigger = json_integer_value(jsonObjectTrigger);
-
-		//DEBUG("dataFromJson");
 	}
-
 	json_t* dataToJson() override {
 		json_t* data = json_object();
 		MultiRangeParam* ratioParamSave = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
@@ -407,42 +424,48 @@ struct Lilies : Module {
 		json_object_set_new(data, "exponential", json_integer(exponential));
 		json_object_set_new(data, "trigger", json_integer(trigger));
 
-
 		return data;
-
-		//DEBUG("dataToJson");
 	}
 
 };
+
+
+
+//--------------------------------
+//        MODULE WIDGET 
+//--------------------------------
 
 struct LiliesWidget : ModuleWidgetEqu {
 	MultiRangeParam* multiRangeParam;
 	std::shared_ptr<Svg> dawn_svg;
 	std::shared_ptr<Svg> sketch_svg;
 
+	// PANEL WIDGETS
 	LiliesWidget(Lilies* module) {
 		setModule(module);
-			//make header file full of skins
+			//make header file full of skins ~-=WORK IN PROGRESS=-~
 		dawn_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_dawn.svg"));
 		sketch_svg = APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/lilies_sketch.svg"));
-//		int panelTheme = isDark(module ? (&(((Lilies*)module)->panelTheme)) : NULL) ? 1 : 0;// need this here since step() not called for module browser
+	//	int panelTheme = isDark(module ? (&(((Lilies*)module)->panelTheme)) : NULL) ? 1 : 0;// need this here since step() not called for module browser
 		setPanelNoBg(dawn_svg);
 
 
-//		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-//		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-//		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-//		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		Dawn_Slider_One* dawn_slider_one = createParam<Dawn_Slider_One>(mm2px(Vec(6.944 - 1.65, 47.731)), module, Lilies::RATIO_PARAM);
 		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->getParamQuantity());
 
 		addParam(dawn_slider_one);
 
+		addParam(createParam<Orange_Switch>(mm2px(Vec(13.897, 62.892)), module, Lilies::DEBUG_PARAM));
+
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 19.894)), module, Lilies::RESET_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 35.134)), module, Lilies::CLOCK_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 78.208)), module, Lilies::RATIO_CV_INPUT));
-//		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::SECRET_INPUT));
+	//	addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::SECRET_INPUT));
 
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 19.894)), module, Lilies::ONE_OUTPUT));
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 35.134)), module, Lilies::TWO_OUTPUT));
@@ -451,17 +474,16 @@ struct LiliesWidget : ModuleWidgetEqu {
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 107.277)), module, Lilies::FIVE_OUTPUT));
 
 
-//		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::out_test));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::DEBUG_OUT));
 
 		// mm2px(Vec(28.876, 7.342))
 		addChild(createWidget<Widget>(mm2px(Vec(0.802, 0.827))));
 	}
 
+	// CONTEXT MENU:
 	void appendContextMenu(Menu* menu) override {
 		Lilies* lilies = (Lilies*)(this->module);
 		assert(lilies);
-
-
 
 		menu->addChild(new MenuSeparator);
 		//Remember it's like a train line of pointers ponting to pointers
@@ -522,14 +544,14 @@ struct LiliesWidget : ModuleWidgetEqu {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
 					module->exponential = !module->exponential;
-					module->resetTrig = true;
+					module->resetTrigger = true;
 				}
 			};
 			struct TriggerSwitchItem : MenuItem {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
 					module->trigger = !module->trigger;
-					//module->resetTrig = true;
+					//module->resetTrigger = true;
 				}
 			};
 			

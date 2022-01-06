@@ -50,151 +50,62 @@ using namespace rack;
 
 	//=-=-=-=-=-=-=-=-=-=-=-=-----
 
-	/*struct ModuleWidgetEqu : ModuleWidget {
-	void setBackground(std::shared_ptr<Svg> svg);
-	void setPanel(widget::Widget* panel);
-	void setPanel(std::shared_ptr<Svg> svg);
-	//widget::Widget* panel = NULL;
-};*/
+	struct SvgPanelCustomBg : widget::Widget {
+		widget::FramebufferWidget* fb;
+		widget::SvgWidget* sw;
+		//PanelBorder* panelBorder;
+		std::shared_ptr<window::Svg> svg;
 
-struct SvgPanelCustomBg : widget::Widget {
-	widget::FramebufferWidget* fb;
-	widget::SvgWidget* sw;
-	//PanelBorder* panelBorder;
-	std::shared_ptr<window::Svg> svg;
+		SvgPanelCustomBg();
+		void step() override;
+		void setBackground(std::shared_ptr<window::Svg> svg);
+	};
 
-	SvgPanelCustomBg();
-	void step() override;
-	void setBackground(std::shared_ptr<window::Svg> svg);
-};
+	inline SvgPanelCustomBg::SvgPanelCustomBg() {
+		fb = new widget::FramebufferWidget;
+		addChild(fb);
 
-inline SvgPanelCustomBg::SvgPanelCustomBg() {
-	fb = new widget::FramebufferWidget;
-	addChild(fb);
+		sw = new widget::SvgWidget;
+		fb->addChild(sw);
 
-	sw = new widget::SvgWidget;
-	fb->addChild(sw);
-
-	//panelBorder = new PanelBorder;
-	//fb->addChild(panelBorder);
-}
-
-
-inline void SvgPanelCustomBg::step() {
-	if (APP->window->pixelRatio < 2.0) {
-		// Small details draw poorly at low DPI, so oversample when drawing to the framebuffer
-		fb->oversample = 2.0;
+		//panelBorder = new PanelBorder;
+		//fb->addChild(panelBorder);
 	}
 
-	Widget::step();
-}
+	inline void SvgPanelCustomBg::step() {
+		if (APP->window->pixelRatio < 2.0) {
+			// Small details draw poorly at low DPI, so oversample when drawing to the framebuffer
+			fb->oversample = 2.0;
+		}
 
-inline void SvgPanelCustomBg::setBackground(std::shared_ptr<window::Svg> svg) {
-	this->svg = svg;
-
-	sw->setSvg(svg);
-	fb->box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
-	//panelBorder->box.size = fb->box.size;
-	box.size = fb->box.size;
-}
-
-//beep boop
-
-struct ModuleWidgetEqu : ModuleWidget {
-
-	
-	//void setPanel(widget::Widget* panel);
-
-
-	//using ModuleWidget::setPanel;
-	void setPanelNoBg(std::shared_ptr<window::Svg> svg) {
-		// Create SvgPanel
-		SvgPanelCustomBg* panel = new SvgPanelCustomBg;
-		panel->SvgPanelCustomBg::setBackground(svg);
-		ModuleWidget::setPanel(panel);
-		DEBUG("ModuleWidget used");
-	}
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-struct ModuleWidgetEqu2 : ModuleWidget {
-	void setBackground(std::shared_ptr<Svg> svg) {
-	widget::SvgWidget* sw = new widget::SvgWidget;
-	sw->setSvg(svg);
-	addChild(sw);
-
-	// Set size
-	box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
-
-	DEBUG("mine was used");
-
-	//PanelBorder* pb = new PanelBorder;
-	//pb->box.size = box.size;
-	//addChild(pb);
+		Widget::step();
 	}
 
-	//void setPanel(widget::Widget* panel);
-	widget::Widget* panel = NULL;
-	void setPanel(std::shared_ptr<Svg> svg) {
-		DEBUG("mine was used");
-	// Remove existing panel
-	if (panel) {
-		removeChild(panel);
-		delete panel;
-		panel = NULL;
+	inline void SvgPanelCustomBg::setBackground(std::shared_ptr<window::Svg> svg) {
+		this->svg = svg;
+
+		sw->setSvg(svg);
+		fb->box.size = sw->box.size.div(RACK_GRID_SIZE).round().mult(RACK_GRID_SIZE);
+		//panelBorder->box.size = fb->box.size;
+		box.size = fb->box.size;
 	}
 
-	// Create SvgPanel
-	ModuleWidgetEqu2* svgPanel = new ModuleWidgetEqu2;
-	svgPanel->setBackground(svg);
-	panel = svgPanel;
-	addChildBottom(panel);
+		//Custom module widget without outline!
+	struct ModuleWidgetEqu : ModuleWidget {
 
-	// Set ModuleWidget size based on panel
-	box.size.x = std::round(panel->box.size.x / RACK_GRID_WIDTH) * RACK_GRID_WIDTH;
-	}
-};
+		
+		//void setPanel(widget::Widget* panel);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		//using ModuleWidget::setPanel;
+		void setPanelNoBg(std::shared_ptr<window::Svg> svg) {
+			// Create SvgPanel
+			SvgPanelCustomBg* panel = new SvgPanelCustomBg;
+			panel->SvgPanelCustomBg::setBackground(svg);
+			ModuleWidget::setPanel(panel);
+			DEBUG("ModuleWidget used");
+		}
+	};
 
 //DATA STRCTURES:
 		//Ring buffer
@@ -314,7 +225,6 @@ struct ModuleWidgetEqu2 : ModuleWidget {
 			//Function
 		double filter(double signalIn, unsigned int desiredBufferSizeCurrentIn);// add passCount
 	};
-
 		//A single pass moving average filter weighed via a sin()
 	struct SmoothSin {
 			//Data
