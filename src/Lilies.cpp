@@ -77,47 +77,53 @@ struct Lilies : Module {
 	//            VARIABLES
 	//--------------------------------
 		//INPUTS
-			double clockInput 	= 0;
-			double resetInput 	= 0;
-			double ratioParamIn = 0;
+			double clockInput 		= 0;
+			double resetInput 		= 0;
+			double ratioParamIn 	= 0;
 
 		//SCHMITT TRIGGERS
 			dsp::SchmittTrigger clockSchmitt;
 			dsp::SchmittTrigger resetSchmitt;
 
 		//RISING AND FALLING EDGE
-			bool fallingEdge	= false;				//A one sample trigger
-			bool risingEdge		= false;				//A one sample trigger
+			bool fallingEdge		= false;				//A one sample trigger
+			bool risingEdge			= false;				//A one sample trigger
 
 		//RESET TRIGGERS
-			dsp::BooleanTrigger resetBooleanTrigger;	//Detects change
-			bool resetTrigger 	= false;				//A one sample trigger
+			dsp::BooleanTrigger 	resetBooleanTrigger;	//Detects change
+			bool resetTrigger 		= false;				//A one sample trigger
 
-			bool resetTFF 		= false;	
+			bool resetTFF 			= false;	
 
 		//HISTORY BUFFERS (start all buffers with b_)
-			bool b_clockSchmitt	= false;
+			bool b_clockSchmitt		= false;
+			double b_clockLength	= 0.0;
 			RingBuffer b_ratioParam{16};
 
 		//CONTEXT MENU RESET OPTIONS (Water)
 				//Reset on frequency change
-			bool freqReset 		= true;
+			bool freqReset 			= true;
 				//Reset on ratio change
-			bool ratioReset 	= false;
-			bool ratioStill 	= false;
+			bool ratioReset 		= false;
+			bool ratioStill 		= false;
 				//Hard reset (all channels)
-			bool hardReset 		= false;
+			bool hardReset 			= false;
 
-
+		//PHASE ACCUMULATORS (start all phase accumulators with p_)
+			double p_phaseClock 	= 1.0;
 			
-
-
+		//LENGTH VARIABLES
+			double clockLength 		= 100.0;
 
 
 		
+
+
+
+
 		//Measuring incoming clock length
-		double phaseClock = 0.0;
-		double clockCycle = 0.0; //Usecase for this should be measured by cnt of rising edges
+		
+		 //Usecase for this should be measured by cnt of rising edges
 
 		//Calculating the multiplications
 		double levelMult[5];
@@ -126,14 +132,8 @@ struct Lilies : Module {
 		double phaseMult[5] =  {0.0, 0.0, 0.0, 0.0, 0.0};
 		bool  triggerMult[5];
 		dsp::PulseGenerator generatorMult[5];
-		//Reset
 		
 		
-		
-		double clockCyclePast = 0.0;
-		
-		
-
 		//Ratio
 		//Ratio y = b^x (for expo)
 		int ratioIn = 2.0;	// x										CHANGE: FROM DOUBLE TO INT
@@ -241,56 +241,52 @@ struct Lilies : Module {
 		}
 		//#endregion
 
-		
-	
-		
-
-		
 
 
+		//#region [rgba(250,50,5,0.1)]
 
-
-
-
-		if(risingEdge) {
-			clockCyclePast = clockCycle;
-			clockCycle = phaseClock;
-			phaseClock = 0;//-= clockCyclePast;
-
-			//if(freqReset  &&  !isNear(clockCycle, clockCyclePast, 3 * args.sampleTime))
-			//{
-			//	resetTrigger = true;
-			//}
-
-			
-
+			//Resets if frequency changes by 10 * sampleTime
+		if(freqReset) {
+			resetTrigger = !isNear(clockLength, b_clockLength, 10 * args.sampleTime);
 		}
-		phaseClock += args.sampleTime;
+		//#endregion
 
+		
+
+		//#region [rgba(20,255,56,0.06)]
+
+			//Calculates
+		if(risingEdge) {
+			b_clockLength = clockLength;
+			clockLength = p_phaseClock;
+			p_phaseClock = 0;
+		}
+		p_phaseClock += args.sampleTime;
+		//#endregion
 		
 
 
 
 		if(DEBUG){
-			//DEBUG("ratioStill     : %s", ratioStill ? "ratioStill TRUE" : "ratioStill FALSE");
-			//DEBUG("risingEdge     : %s", risingEdge ? "reseteTRUE" : "resetFALSE");
-			DEBUG("clockCycle %f", clockCycle);
+			DEBUG("resetTrigger     : %s", resetTrigger ? "resetTrigger TRUE" : "resetTrigger FALSE");
+			DEBUG("clockLength %f", clockLength);
+			DEBUG("clockLength %f", b_clockLength);
 		}
 
-		outputs[DEBUG_OUT].setChannels(3);
+		outputs[DEBUG_OUT].setChannels(4);
 
-		outputs[DEBUG_OUT].setVoltage(clockCycle, 0);
-		outputs[DEBUG_OUT].setVoltage(phaseClock, 1);
-		outputs[DEBUG_OUT].setVoltage(risingEdge, 2);
-
+		outputs[DEBUG_OUT].setVoltage(clockLength, 0);
+		outputs[DEBUG_OUT].setVoltage(p_phaseClock, 1);
+		outputs[DEBUG_OUT].setVoltage(resetTrigger, 2);
+		outputs[DEBUG_OUT].setVoltage(b_clockLength, 3);
+		
 
 
 
 
 
 		//Ratio stuff
-		//ratioBase = ratioParam;
-		//ratioBase = 1.0;
+		ratioBase = ratioParam;
 
 
 
@@ -322,13 +318,13 @@ struct Lilies : Module {
 				ratioOut = std::pow(2, (ratioParam * ratioIn));
 
 				//Set multiplicaiton level
-				levelMult[i] = ratioOut;
-				expoTFF = true;
-				expoTFFforChange = false;
+				//levelMult[i] = ratioOut;
+				//expoTFF = true;
+				//expoTFFforChange = false;
 
-				/*
+				
 				expoTFF = false;
-				if(ratioParam == ratioParamBuffer[1] && !expoTFFforChange) {
+				if(ratioParam == b_ratioParam[1] && !expoTFFforChange) {
 						//Holds exponenent when not in use for optimization	
 					if(expoTFF) {
 						ratioOut = pow(2, (ratioBase * ratioIn));
@@ -343,7 +339,8 @@ struct Lilies : Module {
 					expoTFF = true;
 					expoTFFforChange = false;
 				}
-				*/
+				
+				
 			}
 			//#endregion
 
@@ -351,7 +348,7 @@ struct Lilies : Module {
 			
 
 			//Set the goal for the rising phase
-			phaseTimeFM[i] = clockCycle / levelMult[i];
+			phaseTimeFM[i] = clockLength / levelMult[i];
 			
 			//Reset stuff buffer;
 			if(resetTrigger) {
@@ -363,7 +360,7 @@ struct Lilies : Module {
 				}
 				phaseMult[0] = phaseMult[1] = phaseMult[2] = phaseMult[3] = phaseMult[4] = 0.0;
 				expoTFFforChange = true;
-				phaseClock = 0.0;
+				p_phaseClock = 0.0;
 				if(i == 4) {
 					resetTFF = false;
 				}
@@ -381,7 +378,7 @@ struct Lilies : Module {
 			//Pulse generator section
 			if (triggerMult[i]) {
 				generatorMult[i].reset(); //Stinky branchless stuff to learn
-				generatorMult[i].trigger( ((1e-3f) * trigger) + (((clockCycle / levelMult[i]) / 2) * !trigger) );
+				generatorMult[i].trigger( ((1e-3f) * trigger) + (((clockLength / levelMult[i]) / 2) * !trigger) );
 			}
 			bool outHigh = generatorMult[i].process(args.sampleTime);
 			
