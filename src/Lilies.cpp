@@ -26,7 +26,7 @@
 			Pulsewidth take-in?
 
 		Slider
-			Some kinda liniar or exponential option
+			Some kinda liniar or j_exponential option
 			Some kinda oneshot mode if it doesn't do too much cpu
 			Range options (+-0.5, +-2, +-10) for voltage remap
 
@@ -77,9 +77,10 @@ struct Lilies : Module {
 	//            VARIABLES
 	//--------------------------------
 		//INPUTS
-			double clockInput 		= 0;
-			double resetInput 		= 0;
-			double ratioParamIn 	= 0;
+			double clockInput 		= 0.0;
+			double resetInput 		= 0.0;
+			double ratioInput		= 0.0;
+			double ratioParamIn 	= 0.0;
 
 		//SCHMITT TRIGGERS
 			dsp::SchmittTrigger clockSchmitt;
@@ -98,16 +99,22 @@ struct Lilies : Module {
 		//HISTORY BUFFERS (start all buffers with b_)
 			bool b_clockSchmitt		= false;
 			double b_clockLength	= 0.0;
-			RingBuffer b_ratioParam{16};
+			RingBuffer b_ratioInput{16};
+			bool wasLinear			= false;
 
 		//CONTEXT MENU RESET OPTIONS (Water)
+			//(items stored in json start with j_)
 				//Reset on frequency change
-			bool freqReset 			= true;
+			bool j_freqReset 			= true;
 				//Reset on ratio change
-			bool ratioReset 		= false;
+			bool j_ratioReset 		= false;
 			bool ratioStill 		= false;
 				//Hard reset (all channels)
-			bool hardReset 			= false;
+			bool j_hardReset 			= false;
+
+		//CONTEXT MENU OUTPUT OPTIONS
+			bool j_exponential		= true;
+			bool j_trigger 			= false;
 
 		//PHASE ACCUMULATORS (start all phase accumulators with p_)
 			double p_phaseClock 	= 1.0;
@@ -115,15 +122,18 @@ struct Lilies : Module {
 		//LENGTH VARIABLES
 			double clockLength 		= 100.0;
 
+		//EQUATION OUTPUT
+			double ratioOut			= 0.0;
+
+		//MULTIPLE RANGE PARAMITER (Slider)
+			//ParamQuantity ratioRange;
+			MultiRangeParam* ratioParamPointer;
+			int range 	= 1;
+			bool moduleHasLoaded 	= false;
 
 		
 
 
-
-
-		//Measuring incoming clock length
-		
-		 //Usecase for this should be measured by cnt of rising edges
 
 		//Calculating the multiplications
 		double levelMult[5];
@@ -136,27 +146,20 @@ struct Lilies : Module {
 		
 		//Ratio
 		//Ratio y = b^x (for expo)
-		int ratioIn = 2.0;	// x										CHANGE: FROM DOUBLE TO INT
-		double ratioOut;	// y
-		double ratioBase;	// b
+		//int ratioIn = 2.0;// x										CHANGE: FROM DOUBLE TO INT
+		//double ratioOut;	// y
+		//double ratioBase;	// b
 		
-		//CV Input
-		
-		double ratioParam;
 		
 		//Context Menu
-		
 			//Waves
-		bool exponential = true;	//implimented
-		bool trigger = true;
-		int  range = 1;				//implimented (+-0.5, +-2, +-10) (0, 1, 2)
-		bool hasLoaded = false;
-		bool expoTFF = false;	//exponential optimizing tff
-		bool expoTFFforChange = false;
-	//	int  lastRange = -1;
+		
+						//implimented (+-0.5, +-2, +-10) (0, 1, 2)
+		
 
-		ParamQuantity ratioRange;
-		MultiRangeParam* ratioParamPointer;
+
+
+		//ParamQuantity ratioRange;
 
 	//--------------------------------
 	//       MODULE CONSTRUCTOR
@@ -165,16 +168,17 @@ struct Lilies : Module {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
+		
 	}
 	//--------------------------------
 	//        MODULE PROCESS
 	//--------------------------------
 	void process(const ProcessArgs& args) override {
 
-		//Checks if module has loaded to set the range
-		if(!hasLoaded) {
+		//Checks if module hasn't loaded to set the range
+		if(!moduleHasLoaded) {
 			ratioParamPointer->setRange(range, false);
-			hasLoaded = true;
+			moduleHasLoaded = true;
 		}
 
 		//#region [rgba(100,25,20,0.2)] WORKING Inputs and Atenuator (test atenuator)
@@ -187,11 +191,11 @@ struct Lilies : Module {
 		bool DEBUG = params[DEBUG_PARAM].getValue();
 
 		if(inputs[RATIO_CV_INPUT].isConnected()) {
-			ratioParam = inputs[RATIO_CV_INPUT].getVoltage();
-			ratioParam *= ratioParamIn / 10.0;
+			ratioInput = inputs[RATIO_CV_INPUT].getVoltage();
+			ratioInput *= ratioParamIn / 10.0;
 			//The slider now acts also as an atenuverter!
 		} else {
-			ratioParam = ratioParamIn;
+			ratioInput = ratioParamIn;
 		}
 		//#endregion
 		
@@ -226,19 +230,19 @@ struct Lilies : Module {
 		//#region [rgba(150,05,5,0.1)]
 		
 			//Reset on ratio change (when it hasn't been moved for 16 samples)
-		if(ratioReset) {
+		if(j_ratioReset) {
 			ratioStill = true;
 			for(int i = 0; i < 14; i++) {
-				if(b_ratioParam[i] != b_ratioParam[14] || b_ratioParam[i] == b_ratioParam[15]) {
+				if(b_ratioInput[i] != b_ratioInput[14] || b_ratioInput[i] == b_ratioInput[15]) {
 					ratioStill = false;
 				}
 			}
 			
 			resetTrigger = ratioStill;
-
-			b_ratioParam.rotate(1);
-			b_ratioParam[0] = ratioParam;
 		}
+			//We put this outside the if for use in pow optimization
+		b_ratioInput.rotate(1);
+		b_ratioInput[0] = ratioInput;
 		//#endregion
 
 
@@ -246,7 +250,7 @@ struct Lilies : Module {
 		//#region [rgba(250,50,5,0.1)]
 
 			//Resets if frequency changes by 10 * sampleTime
-		if(freqReset) {
+		if(j_freqReset) {
 			resetTrigger = !isNear(clockLength, b_clockLength, 10 * args.sampleTime);
 		}
 		//#endregion
@@ -268,9 +272,9 @@ struct Lilies : Module {
 
 
 		if(DEBUG){
-			DEBUG("resetTrigger     : %s", resetTrigger ? "resetTrigger TRUE" : "resetTrigger FALSE");
-			DEBUG("clockLength %f", clockLength);
-			DEBUG("clockLength %f", b_clockLength);
+		DEBUG("wasLinear     : %s", wasLinear ? "wasLinear TRUE" : "wasLinear FALSE");
+		DEBUG("ratioOut %f", ratioOut);
+		//DEBUG("i %i", i);
 		}
 
 		outputs[DEBUG_OUT].setChannels(4);
@@ -281,16 +285,6 @@ struct Lilies : Module {
 		outputs[DEBUG_OUT].setVoltage(b_clockLength, 3);
 		
 
-
-
-
-
-		//Ratio stuff
-		ratioBase = ratioParam;
-
-
-
-
 		
 
 		//--------------------------------
@@ -300,47 +294,27 @@ struct Lilies : Module {
 		for(int i = 0, ratioIn = 2.0; i < 5; i++, ratioIn--)
 		{
 			//#region [rgba(0,255,200,0.05)]
+
 			//--------------------------------
 			// DECIDES - LINIAR V EXPOENENTIAL
 			//--------------------------------
-			if(!exponential)
+			if(!j_exponential)
 			{
-					//Forcing expo switch I THINK, check later!
-				expoTFFforChange = true;
-				//ratioParamBuffer[1] =  ratioParam + 1.0;
-
-				levelMult[i] = divCurve(ratioIn, ratioOut, ratioParam);
-				//Set multiplicaiton level
-				//levelMult[i] = ratioOut;
+					//Liniar Graphed Curve
+				levelMult[i] = divCurve(ratioIn, ratioOut, ratioInput);
+					//For context menu when changing to expo
+				wasLinear = true;
 			}
 			else
 			{
-				ratioOut = std::pow(2, (ratioParam * ratioIn));
-
-				//Set multiplicaiton level
-				//levelMult[i] = ratioOut;
-				//expoTFF = true;
-				//expoTFFforChange = false;
-
-				
-				expoTFF = false;
-				if(ratioParam == b_ratioParam[1] && !expoTFFforChange) {
-						//Holds exponenent when not in use for optimization	
-					if(expoTFF) {
-						ratioOut = pow(2, (ratioBase * ratioIn));
-						levelMult[0] = levelMult[1] = levelMult[2] = levelMult[3] = levelMult[4] = ratioOut;
-						expoTFF = false;
-					}
-				} else {
-					ratioOut = std::pow(2, (ratioBase * ratioIn));
-
-					//Set multiplicaiton level
+				if(ratioInput != b_ratioInput[1] || wasLinear) {
+					ratioOut = std::pow(2, (ratioInput * ratioIn));
 					levelMult[i] = ratioOut;
-					expoTFF = true;
-					expoTFFforChange = false;
+						//when coming from liniar to j_exponential
+					if(i == 4) {
+						wasLinear = false;
+					}
 				}
-				
-				
 			}
 			//#endregion
 
@@ -355,11 +329,11 @@ struct Lilies : Module {
 				resetTFF = true;
 			}
 			if(risingEdge && resetTFF) {
-				if(hardReset) {
+				if(j_hardReset) {
 					triggerMult[i] = true;
 				}
 				phaseMult[0] = phaseMult[1] = phaseMult[2] = phaseMult[3] = phaseMult[4] = 0.0;
-				expoTFFforChange = true;
+				//expoTFFforChange = true;
 				p_phaseClock = 0.0;
 				if(i == 4) {
 					resetTFF = false;
@@ -378,7 +352,7 @@ struct Lilies : Module {
 			//Pulse generator section
 			if (triggerMult[i]) {
 				generatorMult[i].reset(); //Stinky branchless stuff to learn
-				generatorMult[i].trigger( ((1e-3f) * trigger) + (((clockLength / levelMult[i]) / 2) * !trigger) );
+				generatorMult[i].trigger( ((1e-3f) * j_trigger) + (((clockLength / levelMult[i]) / 2) * !j_trigger) );
 			}
 			bool outHigh = generatorMult[i].process(args.sampleTime);
 			
@@ -392,8 +366,8 @@ struct Lilies : Module {
 
 		
 
-		//That stuff I forgot about
 		
+			//Makes sure resetTrigger is only one sample long;
 		resetTrigger = false;
 	}
 
@@ -406,30 +380,30 @@ struct Lilies : Module {
 		if(jsonObjectRange != NULL) {
 			int range = json_integer_value(jsonObjectRange);
 			ratioParamPointer->setRange(range, false);
-			hasLoaded = true;
+			moduleHasLoaded = true;
 		}	
 
-		json_t* jsonObjectFreqReset = json_object_get(data, "freqReset");
-    	freqReset = json_integer_value(jsonObjectFreqReset);
-		json_t* jsonObjectRatioReset = json_object_get(data, "ratioReset");
-    	ratioReset = json_integer_value(jsonObjectRatioReset);
-		json_t* jsonObjectHardReset = json_object_get(data, "hardReset");
-    	hardReset = json_integer_value(jsonObjectHardReset);
-		json_t* jsonObjectExponential = json_object_get(data, "exponential");
-    	exponential = json_integer_value(jsonObjectExponential);
-		json_t* jsonObjectTrigger = json_object_get(data, "trigger");
-    	trigger = json_integer_value(jsonObjectTrigger);
+		json_t* jsonObjectFreqReset = json_object_get(data, "j_freqReset");
+    	j_freqReset = json_integer_value(jsonObjectFreqReset);
+		json_t* jsonObjectRatioReset = json_object_get(data, "j_ratioReset");
+    	j_ratioReset = json_integer_value(jsonObjectRatioReset);
+		json_t* jsonObjectHardReset = json_object_get(data, "j_hardReset");
+    	j_hardReset = json_integer_value(jsonObjectHardReset);
+		json_t* jsonObjectExponential = json_object_get(data, "j_exponential");
+    	j_exponential = json_integer_value(jsonObjectExponential);
+		json_t* jsonObjectTrigger = json_object_get(data, "j_trigger");
+    	j_trigger = json_integer_value(jsonObjectTrigger);
 	}
 	json_t* dataToJson() override {
 		json_t* data = json_object();
 		MultiRangeParam* ratioParamSave = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		json_object_set_new(data, "RangeSave", json_integer(ratioParamSave->rangeSelection));
 
-		json_object_set_new(data, "freqReset", json_integer(freqReset));
-		json_object_set_new(data, "ratioReset", json_integer(ratioReset));
-		json_object_set_new(data, "hardReset", json_integer(hardReset));
-		json_object_set_new(data, "exponential", json_integer(exponential));
-		json_object_set_new(data, "trigger", json_integer(trigger));
+		json_object_set_new(data, "j_freqReset", json_integer(j_freqReset));
+		json_object_set_new(data, "j_ratioReset", json_integer(j_ratioReset));
+		json_object_set_new(data, "j_hardReset", json_integer(j_hardReset));
+		json_object_set_new(data, "j_exponential", json_integer(j_exponential));
+		json_object_set_new(data, "j_trigger", json_integer(j_trigger));
 
 		return data;
 	}
@@ -500,21 +474,21 @@ struct LiliesWidget : ModuleWidgetEqu {
 			struct FreqResetItem : MenuItem {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
-					module->freqReset = !module->freqReset;
+					module->j_freqReset = !module->j_freqReset;
 				}
 			};
 
 			struct RatioResetItem : MenuItem {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
-					module->ratioReset = !module->ratioReset;
+					module->j_ratioReset = !module->j_ratioReset;
 				}
 			};
 
 			struct HardResetItem : MenuItem {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
-					module->hardReset = !module->hardReset;
+					module->j_hardReset = !module->j_hardReset;
 				}
 			};
 
@@ -523,13 +497,13 @@ struct LiliesWidget : ModuleWidgetEqu {
 				Menu* menu = new Menu;
 				menu->addChild(createMenuLabel("And to god he said:"));
 					//My frequency reset item
-				FreqResetItem* freqResetItem = createMenuItem<FreqResetItem>("Reset on frequency", CHECKMARK(module->freqReset));
+				FreqResetItem* freqResetItem = createMenuItem<FreqResetItem>("Reset on frequency", CHECKMARK(module->j_freqReset));
 				freqResetItem->module = module;
 					//My ratio reset item
-				RatioResetItem* ratioResetItem = createMenuItem<RatioResetItem>("Reset on ratio", CHECKMARK(module->ratioReset));
+				RatioResetItem* ratioResetItem = createMenuItem<RatioResetItem>("Reset on ratio", CHECKMARK(module->j_ratioReset));
 				ratioResetItem->module = module;
 					//My hard reset item
-				HardResetItem* hardResetItem = createMenuItem<HardResetItem>("Hard reset", CHECKMARK(module->hardReset));
+				HardResetItem* hardResetItem = createMenuItem<HardResetItem>("Hard reset", CHECKMARK(module->j_hardReset));
 				hardResetItem->module = module;
 
 				menu->addChild(new MenuSeparator);
@@ -550,14 +524,14 @@ struct LiliesWidget : ModuleWidgetEqu {
 			struct ExpoSwitchItem : MenuItem {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
-					module->exponential = !module->exponential;
+					module->j_exponential = !module->j_exponential;
 					module->resetTrigger = true;
 				}
 			};
 			struct TriggerSwitchItem : MenuItem {
 				Lilies* module;
 				void onAction(const event::Action &e) override {
-					module->trigger = !module->trigger;
+					module->j_trigger = !module->j_trigger;
 					//module->resetTrigger = true;
 				}
 			};
@@ -587,9 +561,9 @@ struct LiliesWidget : ModuleWidgetEqu {
 				menu->addChild(createMenuLabel("Let the waves rise."));
 
 					//My expo switch item
-				ExpoSwitchItem* expoSwitchItem = createMenuItem<ExpoSwitchItem>("Exponential", CHECKMARK(module->exponential));
+				ExpoSwitchItem* expoSwitchItem = createMenuItem<ExpoSwitchItem>("Exponential", CHECKMARK(module->j_exponential));
 				expoSwitchItem->module = module;
-				TriggerSwitchItem* triggerSwitchItem = createMenuItem<TriggerSwitchItem>("Trigger", CHECKMARK(module->trigger));
+				TriggerSwitchItem* triggerSwitchItem = createMenuItem<TriggerSwitchItem>("Trigger", CHECKMARK(module->j_trigger));
 				triggerSwitchItem->module = module;
 					//My range switches
 				RangeZeroItem* rangeZeroItem = createMenuItem<RangeZeroItem>("Range: ±0.5", CHECKMARK(multiRangeParam->rangeSelection == 0));
