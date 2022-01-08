@@ -168,7 +168,7 @@ struct Lilies : Module {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
-		
+		ratioParamPointer->setValue(1.f);
 	}
 	//--------------------------------
 	//        MODULE PROCESS
@@ -178,8 +178,12 @@ struct Lilies : Module {
 		//Checks if module hasn't loaded to set the range
 		if(!moduleHasLoaded) {
 			ratioParamPointer->setRange(ratioParamRange, false);
+			params[RATIO_PARAM].setValue(1.f);
 			moduleHasLoaded = true;
 		}
+		//ratioParamPointer->setValue(1.f);
+		//ratioParamPointer->setDisplayValue(1.f);
+		ratioParamPointer->reset();
 
 		//#region [rgba(100,25,20,0.2)] WORKING Inputs and Atenuator (test atenuator)
 
