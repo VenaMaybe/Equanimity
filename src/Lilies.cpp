@@ -128,7 +128,7 @@ struct Lilies : Module {
 		//MULTIPLE RANGE PARAMITER (Slider)
 			//ParamQuantity ratioRange;
 			MultiRangeParam* ratioParamPointer;
-			int range 	= 1;
+			int ratioParamRange 	= 1;
 			bool moduleHasLoaded 	= false;
 
 		
@@ -177,7 +177,7 @@ struct Lilies : Module {
 
 		//Checks if module hasn't loaded to set the range
 		if(!moduleHasLoaded) {
-			ratioParamPointer->setRange(range, false);
+			ratioParamPointer->setRange(ratioParamRange, false);
 			moduleHasLoaded = true;
 		}
 
