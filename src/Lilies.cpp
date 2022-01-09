@@ -168,8 +168,11 @@ struct Lilies : Module {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 		configParam<MultiRangeParam>(RATIO_PARAM, -10.0, 10.0, 1.0, "Exponential Ratio");
 		ratioParamPointer = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
-		ratioParamPointer->setValue(1.f);
+		//ratioParamPointer->setValue(1.f);
 	}
+
+	bool initedFromJson = false;
+
 	//--------------------------------
 	//        MODULE PROCESS
 	//--------------------------------
@@ -177,13 +180,32 @@ struct Lilies : Module {
 
 		//Checks if module hasn't loaded to set the range
 		if(!moduleHasLoaded) {
-			ratioParamPointer->setRange(ratioParamRange, false);
-			params[RATIO_PARAM].setValue(1.f);
+			ratioParamPointer->setRange(ratioParamRange, true);
+			//ratioParamPointer->setRange(ratioParamRange, true);
+			
+			//ratioParamPointer->setValue(1.f);
+			//params[RATIO_PARAM].setValue(1.f);
+		//	ratioParamPointer->reset();
+
+			//params[RATIO_PARAM].setValue(1);
+			
+			
+
+			DEBUG("DEBUG: module has Loaded");
+
 			moduleHasLoaded = true;
 		}
 		//ratioParamPointer->setValue(1.f);
 		//ratioParamPointer->setDisplayValue(1.f);
-		ratioParamPointer->reset();
+
+		if(initedFromJson) {
+			
+		}
+		
+		params[RATIO_PARAM].setValue(1);
+
+		
+		
 
 		//#region [rgba(100,25,20,0.2)] WORKING Inputs and Atenuator (test atenuator)
 
@@ -203,7 +225,18 @@ struct Lilies : Module {
 		}
 		//#endregion
 		
-		
+		if(DEBUG){
+		//DEBUG("wasLinear     : %s", wasLinear ? "wasLinear TRUE" : "wasLinear FALSE");
+		//DEBUG("ratioOut %f", ratioOut);
+		DEBUG("ratioParamIn %f", ratioParamIn);
+		}
+
+		outputs[DEBUG_OUT].setChannels(4);
+
+		outputs[DEBUG_OUT].setVoltage(clockLength, 0);
+		outputs[DEBUG_OUT].setVoltage(p_phaseClock, 1);
+		outputs[DEBUG_OUT].setVoltage(resetTrigger, 2);
+		outputs[DEBUG_OUT].setVoltage(b_clockLength, 3);
 
 		//#region [rgba(10,25,50,0.5)] WORKING (Processing Clock and Reset Input into Bools)
 
@@ -275,18 +308,6 @@ struct Lilies : Module {
 
 
 
-		if(DEBUG){
-		DEBUG("wasLinear     : %s", wasLinear ? "wasLinear TRUE" : "wasLinear FALSE");
-		DEBUG("ratioOut %f", ratioOut);
-		//DEBUG("i %i", i);
-		}
-
-		outputs[DEBUG_OUT].setChannels(4);
-
-		outputs[DEBUG_OUT].setVoltage(clockLength, 0);
-		outputs[DEBUG_OUT].setVoltage(p_phaseClock, 1);
-		outputs[DEBUG_OUT].setVoltage(resetTrigger, 2);
-		outputs[DEBUG_OUT].setVoltage(b_clockLength, 3);
 		
 
 		
@@ -374,14 +395,17 @@ struct Lilies : Module {
 			//Makes sure resetTrigger is only one sample long;
 		resetTrigger = false;
 	}
-
+	
 	//--------------------------------
 	//           JSON DATA 
 	//--------------------------------
 	void dataFromJson(json_t* data) override {
+		initedFromJson = true;
+		DEBUG("DEBUG: dataFromJson");
 		json_t* jsonObjectRange = json_object_get(data, "RangeSave");
     	//if json file is corrupted
 		if(jsonObjectRange != NULL) {
+			DEBUG("DEBUG: dataFromJson: jsonObjectRange != Null");
 			int range = json_integer_value(jsonObjectRange);
 			ratioParamPointer->setRange(range, false);
 			moduleHasLoaded = true;
@@ -399,6 +423,7 @@ struct Lilies : Module {
     	j_trigger = json_integer_value(jsonObjectTrigger);
 	}
 	json_t* dataToJson() override {
+		DEBUG("DEBUG: dataToJson");
 		json_t* data = json_object();
 		MultiRangeParam* ratioParamSave = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		json_object_set_new(data, "RangeSave", json_integer(ratioParamSave->rangeSelection));
@@ -411,6 +436,8 @@ struct Lilies : Module {
 
 		return data;
 	}
+
+	
 
 };
 
@@ -443,7 +470,12 @@ struct LiliesWidget : ModuleWidgetEqu {
 		Dawn_Slider_One* dawn_slider_one = createParam<Dawn_Slider_One>(mm2px(Vec(6.944 - 1.65, 47.731)), module, Lilies::RATIO_PARAM);
 		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->getParamQuantity());
 
+		//
+		//DEBUG("DEBUG: LiliesWidget Constuctor");
+
 		addParam(dawn_slider_one);
+
+		
 
 		addParam(createParam<Orange_Switch>(mm2px(Vec(13.897, 62.892)), module, Lilies::DEBUG_PARAM));
 
@@ -543,19 +575,19 @@ struct LiliesWidget : ModuleWidgetEqu {
 			struct RangeZeroItem : MenuItem {
 				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
-					multiRangeParam->setRange(0);
+					multiRangeParam->setRange(0, true);
 				}
 			};
 			struct RangeOneItem : MenuItem {
 				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
-					multiRangeParam->setRange(1);
+					multiRangeParam->setRange(1, true);
 				}
 			};
 			struct RangeTwoItem : MenuItem {
 				MultiRangeParam* multiRangeParam;
 				void onAction(const event::Action &e) override {
-					multiRangeParam->setRange(2);
+					multiRangeParam->setRange(2, true);
 					
 				}
 			};

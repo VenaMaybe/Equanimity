@@ -16,7 +16,8 @@ using namespace rack;
 		//selector to make checkmarks :>
 		int rangeSelection;
 
-		void setRange(int rangeChoice, bool normalize = true) {
+		void setRange(int rangeChoice, bool normalize) {
+			DEBUG("DEBUG: ModuleWidget used: MultiRangeParam setRange");
 			rangeSelection = rangeChoice;
 			float normalized;
 			if(normalize) {
@@ -103,7 +104,7 @@ using namespace rack;
 			SvgPanelCustomBg* panel = new SvgPanelCustomBg;
 			panel->SvgPanelCustomBg::setBackground(svg);
 			ModuleWidget::setPanel(panel);
-			DEBUG("ModuleWidget used");
+			DEBUG("DEBUG: ModuleWidget used: setPanelNoBg");
 		}
 	};
 
