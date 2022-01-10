@@ -34,6 +34,7 @@
 		Remember if resetting too soon you do not allow for the divisions to occure! :)
 */
 
+//Function for I have absolutly no idea WHY DID I USE BRANCHLESS CODE
 double divCurve(double ratioIn, double ratioOut, double ratioBase) {
 	//Brancheless x+/1 and 1/x+ depending on input!
 	ratioIn = (ratioBase < 0) * (-2 * ratioIn) + ratioIn;
@@ -50,7 +51,7 @@ double divCurve(double ratioIn, double ratioOut, double ratioBase) {
 struct Lilies : Module {
 	enum ParamIds {
 		RATIO_PARAM,
-		DEBUG_PARAM,
+		//DEBUG: DEBUG_PARAM,
 		NUM_PARAMS
 	};
 	enum InputIds {
@@ -66,7 +67,7 @@ struct Lilies : Module {
 		THREE_OUTPUT,
 		FOUR_OUTPUT,
 		FIVE_OUTPUT,
-		DEBUG_OUT,
+		//DEBUG: DEBUG_OUT,
 		NUM_OUTPUTS
 	};
 	enum LightIds {
@@ -93,8 +94,13 @@ struct Lilies : Module {
 		//RESET TRIGGERS
 			dsp::BooleanTrigger 	resetBooleanTrigger;	//Detects change
 			bool resetTrigger 		= false;				//A one sample trigger
+			bool resetTFF 			= false;				//Reset T-Flip FLop
 
-			bool resetTFF 			= false;	
+		//OUTPUT TRIGGER
+			bool triggerOutPulse[5]	= {false, false, false, false, false};
+
+		//OUTPUT GENERATOR
+			dsp::PulseGenerator generatorMult[5];
 
 		//HISTORY BUFFERS (start all buffers with b_)
 			bool b_clockSchmitt		= false;
@@ -105,12 +111,12 @@ struct Lilies : Module {
 		//CONTEXT MENU RESET OPTIONS (Water)
 			//(items stored in json start with j_)
 				//Reset on frequency change
-			bool j_freqReset 			= true;
+			bool j_freqReset 		= true;
 				//Reset on ratio change
 			bool j_ratioReset 		= false;
 			bool ratioStill 		= false;
 				//Hard reset (all channels)
-			bool j_hardReset 			= false;
+			bool j_hardReset 		= false;
 
 		//CONTEXT MENU OUTPUT OPTIONS
 			bool j_exponential		= true;
@@ -118,49 +124,21 @@ struct Lilies : Module {
 
 		//PHASE ACCUMULATORS (start all phase accumulators with p_)
 			double p_phaseClock 	= 1.0;
+			double p_phaseMult[5] 	= {0.0, 0.0, 0.0, 0.0, 0.0};
 			
 		//LENGTH VARIABLES
 			double clockLength 		= 100.0;
+			double pulseLength[5]	= {0.0, 0.0, 0.0, 0.0, 0.0};
 
 		//EQUATION OUTPUT
 			double ratioOut			= 0.0;
+			double multLevel[5]		= {0.0, 0.0, 0.0, 0.0, 0.0};
 
 		//MULTIPLE RANGE PARAMITER (Slider)
-			//ParamQuantity ratioRange;
 			MultiRangeParam* ratioParamPointer;
 			int ratioParamRange 	= 1;
 			bool moduleHasLoaded 	= false;
-
 		
-
-
-
-		//Calculating the multiplications
-		double levelMult[5];
-			//phase time for mult, clock cycle / level mult;
-		double phaseTimeFM[5];
-		double phaseMult[5] =  {0.0, 0.0, 0.0, 0.0, 0.0};
-		bool  triggerMult[5];
-		dsp::PulseGenerator generatorMult[5];
-		
-		
-		//Ratio
-		//Ratio y = b^x (for expo)
-		//int ratioIn = 2.0;// x										CHANGE: FROM DOUBLE TO INT
-		//double ratioOut;	// y
-		//double ratioBase;	// b
-		
-		
-		//Context Menu
-			//Waves
-		
-						//implimented (+-0.5, +-2, +-10) (0, 1, 2)
-		
-
-
-
-		//ParamQuantity ratioRange;
-
 	//--------------------------------
 	//       MODULE CONSTRUCTOR
 	//--------------------------------
@@ -171,17 +149,13 @@ struct Lilies : Module {
 		//ratioParamPointer->setValue(1.f);
 	}
 
-	bool zxc = true;
-
 	//--------------------------------
 	//        MODULE PROCESS
 	//--------------------------------
-
 	void onAdd(const AddEvent& e) override {
 		if(!moduleHasLoaded) {
 			ratioParamPointer->setRange(ratioParamRange, false);
-		}
-        
+		}        
 	}
 
 	void process(const ProcessArgs& args) override {
@@ -193,7 +167,7 @@ struct Lilies : Module {
 		clockInput = inputs[CLOCK_INPUT].getVoltage();
 		resetInput = inputs[RESET_INPUT].getVoltage();
 			//Temporary debug switch
-		bool DEBUG = params[DEBUG_PARAM].getValue();
+		//DEBUG: bool DEBUG = params[DEBUG_PARAM].getValue();
 
 		if(inputs[RATIO_CV_INPUT].isConnected()) {
 			ratioInput = inputs[RATIO_CV_INPUT].getVoltage();
@@ -264,20 +238,11 @@ struct Lilies : Module {
 		}
 		//#endregion
 
-		if(DEBUG){
-		//DEBUG("wasLinear     : %s", wasLinear ? "wasLinear TRUE" : "wasLinear FALSE");
-		//DEBUG("ratioOut %f", ratioOut);
-		DEBUG("ratioParamIn %f", ratioParamIn);
-		}
-
-		outputs[DEBUG_OUT].setChannels(1);
-
-		outputs[DEBUG_OUT].setVoltage(resetTrigger, 0);
-		//outputs[DEBUG_OUT].setVoltage(p_phaseClock, 1);
+		
 
 		//#region [rgba(20,255,56,0.06)]
 
-			//Calculates
+			//Calculates distance between rising edges of incoming clock
 		if(risingEdge) {
 			b_clockLength = clockLength;
 			clockLength = p_phaseClock;
@@ -285,13 +250,6 @@ struct Lilies : Module {
 		}
 		p_phaseClock += args.sampleTime;
 		//#endregion
-		
-
-
-
-		
-
-		
 
 		//--------------------------------
 		// FOR - EACH OUTPUT (FIVE)
@@ -307,7 +265,7 @@ struct Lilies : Module {
 			if(!j_exponential)
 			{
 					//Liniar Graphed Curve
-				levelMult[i] = divCurve(ratioIn, ratioOut, ratioInput);
+				multLevel[i] = divCurve(ratioIn, ratioOut, ratioInput);
 					//For context menu when changing to expo
 				wasLinear = true;
 			}
@@ -315,7 +273,7 @@ struct Lilies : Module {
 			{
 				if(ratioInput != b_ratioInput[1] || wasLinear) {
 					ratioOut = std::pow(2, (ratioInput * ratioIn));
-					levelMult[i] = ratioOut;
+					multLevel[i] = ratioOut;
 						//when coming from liniar to j_exponential
 					if(i == 4) {
 						wasLinear = false;
@@ -326,9 +284,7 @@ struct Lilies : Module {
 
 
 			
-
-			//Set the goal for the rising phase
-			phaseTimeFM[i] = clockLength / levelMult[i];
+			//#region [rgba(200,25,150,0.05)]
 			
 			//Reset stuff buffer;
 			if(resetTrigger) {
@@ -336,44 +292,60 @@ struct Lilies : Module {
 			}
 			if(risingEdge && resetTFF) {
 				if(j_hardReset) {
-					triggerMult[i] = true;
+					triggerOutPulse[i] = true;
 				}
-				phaseMult[0] = phaseMult[1] = phaseMult[2] = phaseMult[3] = phaseMult[4] = 0.0;
-				//expoTFFforChange = true;
+				p_phaseMult[0] = p_phaseMult[1] = p_phaseMult[2] = p_phaseMult[3] = p_phaseMult[4] = 0.0;
 				p_phaseClock = 0.0;
 				if(i == 4) {
 					resetTFF = false;
 				}
 			}
+			//#endregion
 
-			//Calculates the multiplication phase level?
-			phaseMult[i] += args.sampleTime;
-			
-			if (phaseMult[i] >= phaseTimeFM[i]) {
-			//	phaseMult[i] = 0.0;
-				phaseMult[i] -= phaseTimeFM[i];
-				triggerMult[i] = true;
+
+
+			//#region [rgba(200,0,255,0.05)]
+
+			//Set the goal for the rising phase
+			pulseLength[i] = clockLength / multLevel[i];
+
+			//Phase accumulator to determin output
+			p_phaseMult[i] += args.sampleTime;
+
+			//triggers output pulse when mult/div correct
+			if (p_phaseMult[i] >= pulseLength[i]) {
+				//p_phaseMult[i] = 0.0;
+				p_phaseMult[i] -= pulseLength[i];
+				triggerOutPulse[i] = true;
 			}
+			//#endregion
+
+
+
+			//#region [rgba(255,25,150,0.05)]
 
 			//Pulse generator section
-			if (triggerMult[i]) {
+			if (triggerOutPulse[i]) {
 				generatorMult[i].reset(); //Stinky branchless stuff to learn
-				generatorMult[i].trigger( ((1e-3f) * j_trigger) + (((clockLength / levelMult[i]) / 2) * !j_trigger) );
+				generatorMult[i].trigger( ((1e-3f) * j_trigger) + (((clockLength / multLevel[i]) / 2) * !j_trigger) );
 			}
+
 			bool outHigh = generatorMult[i].process(args.sampleTime);
+			//#endregion
+
+
+
+			//#region [rgba(255,100,255,0.05)]
 			
 			//Outputs
-				//outputs[i].setVoltage(10.0 * triggerMult[i]);
 			outputs[i].setVoltage(10.0 * outHigh);
 
-			//Trigger Reset
-			triggerMult[i] = false;
+			//Makes sure pulse trigger is one sample long;
+			triggerOutPulse[i] = false;
+			//#endregion
 		}
-
 		
-
-		
-			//Makes sure resetTrigger is only one sample long;
+		//Makes sure resetTrigger is only one sample long;
 		resetTrigger = false;
 	}
 	
@@ -381,11 +353,9 @@ struct Lilies : Module {
 	//           JSON DATA 
 	//--------------------------------
 	void dataFromJson(json_t* data) override {
-		DEBUG("DEBUG: dataFromJson");
 		json_t* jsonObjectRange = json_object_get(data, "RangeSave");
     	//if json file is corrupted
 		if(jsonObjectRange != NULL) {
-			DEBUG("DEBUG: dataFromJson: jsonObjectRange != Null");
 			int range = json_integer_value(jsonObjectRange);
 			ratioParamPointer->setRange(range, false);
 			moduleHasLoaded = true;
@@ -402,8 +372,8 @@ struct Lilies : Module {
 		json_t* jsonObjectTrigger = json_object_get(data, "j_trigger");
     	j_trigger = json_integer_value(jsonObjectTrigger);
 	}
+
 	json_t* dataToJson() override {
-		DEBUG("DEBUG: dataToJson");
 		json_t* data = json_object();
 		MultiRangeParam* ratioParamSave = reinterpret_cast<MultiRangeParam*>(paramQuantities[RATIO_PARAM]);
 		json_object_set_new(data, "RangeSave", json_integer(ratioParamSave->rangeSelection));
@@ -416,9 +386,6 @@ struct Lilies : Module {
 
 		return data;
 	}
-
-	
-
 };
 
 
@@ -432,7 +399,7 @@ struct LiliesWidget : ModuleWidgetEqu {
 	std::shared_ptr<Svg> dawn_svg;
 	std::shared_ptr<Svg> sketch_svg;
 
-	// PANEL WIDGETS
+	//PANEL WIDGETS:
 	LiliesWidget(Lilies* module) {
 		setModule(module);
 			//make header file full of skins ~-=WORK IN PROGRESS=-~
@@ -450,28 +417,22 @@ struct LiliesWidget : ModuleWidgetEqu {
 		Dawn_Slider_One* dawn_slider_one = createParam<Dawn_Slider_One>(mm2px(Vec(6.944 - 1.65, 47.731)), module, Lilies::RATIO_PARAM);
 		multiRangeParam = reinterpret_cast<MultiRangeParam*>(dawn_slider_one->getParamQuantity());
 
-		//
-		//DEBUG("DEBUG: LiliesWidget Constuctor");
-
 		addParam(dawn_slider_one);
-
 		
-
-		addParam(createParam<Orange_Switch>(mm2px(Vec(13.897, 62.892)), module, Lilies::DEBUG_PARAM));
+		//DEBUG: addParam(createParam<Orange_Switch>(mm2px(Vec(13.897, 62.892)), module, Lilies::DEBUG_PARAM));
 
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 19.894)), module, Lilies::RESET_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 35.134)), module, Lilies::CLOCK_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 78.208)), module, Lilies::RATIO_CV_INPUT));
-	//	addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::SECRET_INPUT));
+		//addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::SECRET_INPUT));
 
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 19.894)), module, Lilies::ONE_OUTPUT));
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 35.134)), module, Lilies::TWO_OUTPUT));
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 53.386)), module, Lilies::THREE_OUTPUT));
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 78.208)), module, Lilies::FOUR_OUTPUT));
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(22.86, 107.277)), module, Lilies::FIVE_OUTPUT));
-
-
-		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::DEBUG_OUT));
+		
+		//DEBUG: addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.62, 107.277)), module, Lilies::DEBUG_OUT));
 
 		// mm2px(Vec(28.876, 7.342))
 		addChild(createWidget<Widget>(mm2px(Vec(0.802, 0.827))));
@@ -531,7 +492,7 @@ struct LiliesWidget : ModuleWidgetEqu {
 			};
 		};
 
-//		menu->addChild(new MenuSeparator);
+		//menu->addChild(new MenuSeparator);
 		//Remember it's like a train line of pointers ponting to pointers
 		struct RangeMenuItem : MenuItem {
 			Lilies* module;
@@ -613,14 +574,8 @@ struct LiliesWidget : ModuleWidgetEqu {
 		rangeItem->multiRangeParam = this->multiRangeParam;
 		menu->addChild(rangeItem);
 
-
-
-
-		
-
 		menu->addChild(new MenuSeparator);
-	//	menu->addChild(createMenuLabel("Hight of the waves"));
-
+		//menu->addChild(createMenuLabel("Hight of the waves"));
 	}
 };
 
