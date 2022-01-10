@@ -171,41 +171,20 @@ struct Lilies : Module {
 		//ratioParamPointer->setValue(1.f);
 	}
 
-	bool initedFromJson = false;
+	bool zxc = true;
 
 	//--------------------------------
 	//        MODULE PROCESS
 	//--------------------------------
-	void process(const ProcessArgs& args) override {
 
-		//Checks if module hasn't loaded to set the range
+	void onAdd(const AddEvent& e) override {
 		if(!moduleHasLoaded) {
-			ratioParamPointer->setRange(ratioParamRange, true);
-			//ratioParamPointer->setRange(ratioParamRange, true);
-			
-			//ratioParamPointer->setValue(1.f);
-			//params[RATIO_PARAM].setValue(1.f);
-		//	ratioParamPointer->reset();
-
-			//params[RATIO_PARAM].setValue(1);
-			
-			
-
-			DEBUG("DEBUG: module has Loaded");
-
-			moduleHasLoaded = true;
+			ratioParamPointer->setRange(ratioParamRange, false);
 		}
-		//ratioParamPointer->setValue(1.f);
-		//ratioParamPointer->setDisplayValue(1.f);
+        
+	}
 
-		if(initedFromJson) {
-			
-		}
-		
-		params[RATIO_PARAM].setValue(1);
-
-		
-		
+	void process(const ProcessArgs& args) override {
 
 		//#region [rgba(100,25,20,0.2)] WORKING Inputs and Atenuator (test atenuator)
 
@@ -400,7 +379,6 @@ struct Lilies : Module {
 	//           JSON DATA 
 	//--------------------------------
 	void dataFromJson(json_t* data) override {
-		initedFromJson = true;
 		DEBUG("DEBUG: dataFromJson");
 		json_t* jsonObjectRange = json_object_get(data, "RangeSave");
     	//if json file is corrupted
