@@ -204,18 +204,7 @@ struct Lilies : Module {
 		}
 		//#endregion
 		
-		if(DEBUG){
-		//DEBUG("wasLinear     : %s", wasLinear ? "wasLinear TRUE" : "wasLinear FALSE");
-		//DEBUG("ratioOut %f", ratioOut);
-		DEBUG("ratioParamIn %f", ratioParamIn);
-		}
-
-		outputs[DEBUG_OUT].setChannels(4);
-
-		outputs[DEBUG_OUT].setVoltage(clockLength, 0);
-		outputs[DEBUG_OUT].setVoltage(p_phaseClock, 1);
-		outputs[DEBUG_OUT].setVoltage(resetTrigger, 2);
-		outputs[DEBUG_OUT].setVoltage(b_clockLength, 3);
+		
 
 		//#region [rgba(10,25,50,0.5)] WORKING (Processing Clock and Reset Input into Bools)
 
@@ -251,10 +240,12 @@ struct Lilies : Module {
 			for(int i = 0; i < 14; i++) {
 				if(b_ratioInput[i] != b_ratioInput[14] || b_ratioInput[i] == b_ratioInput[15]) {
 					ratioStill = false;
+				} else {
+					resetTrigger = true;
 				}
 			}
 			
-			resetTrigger = ratioStill;
+			//resetTrigger = ratioStill;
 		}
 			//We put this outside the if for use in pow optimization
 		b_ratioInput.rotate(1);
@@ -267,11 +258,22 @@ struct Lilies : Module {
 
 			//Resets if frequency changes by 10 * sampleTime
 		if(j_freqReset) {
-			resetTrigger = !isNear(clockLength, b_clockLength, 10 * args.sampleTime);
+			if(!isNear(clockLength, b_clockLength, 10 * args.sampleTime)) {
+				resetTrigger = true;
+			}
 		}
 		//#endregion
 
-		
+		if(DEBUG){
+		//DEBUG("wasLinear     : %s", wasLinear ? "wasLinear TRUE" : "wasLinear FALSE");
+		//DEBUG("ratioOut %f", ratioOut);
+		DEBUG("ratioParamIn %f", ratioParamIn);
+		}
+
+		outputs[DEBUG_OUT].setChannels(1);
+
+		outputs[DEBUG_OUT].setVoltage(resetTrigger, 0);
+		//outputs[DEBUG_OUT].setVoltage(p_phaseClock, 1);
 
 		//#region [rgba(20,255,56,0.06)]
 
