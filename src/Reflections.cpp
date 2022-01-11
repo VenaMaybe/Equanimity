@@ -270,17 +270,17 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		addParam(createParam<Dawn_Slider_One>(mm2px(Vec(10.752, 17.284)), module, Reflections::SLEW_SLIDER_PARAM));
 		addParam(createParam<Dawn_Slider_One>(mm2px(Vec(14.712, 17.284)), module, Reflections::LATCH_SLIDER_PARAM));
 
-		addParam(createParam<Orange_Switch>(mm2px(Vec(7.897, 62.892)), module, Reflections::GATE_SWITCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(3.372, 62.892)), module, Reflections::LATCH_SWITCH_PARAM));
-		addParam(createParam<Orange_Switch>(mm2px(Vec(12.449, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(10.16, 63.586)), module, Reflections::GATE_SWITCH_PARAM));
+		addParam(createParam<Orange_Switch>(mm2px(Vec(3.372, 63.586)), module, Reflections::LATCH_SWITCH_PARAM));
+		//addParam(createParam<Orange_Switch>(mm2px(Vec(12.449, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
 
-		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 18.835)), module, Reflections::A_INPUT));
-		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 52.478)), module, Reflections::B_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 19.894)), module, Reflections::A_INPUT));
+		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 53.386)), module, Reflections::B_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 78.208)), module, Reflections::LATCH_CV_INPUT));
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(10.16, 93.763)), module, Reflections::SLEW_CV_INPUT));
 
-		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 30.05)), module, Reflections::GREATER_OUTPUT));
-		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 41.264)), module, Reflections::LESSER_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 31.058)), module, Reflections::GREATER_OUTPUT));
+		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 42.222)), module, Reflections::LESSER_OUTPUT));
 
 		// mm2px(Vec(0.655, 36.46))
 		addChild(createWidget<Widget>(mm2px(Vec(14.057, 17.284))));
