@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="3.9600101mm"
+   height="33.492039mm"
+   viewBox="0 0 3.9600101 33.492039"
+   version="1.1"
+   id="svg3653"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="black_slider_bg_invis.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview3655"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="7.5893747"
+     inkscape:cx="12.188092"
+     inkscape:cy="66.606278"
+     inkscape:window-width="1795"
+     inkscape:window-height="1003"
+     inkscape:window-x="186"
+     inkscape:window-y="137"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs3650" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-103.72517,-82.253983)">
+    <rect
+       style="display:inline;fill:#ff74a2;fill-opacity:0;stroke:none;stroke-width:0.0336558;stroke-linecap:square;paint-order:stroke fill markers;stop-color:#000000"
+       id="LATCH_SLIDER"
+       width="3.9600101"
+       height="33.492039"
+       x="103.72517"
+       y="82.253983" />
+  </g>
+</svg>

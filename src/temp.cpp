@@ -54,10 +54,10 @@ struct TempWidget : ModuleWidget {
 		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(10.752, 17.284)), module, Temp::SLEW_SLIDER_PARAM));
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(14.712, 17.284)), module, Temp::LATCH_SLIDER_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(10.752, 19.894)), module, Temp::SLEW_SLIDER_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(14.712, 19.894)), module, Temp::LATCH_SLIDER_PARAM));
 		addParam(createParam<RoundBlackKnob>(mm2px(Vec(3.372, 63.586)), module, Temp::LATCH_SWITCH_PARAM));
-		addParam(createParam<RoundBlackKnob>(mm2px(Vec(10.16, 63.586)), module, Temp::GATE_SWITCH_PARAM));
+		addParam(createParam<RoundBlackKnob>(mm2px(Vec(10.16, 63.586)), module, Temp::RECT12144_PARAM));
 
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 19.894)), module, Temp::A_INPUT));
 		addInput(createInputCentered<PJ301MPort>(mm2px(Vec(7.265, 53.386)), module, Temp::B_INPUT));
@@ -67,10 +67,10 @@ struct TempWidget : ModuleWidget {
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 31.058)), module, Temp::GREATER_OUTPUT));
 		addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(7.265, 42.222)), module, Temp::LESSER_OUTPUT));
 
-		// mm2px(Vec(0.655, 36.46))
-		addChild(createWidget<Widget>(mm2px(Vec(14.057, 17.284))));
-		// mm2px(Vec(0.655, 36.46))
-		addChild(createWidget<Widget>(mm2px(Vec(14.712, 17.284))));
+		// mm2px(Vec(0.655, 33.492))
+		addChild(createWidget<Widget>(mm2px(Vec(14.057, 19.894))));
+		// mm2px(Vec(0.655, 33.492))
+		addChild(createWidget<Widget>(mm2px(Vec(14.712, 19.894))));
 	}
 };
 

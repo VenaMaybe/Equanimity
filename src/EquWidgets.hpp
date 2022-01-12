@@ -6,9 +6,11 @@
 
 #include <rack.hpp>
 #include <cmath>
-#include "Equanimity.hpp"
+//#include "Equanimity.hpp"
 
 using namespace rack;
+//using namespace app;
+
 
 //VCV OVERRIDING:
 		//TODO: Rename and make it easier to set switch cases
@@ -17,7 +19,7 @@ using namespace rack;
 		int rangeSelection;
 
 		void setRange(int rangeChoice, bool normalize) {
-			DEBUG("DEBUG: ModuleWidget used: MultiRangeParam setRange");
+			//DEBUG("DEBUG: ModuleWidget used: MultiRangeParam setRange");
 			rangeSelection = rangeChoice;
 			float normalized;
 			if(normalize) {
@@ -93,11 +95,6 @@ using namespace rack;
 
 		//Custom module widget without outline!
 	struct ModuleWidgetEqu : ModuleWidget {
-
-		
-		//void setPanel(widget::Widget* panel);
-
-
 		//using ModuleWidget::setPanel;
 		void setPanelNoBg(std::shared_ptr<window::Svg> svg) {
 			// Create SvgPanel
@@ -107,6 +104,24 @@ using namespace rack;
 			DEBUG("DEBUG: ModuleWidget used: setPanelNoBg");
 		}
 	};
+
+	//=-=-=-=-=-=-=-=-=-=-=-=-----
+
+	struct SvgSwitchNoShadow : app::SvgSwitch {
+		SvgSwitchNoShadow() {
+			shadow->hide();
+			//removeChild(shadow);
+			//delete shadow;
+			//shadow = NULL;
+		}
+	};
+
+	
+
+
+
+
+
 
 //DATA STRCTURES:
 		//Ring buffer

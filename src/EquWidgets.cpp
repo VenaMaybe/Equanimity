@@ -1,5 +1,7 @@
 #include "EquWidgets.hpp"
 
+
+
 /*
 float SlewLimiter::slewLimit(float signalIn, const Module::ProcessArgs& args, float riseIn, float fallIn) {
 
@@ -126,11 +128,9 @@ previousOutA = outA;
     bA.rotate(1);
 */
 
-
 // //exp();
 // //float passThroughB
 // //float passThroughA = (bufferASum / 500) - (signalIn);
-
 
 // bufferSum -= bA[bufferSize - 1];
 // bA[0] = signalIn;
@@ -138,7 +138,6 @@ previousOutA = outA;
 //                                                     //DEBUG("signalIn: %f", signalIn);
 
 // float mAFilter = 0.f;
-
 
 // //TESTING FOR NAN
 // /*
@@ -187,15 +186,10 @@ previousOutA = outA;
 // float outA = 0.f;
 // outA = weight * rMS;
 
-
-
 // //TESTOUT = rMS;
 
 // bA.rotate(1);
 // bRMS.rotate(1);
-
-
-
 
 //         //Keeping the moving Sum stable!
 // //    bufferASum -= bufferA[bufferSize - 1];
@@ -242,13 +236,10 @@ previousOutA = outA;
 // float outD = bufferDSum / bufferSize;
 // */  
 
-    
 //     out = outA;
 //     return out;
 
 // }
-
-
 
 /*
 
@@ -295,13 +286,93 @@ previousOutA = outA;
 
 
 
+//--------------------------------
+//       VCV REDEFINITIONS
+//--------------------------------
+
+/*
+
+SvgSwitch::SvgSwitch() {
+	fb = new widget::FramebufferWidget;
+	addChild(fb);
+
+	shadow = new CircularShadow;
+	fb->addChild(shadow);
+	shadow->box.size = math::Vec();
+
+	sw = new widget::SvgWidget;
+	fb->addChild(sw);
+}
 
 
+SvgSwitch::~SvgSwitch() {
+}
 
 
+void SvgSwitch::addFrame(std::shared_ptr<window::Svg> svg) {
+	frames.push_back(svg);
+	// If this is our first frame, automatically set SVG and size
+	if (!sw->svg) {
+		sw->setSvg(svg);
+		box.size = sw->box.size;
+		fb->box.size = sw->box.size;
+		// Move shadow downward by 10%
+		shadow->box.size = sw->box.size;
+		shadow->box.pos = math::Vec(0, sw->box.size.y * 0.10);
+	}
+}
 
 
+void SvgSwitch::onDragStart(const DragStartEvent& e) {
+	Switch::onDragStart(e);
+	if (e.button != GLFW_MOUSE_BUTTON_LEFT)
+		return;
 
+	// Set down frame if latch
+	if (latch) {
+		if (frames.size() >= 2) {
+			sw->setSvg(frames[1]);
+			fb->setDirty();
+		}
+	}
+}
+
+
+void SvgSwitch::onDragEnd(const DragEndEvent& e) {
+	Switch::onDragEnd(e);
+	if (e.button != GLFW_MOUSE_BUTTON_LEFT)
+		return;
+
+	// Set up frame if latch
+	if (latch) {
+		if (frames.size() >= 1) {
+			sw->setSvg(frames[0]);
+			fb->setDirty();
+		}
+	}
+}
+
+
+void SvgSwitch::onChange(const ChangeEvent& e) {
+	if (!latch) {
+		engine::ParamQuantity* pq = getParamQuantity();
+		if (!frames.empty() && pq) {
+			int index = (int) std::round(pq->getValue() - pq->getMinValue());
+			index = math::clamp(index, 0, (int) frames.size() - 1);
+			sw->setSvg(frames[index]);
+			fb->setDirty();
+		}
+	}
+	ParamWidget::onChange(e);
+}
+
+
+*/
+
+
+//--------------------------------
+//        MY OWN STRUCTS
+//--------------------------------
 
 
 
