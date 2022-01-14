@@ -22,6 +22,7 @@ struct Reflections : Module {
 		NUM_OUTPUTS
 	};
 	enum LightIds {
+		SLIDER_RIGHT_LIGHT,
 		NUM_LIGHTS
 	};
 //--- Variables ----//
@@ -52,21 +53,6 @@ struct Reflections : Module {
 	MovingAverageFourPass inA_MAFP{4096};
 	MovingAverageFourPass inB_MAFP{4096};
 	unsigned int desiredBufferSizeCurrent = 0;
-	
-
-
-	// MovingAverageFourPass sS{4096}; //4096, 2048
-	// MovingAverageFourPass sS2{4096};
-	// MovingAverage test{4096};
-	// MovingAverage test2{4096};
-	// SmoothSin smoothSineTest{16392};
-
-	// SlopeSmoothStack oldSinTest{16392};
-
-	
-
-	
-
 
 	Reflections() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -78,9 +64,6 @@ struct Reflections : Module {
 	}
 
 	//TODO cv input and panel and switch to v2 for lights
-
-	float temp = 0.f;
-
 	void process(const ProcessArgs& args) override 
 	{
 		//Inputs
@@ -149,7 +132,7 @@ struct Reflections : Module {
 	outputs[GREATER_OUTPUT].setVoltage(outA);
 	outputs[LESSER_OUTPUT].setVoltage(outB);
 
-	
+	lights[SLIDER_RIGHT_LIGHT].setBrightness(1.f);
 	
 
 
@@ -247,18 +230,60 @@ struct Reflections : Module {
 	}
 
 	
+
 };
 
+struct SliderRightDisplay : ModuleLightWidget {
+	//Reflections* module;
+	Dawn_Slider_Light_Right* dawn_slider_light_right;
 
+	SliderRightDisplay() {
+		dawn_slider_light_right = new Dawn_Slider_Light_Right();
+		addChild(dawn_slider_light_right);
+
+		//nvgRGB takes 0-255, nvgRGBf takes 0-1 floats
+		addBaseColor(nvgRGBf(0.f,1.f,0.f));
+		box.size = dawn_slider_light_right->box.size;
+		dawn_slider_light_right->box.pos = Vec(0,0);
+	}
+
+	/*
+	~SliderRightDisplay() {
+		event::Remove eRemove;
+		dawn_slider_light_right->onRemove(eRemove);
+		delete dawn_slider_light_right;
+	}
+	*/
+
+	void drawLayer(const DrawArgs& args, int layer) override {
+		//if(!module) {
+		//	return;
+		//}
+		//Change position in step method with box.pos
+
+		if(layer == 1) {
+			//dawn_slider_light_right->draw(args);
+
+			//Kinda like a bg to fg crossfader!
+			nvgGlobalCompositeBlendFunc(args.vg, NVG_ONE_MINUS_DST_COLOR, NVG_ONE);
+			nvgSave(args.vg);
+			nvgTranslate(args.vg,mm2px(-0.84),0);
+			drawHalo(args);
+			nvgRestore(args.vg);
+		}
+
+		Widget::drawLayer(args, layer);
+	}
+};
 
 
 
 struct ReflectionsWidget : ModuleWidgetEqu {
 	//PanelBorderNoOutline* noBorder;
 
+	SliderRightDisplay* slider_right_display;
 	ReflectionsWidget(Reflections* module) {
-		//module = reinterpret_cast<PanelBorderNoOutline*>(module->set());
-
+		//TODO: SKIN STUFF LATER!!!
 		ModuleWidgetEqu::setModule(module);
 		ModuleWidgetEqu::setPanelNoBg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/dawn/reflections_dawn.svg")));
 		
@@ -266,20 +291,16 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		//pb->box.size = mm2px(Vec(0, 55.06));
 		//addChild(pb);
 
-	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-	//	addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-	//	addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		
+		
 
+		//addParam(createLightParamCentered<VCVLightSlider<YellowLight>>(mm2px(Vec(6.604, 33.605)), module, VCMixer::LVL_PARAMS + 0, VCMixer::LVL_LIGHTS + 0));
+
+		//MY PARAMS
 		addParam(createParam<Dawn_Slider_Left>(mm2px(Vec(10.752, 19.894)), module, Reflections::SLEW_SLIDER_PARAM));
 		addParam(createParam<Dawn_Slider_Right>(mm2px(Vec(14.712, 19.894)), module, Reflections::LATCH_SLIDER_PARAM));
 
 		Dawn_Button_Latch* dawn_button_latch = createParam<Dawn_Button_Latch>(mm2px(Vec(10.16, 63.586)), module, Reflections::GATE_SWITCH_PARAM);
-		
-		//if(module != NULL) {
-		//	dawn_button_latch->clearChildren();
-		//}
-
 		addParam(dawn_button_latch);
 		
 		addParam(createParam<Dawn_Button_Latch>(mm2px(Vec(3.372, 63.586)), module, Reflections::LATCH_SWITCH_PARAM));
@@ -294,14 +315,32 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		addOutput(createOutputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 42.222)), module, Reflections::LESSER_OUTPUT));
 
 		// mm2px(Vec(0.655, 36.46))
-		addChild(createWidget<Widget>(mm2px(Vec(14.057, 19.894))));
+		//addChild(createWidget<Widget>(mm2px(Vec(14.057, 19.894))));
 		// mm2px(Vec(0.655, 36.46))
-		addChild(createWidget<Widget>(mm2px(Vec(14.712, 19.894))));
+		//addChild(createWidget<Widget>(mm2px(Vec(14.712, 19.894))));
+
+		//MY DISPLAYS
+
+		
+		
+		//Dawn_Slider_Light_Right* dawn_slider_light_right; = new Dawn_Slider_Light_Right();
+		//slider_right_display->module = module;
+		//slider_right_display->box.pos = mm2px(Vec(14.712, 19.894));
+
+		slider_right_display = createLight<SliderRightDisplay>(mm2px(Vec(14.712, 19.894)),module,Reflections::SLIDER_RIGHT_LIGHT);
+		addChild(slider_right_display);
+		
 	}
 
-	//void step() override {
-	//
-	//}
+	void step() override {
+		if(module) {
+			Reflections* my_module = reinterpret_cast<Reflections*>(module);
+			//TODO: scale by size of slider, add pos of slider as well so it starts correctly
+			slider_right_display->box.pos = mm2px(Vec(14.712, 19.894 - 2.06 + rescale(my_module->inputs[my_module->A_INPUT].getVoltage(), -10, 10, 0, 33.49)));
+		}
+		
+		ModuleWidget::step();
+	}
 
 };
 

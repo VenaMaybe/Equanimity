@@ -132,6 +132,27 @@ struct Dawn_Slider_Left : app::SvgSlider
 	}
 };
 
+//Slider lights
+
+struct Dawn_Slider_Light_Right : SvgWidget {
+	Dawn_Slider_Light_Right() {
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_light_right.svg")));
+	}
+	void draw(const DrawArgs& args) override {
+		Widget::draw(args);
+	}
+	void drawLayer(const DrawArgs& args, int layer) override {
+		if(args.fb) {
+			//If we're in the module browser!
+			SvgWidget::draw(args);
+		} else if(layer == 1) {
+			//If we're on the light layer!
+			SvgWidget::draw(args);
+		}
+	}
+};
+
+//Buttons
 struct Dawn_Button_Latch : SvgSwitchNoShadow {
 	Dawn_Button_Latch()
 	{
@@ -162,7 +183,7 @@ struct TriangleThingi : SvgWidget
 
 
 
-//  Utility
+//  Utility (not used)
 	//Gate handler struct
 struct gateHandler {
 	//float to gate function, pass float return gate

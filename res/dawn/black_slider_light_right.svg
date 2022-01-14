@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="2.4464788mm"
+   height="4.1173401mm"
+   viewBox="0 0 2.4464788 4.1173401"
+   version="1.1"
+   id="svg1023"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="black_slider_light_right.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1025"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="32"
+     inkscape:cx="-0.90625"
+     inkscape:cy="8.078125"
+     inkscape:window-width="2560"
+     inkscape:window-height="1417"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:snap-global="true"
+     inkscape:snap-page="true" />
+  <defs
+     id="defs1020" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-93.043693,-102.85768)">
+    <path
+       id="path851"
+       style="display:inline;fill:#8cdb29;stroke-width:0.0406333;fill-opacity:1"
+       d="M 3.15625,5.1582031 C 2.8375065,5.2823282 2.505594,5.3807278 2.2714844,5.6328125 1.7024916,6.0060786 1.2825982,6.6253744 0.66210938,6.9394531 0.59161741,7.353387 -0.09702047,7.5722387 0,7.9628906 0.40634079,7.9679552 0.33537148,8.3232338 0.60742188,8.4453125 1.158099,8.3913786 1.0849507,9.0914167 1.5175781,9.0800781 1.401728,9.5276876 1.921427,9.2416903 1.8847656,9.6113281 c 0.343423,0.1978961 0.9246305,0.2173146 1.2363282,0.6230469 0.011901,0.004 0.023718,0.0091 0.035156,0.01367 z"
+       transform="matrix(0.26458333,0,0,0.26458333,93.043693,102.85768)" />
+  </g>
+</svg>

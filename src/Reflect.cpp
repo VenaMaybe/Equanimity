@@ -75,11 +75,6 @@ struct ModDisplay : TransparentWidget {
 		nvgRect(args.vg, rescale(module->inputs[module->INPUT_A].getVoltage(), -10, 10, 40, 0), 0, 5, 10);
 		nvgStroke(args.vg);
 		
-
-		
-
-		
-		
 		
 		//loadSvg(mm2px(Vec(0, 55.06)));
 
