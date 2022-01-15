@@ -23,6 +23,7 @@ struct Reflections : Module {
 	};
 	enum LightIds {
 		SLIDER_RIGHT_LIGHT,
+		SLIDER_LEFT_LIGHT,
 		NUM_LIGHTS
 	};
 //--- Variables ----//
@@ -133,6 +134,7 @@ struct Reflections : Module {
 	outputs[LESSER_OUTPUT].setVoltage(outB);
 
 	lights[SLIDER_RIGHT_LIGHT].setBrightness(1.f);
+	lights[SLIDER_LEFT_LIGHT].setBrightness(1.f);
 	
 
 
@@ -234,17 +236,17 @@ struct Reflections : Module {
 };
 
 struct SliderRightDisplay : ModuleLightWidget {
-	//Reflections* module;
 	Dawn_Slider_Light_Right* dawn_slider_light_right;
 
 	SliderRightDisplay() {
+		//nvgRGB takes 0-255, nvgRGBf takes 0-1 floats
+		addBaseColor(nvgRGB(140,219,41));
+		
 		dawn_slider_light_right = new Dawn_Slider_Light_Right();
 		addChild(dawn_slider_light_right);
-
-		//nvgRGB takes 0-255, nvgRGBf takes 0-1 floats
-		addBaseColor(nvgRGBf(0.f,1.f,0.f));
 		box.size = dawn_slider_light_right->box.size;
 		dawn_slider_light_right->box.pos = Vec(0,0);
+		
 	}
 
 	/*
@@ -256,20 +258,44 @@ struct SliderRightDisplay : ModuleLightWidget {
 	*/
 
 	void drawLayer(const DrawArgs& args, int layer) override {
-		//if(!module) {
-		//	return;
-		//}
-		//Change position in step method with box.pos
 
 		if(layer == 1) {
-			//dawn_slider_light_right->draw(args);
-
 			//Kinda like a bg to fg crossfader!
 			nvgGlobalCompositeBlendFunc(args.vg, NVG_ONE_MINUS_DST_COLOR, NVG_ONE);
 			nvgSave(args.vg);
 			nvgTranslate(args.vg,mm2px(-0.84),0);
 			drawHalo(args);
 			nvgRestore(args.vg);
+			
+		}
+
+		Widget::drawLayer(args, layer);
+	}
+};
+struct SliderLeftDisplay : ModuleLightWidget {
+	Dawn_Slider_Light_Left* dawn_slider_light_left;
+
+	SliderLeftDisplay() {
+		//nvgRGB takes 0-255, nvgRGBf takes 0-1 floats
+		addBaseColor(nvgRGB(140,219,41));
+		
+		dawn_slider_light_left = new Dawn_Slider_Light_Left();
+		addChild(dawn_slider_light_left);
+		box.size = dawn_slider_light_left->box.size;
+		dawn_slider_light_left->box.pos = Vec(0,0);
+		
+	}
+
+	void drawLayer(const DrawArgs& args, int layer) override {
+
+		if(layer == 1) {
+			//Kinda like a bg to fg crossfader!
+			nvgGlobalCompositeBlendFunc(args.vg, NVG_ONE_MINUS_DST_COLOR, NVG_ONE);
+			nvgSave(args.vg);
+			nvgTranslate(args.vg,mm2px(0.84),0);
+			drawHalo(args);
+			nvgRestore(args.vg);
+			
 		}
 
 		Widget::drawLayer(args, layer);
@@ -277,11 +303,15 @@ struct SliderRightDisplay : ModuleLightWidget {
 };
 
 
-
 struct ReflectionsWidget : ModuleWidgetEqu {
-	//PanelBorderNoOutline* noBorder;
-
+	//--- Variables ----//
+		//Slider light displays!
 	SliderRightDisplay* slider_right_display;
+	SliderLeftDisplay* slider_left_display;
+
+	
+
+
 	ReflectionsWidget(Reflections* module) {
 		//TODO: SKIN STUFF LATER!!!
 		ModuleWidgetEqu::setModule(module);
@@ -327,16 +357,27 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		//slider_right_display->module = module;
 		//slider_right_display->box.pos = mm2px(Vec(14.712, 19.894));
 
+		
 		slider_right_display = createLight<SliderRightDisplay>(mm2px(Vec(14.712, 19.894)),module,Reflections::SLIDER_RIGHT_LIGHT);
 		addChild(slider_right_display);
+
+		slider_left_display = createLight<SliderLeftDisplay>(mm2px(Vec(10.752 + 1.61, 19.894)),module,Reflections::SLIDER_LEFT_LIGHT);
+		addChild(slider_left_display);
+		
 		
 	}
+
+
 
 	void step() override {
 		if(module) {
 			Reflections* my_module = reinterpret_cast<Reflections*>(module);
 			//TODO: scale by size of slider, add pos of slider as well so it starts correctly
-			slider_right_display->box.pos = mm2px(Vec(14.712, 19.894 - 2.06 + rescale(my_module->inputs[my_module->A_INPUT].getVoltage(), -10, 10, 0, 33.49)));
+			float latchRightInput = - 1 * my_module->latchAmt;
+			slider_right_display->box.pos = mm2px(Vec(14.712, 19.894 - 2.06 + rescale(latchRightInput, -10, 10, 0, 33.49)));
+
+			float latchLeftInput = my_module->slewAmt;
+			slider_left_display->box.pos = mm2px(Vec(10.752 + 1.61, 19.894 - 2.06 + rescale(latchLeftInput, 0, 1, 33.49, 0)));
 		}
 		
 		ModuleWidget::step();

@@ -152,6 +152,28 @@ struct Dawn_Slider_Light_Right : SvgWidget {
 	}
 };
 
+struct Dawn_Slider_Light_Left : SvgWidget {
+	Dawn_Slider_Light_Left() {
+		setSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_light_left.svg")));
+	}
+	void draw(const DrawArgs& args) override {
+		Widget::draw(args);
+	}
+	void drawLayer(const DrawArgs& args, int layer) override {
+		if(args.fb) {
+			//If we're in the module browser!
+			SvgWidget::draw(args);
+		} else if(layer == 1) {
+			//If we're on the light layer!
+			SvgWidget::draw(args);
+		}
+	}
+};
+
+
+
+
+
 //Buttons
 struct Dawn_Button_Latch : SvgSwitchNoShadow {
 	Dawn_Button_Latch()
