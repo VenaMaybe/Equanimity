@@ -322,7 +322,12 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		//addChild(pb);
 
 		
-		
+		//MY DISPLAYS
+		slider_right_display = createLight<SliderRightDisplay>(mm2px(Vec(14.712, 19.894)),module,Reflections::SLIDER_RIGHT_LIGHT);
+		addChild(slider_right_display);
+
+		slider_left_display = createLight<SliderLeftDisplay>(mm2px(Vec(10.752 + 1.61, 19.894)),module,Reflections::SLIDER_LEFT_LIGHT);
+		addChild(slider_left_display);
 
 		//addParam(createLightParamCentered<VCVLightSlider<YellowLight>>(mm2px(Vec(6.604, 33.605)), module, VCMixer::LVL_PARAMS + 0, VCMixer::LVL_LIGHTS + 0));
 
@@ -349,20 +354,7 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		// mm2px(Vec(0.655, 36.46))
 		//addChild(createWidget<Widget>(mm2px(Vec(14.712, 19.894))));
 
-		//MY DISPLAYS
-
 		
-		
-		//Dawn_Slider_Light_Right* dawn_slider_light_right; = new Dawn_Slider_Light_Right();
-		//slider_right_display->module = module;
-		//slider_right_display->box.pos = mm2px(Vec(14.712, 19.894));
-
-		
-		slider_right_display = createLight<SliderRightDisplay>(mm2px(Vec(14.712, 19.894)),module,Reflections::SLIDER_RIGHT_LIGHT);
-		addChild(slider_right_display);
-
-		slider_left_display = createLight<SliderLeftDisplay>(mm2px(Vec(10.752 + 1.61, 19.894)),module,Reflections::SLIDER_LEFT_LIGHT);
-		addChild(slider_left_display);
 		
 		
 	}
@@ -377,7 +369,7 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 			slider_right_display->box.pos = mm2px(Vec(14.712, 19.894 - 2.06 + rescale(latchRightInput, -10, 10, 0, 33.49)));
 
 			float latchLeftInput = my_module->slewAmt;
-			slider_left_display->box.pos = mm2px(Vec(10.752 + 1.61, 19.894 - 2.06 + rescale(latchLeftInput, 0, 1, 33.49, 0)));
+			slider_left_display->box.pos = mm2px(Vec(10.752 + 3.96 - 2.45, 19.894 - 2.06 + rescale(latchLeftInput, 0, 1, 33.49, 0)));
 		}
 		
 		ModuleWidget::step();

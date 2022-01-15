@@ -116,8 +116,8 @@ struct Dawn_Slider_One : app::SvgSlider
 struct Dawn_Slider_Right : app::SvgSlider 
 {
 	Dawn_Slider_Right() {
-	maxHandlePos = mm2px(math::Vec(-1.54 + 1.65, -2.06));
-	minHandlePos = mm2px(math::Vec(-1.54 + 1.65, 33.49 - 2.06));
+	maxHandlePos = mm2px(math::Vec(0, -2.06));
+	minHandlePos = mm2px(math::Vec(0, 33.49 - 2.06));
 	setBackgroundSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_bg_invis.svg")));
 	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_handle_right.svg")));
 	}
@@ -125,8 +125,8 @@ struct Dawn_Slider_Right : app::SvgSlider
 struct Dawn_Slider_Left : app::SvgSlider 
 {
 	Dawn_Slider_Left() {
-	maxHandlePos = mm2px(math::Vec(-1.54 + 1.65 + 3.96 - 2.45, -2.06));
-	minHandlePos = mm2px(math::Vec(-1.54 + 1.65 + 3.96 - 2.45, 33.49 - 2.06));
+	maxHandlePos = mm2px(math::Vec(3.96 - 2.45, -2.06));
+	minHandlePos = mm2px(math::Vec(3.96 - 2.45, 33.49 - 2.06));
 	setBackgroundSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_bg_invis.svg")));
 	setHandleSvg(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/black_slider_handle_left.svg")));
 	}
