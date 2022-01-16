@@ -183,6 +183,14 @@ struct Dawn_Button_Latch : SvgSwitchNoShadow {
 	}
 };
 
+struct Dawn_Button_Gate : SvgSwitchNoShadow {
+	Dawn_Button_Gate()
+	{
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_bg_blank.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_bg_gate.svg")));
+	}
+};
+
 struct Dawn_Port_One : app::SvgPort
 {
 	Dawn_Port_One()

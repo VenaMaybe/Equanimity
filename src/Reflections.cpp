@@ -335,10 +335,11 @@ struct ReflectionsWidget : ModuleWidgetEqu {
 		addParam(createParam<Dawn_Slider_Left>(mm2px(Vec(10.752, 19.894)), module, Reflections::SLEW_SLIDER_PARAM));
 		addParam(createParam<Dawn_Slider_Right>(mm2px(Vec(14.712, 19.894)), module, Reflections::LATCH_SLIDER_PARAM));
 
-		Dawn_Button_Latch* dawn_button_latch = createParam<Dawn_Button_Latch>(mm2px(Vec(10.16, 63.586)), module, Reflections::GATE_SWITCH_PARAM);
-		addParam(dawn_button_latch);
+		Dawn_Button_Gate* dawn_button_gate = createParam<Dawn_Button_Gate>(mm2px(Vec(10.16, 63.586)), module, Reflections::GATE_SWITCH_PARAM);
+		addParam(dawn_button_gate);
 		
-		addParam(createParam<Dawn_Button_Latch>(mm2px(Vec(3.372, 63.586)), module, Reflections::LATCH_SWITCH_PARAM));
+		Dawn_Button_Latch* dawn_button_latch = createParam<Dawn_Button_Latch>(mm2px(Vec(3.372, 63.586)), module, Reflections::LATCH_SWITCH_PARAM);
+		addParam(dawn_button_latch);
 		//addParam(createParam<Orange_Switch>(mm2px(Vec(12.449, 62.892)), module, Reflections::SLEW_SWITCH_PARAM));
 
 		addInput(createInputCentered<Dawn_Port_One>(mm2px(Vec(7.265, 19.894)), module, Reflections::A_INPUT));
