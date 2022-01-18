@@ -178,16 +178,16 @@ struct Dawn_Slider_Light_Left : SvgWidget {
 struct Dawn_Button_Latch : SvgSwitchNoShadow {
 	Dawn_Button_Latch()
 	{
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_bg_blank.svg")));
 		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_bg_latch.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_latch.svg")));
 	}
 };
 
 struct Dawn_Button_Gate : SvgSwitchNoShadow {
 	Dawn_Button_Gate()
 	{
-		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_bg_blank.svg")));
 		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_bg_gate.svg")));
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/dawn/dawn_button_gate.svg")));
 	}
 };
 

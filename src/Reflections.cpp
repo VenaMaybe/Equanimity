@@ -240,7 +240,7 @@ struct SliderRightDisplay : ModuleLightWidget {
 
 	SliderRightDisplay() {
 		//nvgRGB takes 0-255, nvgRGBf takes 0-1 floats
-		addBaseColor(nvgRGB(140,219,41));
+		addBaseColor(nvgRGB(199,75,64));
 		
 		dawn_slider_light_right = new Dawn_Slider_Light_Right();
 		addChild(dawn_slider_light_right);
@@ -277,7 +277,7 @@ struct SliderLeftDisplay : ModuleLightWidget {
 
 	SliderLeftDisplay() {
 		//nvgRGB takes 0-255, nvgRGBf takes 0-1 floats
-		addBaseColor(nvgRGB(140,219,41));
+		addBaseColor(nvgRGB(199,75,64));
 		
 		dawn_slider_light_left = new Dawn_Slider_Light_Left();
 		addChild(dawn_slider_light_left);
